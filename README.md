@@ -1,23 +1,22 @@
-Student Name : Nicolas Klein
-Student ID : 21892288
+# Student Name : Nicolas Klein  
+# Student ID   : 21892288  
 
-PT3 Showground Tasks
-Description
+---
 
-Small tasks with Matplotlib drawing pirate ships in frames.
-Requirements
+# PT3 Showground Tasks  
 
-Python 3.10+
-matplotlib, numpy
+## Description  
+Small tasks with Matplotlib drawing pirate ships in frames.  
 
-Files
+## Requirements  
+- Python 3.10+  
+- matplotlib  
+- numpy  
 
-Task1: one ship, rectangle
-Task2: ship with numpy + colors
-Task3: change color, size, margin
-Task4: animation with ships
-
-showDemo.py: demo
-COMP1005_Showground_Documentation.pdf
-
-
+## Files  
+- **Task1**: one ship, rectangle  
+- **Task2**: ship with numpy + colors  
+- **Task3**: change color, size, margin  
+- **Task4**: animation with ships  
+- **showDemo.py**: demo  
+- **COMP1005_Showground_Documentation.pdf**  
