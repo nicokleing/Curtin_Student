@@ -91,21 +91,14 @@ class Simulation:
                           terrain=terrain, patron_type=patron_type)
             self.patrons.append(patron)
 
-        if show_stats:
-            self.fig = plt.figure(figsize=(10, 6))
-            self.ax_map = self.fig.add_subplot(1, 2, 1)
-            self.ax_stats = self.fig.add_subplot(1, 2, 2)
-        else:
-            self.fig, self.ax_map = plt.subplots(figsize=(8, 6))
-            self.ax_stats = None
-
         # 🎯 ÉPICA 4: Controles de velocidad y pausa
         self.paused = False
         self.speed_multiplier = 1  # 1x, 5x, 10x
         self.speed_names = {1: "1x", 5: "5x", 10: "10x"}
+        self.running = True
         
-        # Conectar eventos de teclado
-        self.fig.canvas.mpl_connect('key_press_event', self._on_key_press)
+        # 🎮 ÉPICA 4 MEJORADA: Layout con controles visuales
+        self.setup_visual_layout(show_stats)
 
         self.riders_now = []
         self.queued_now = []
@@ -128,39 +121,317 @@ class Simulation:
         else:
             return PatronType.IMPACIENTE
 
+    def setup_visual_layout(self, show_stats):
+        """🎮 ÉPICA 4: Configurar layout con controles visuales clickeables"""
+        import matplotlib.patches as patches
+        
+        # Crear figura principal con espacio para controles
+        if show_stats:
+            self.fig = plt.figure(figsize=(14, 8))
+            # Mapa principal (ocupa 4/5 del alto)
+            self.ax_map = plt.subplot2grid((5, 2), (0, 0), rowspan=4, colspan=1)
+            # Estadísticas (derecha, ocupa 4/5 del alto)
+            self.ax_stats = plt.subplot2grid((5, 2), (0, 1), rowspan=4, colspan=1)
+            # Controles (parte inferior, ocupa todo el ancho)
+            self.ax_controls = plt.subplot2grid((5, 2), (4, 0), rowspan=1, colspan=2)
+        else:
+            self.fig = plt.figure(figsize=(10, 7))
+            # Mapa principal (ocupa 4/5 del alto)
+            self.ax_map = plt.subplot2grid((5, 1), (0, 0), rowspan=4, colspan=1)
+            self.ax_stats = None
+            # Controles (parte inferior)
+            self.ax_controls = plt.subplot2grid((5, 1), (4, 0), rowspan=1, colspan=1)
+        
+        # Configurar área de controles
+        self.setup_control_buttons()
+        
+        # Conectar eventos de click
+        self.fig.canvas.mpl_connect('button_press_event', self._on_click)
+        
+        # Título de ventana
+        self.fig.canvas.set_window_title('🎮 AdventureWorld - Controles Visuales')
+        
+        print("🎮 Controles visuales configurados - ¡Haz click en los botones!")
+        
+    def setup_control_buttons(self):
+        """🎮 Crear botones de control visuales"""
+        import matplotlib.patches as patches
+        
+        self.ax_controls.set_xlim(0, 8)
+        self.ax_controls.set_ylim(0, 1)
+        self.ax_controls.axis('off')
+        
+        # Configuración de botones
+        button_width = 0.9
+        button_height = 0.6
+        y_pos = 0.2
+        
+        # Lista para guardar los botones y sus áreas de click
+        self.buttons = {}
+        
+        # Botón 1: Pause/Play
+        x1 = 0.1
+        self.buttons['pause'] = {
+            'rect': patches.Rectangle((x1, y_pos), button_width, button_height, 
+                                    facecolor='lightgreen', edgecolor='black', linewidth=2),
+            'area': (x1, x1 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x1 + button_width/2, y_pos + button_height/2),
+            'current_text': '⏸️'
+        }
+        
+        # Botón 2: Velocidad 1x  
+        x2 = 1.2
+        self.buttons['speed1'] = {
+            'rect': patches.Rectangle((x2, y_pos), button_width, button_height,
+                                    facecolor='lightblue', edgecolor='black', linewidth=2),
+            'area': (x2, x2 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x2 + button_width/2, y_pos + button_height/2),
+            'current_text': '🐌 1x'
+        }
+        
+        # Botón 3: Velocidad 5x
+        x3 = 2.4
+        self.buttons['speed5'] = {
+            'rect': patches.Rectangle((x3, y_pos), button_width, button_height,
+                                    facecolor='orange', edgecolor='black', linewidth=2),
+            'area': (x3, x3 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x3 + button_width/2, y_pos + button_height/2),
+            'current_text': '🏃 5x'
+        }
+        
+        # Botón 4: Velocidad 10x
+        x4 = 3.6
+        self.buttons['speed10'] = {
+            'rect': patches.Rectangle((x4, y_pos), button_width, button_height,
+                                    facecolor='red', edgecolor='black', linewidth=2),
+            'area': (x4, x4 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x4 + button_width/2, y_pos + button_height/2),
+            'current_text': '🚀 10x'
+        }
+        
+        # Botón 5: Toggle Stats
+        x5 = 4.8
+        stats_text = '📊 ON' if self.ax_stats else '📊 OFF'
+        self.buttons['stats'] = {
+            'rect': patches.Rectangle((x5, y_pos), button_width, button_height,
+                                    facecolor='lightcyan', edgecolor='black', linewidth=2),
+            'area': (x5, x5 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x5 + button_width/2, y_pos + button_height/2),
+            'current_text': stats_text
+        }
+        
+        # Botón 6: Reset
+        x6 = 6.0
+        self.buttons['reset'] = {
+            'rect': patches.Rectangle((x6, y_pos), button_width, button_height,
+                                    facecolor='yellow', edgecolor='black', linewidth=2),
+            'area': (x6, x6 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x6 + button_width/2, y_pos + button_height/2),
+            'current_text': '🔄'
+        }
+        
+        # Botón 7: Salir
+        x7 = 7.1
+        self.buttons['exit'] = {
+            'rect': patches.Rectangle((x7, y_pos), button_width, button_height,
+                                    facecolor='gray', edgecolor='black', linewidth=2),
+            'area': (x7, x7 + button_width, y_pos, y_pos + button_height),
+            'text_pos': (x7 + button_width/2, y_pos + button_height/2),
+            'current_text': '❌'
+        }
+        
+        # Agregar todos los rectángulos al axes
+        for button_name, button_data in self.buttons.items():
+            self.ax_controls.add_patch(button_data['rect'])
+        
+        # Dibujar textos iniciales
+        self._update_button_texts()
+        
+        # Instrucciones
+        self.ax_controls.text(4, 0.05, '👆 HAZ CLICK EN LOS BOTONES', 
+                            ha='center', va='bottom', fontsize=12, weight='bold', color='blue')
+    
+    def _update_button_texts(self):
+        """Actualizar textos de los botones"""
+        # Limpiar textos anteriores (excepto las instrucciones)
+        for text in list(self.ax_controls.texts):
+            if '👆' not in text.get_text():
+                text.remove()
+        
+        # Agregar textos actualizados
+        for button_name, button_data in self.buttons.items():
+            x, y = button_data['text_pos']
+            text = button_data['current_text']
+            fontsize = 9 if len(text) > 3 else 11
+            self.ax_controls.text(x, y, text, ha='center', va='center', 
+                                fontsize=fontsize, weight='bold')
+
+    def _on_click(self, event):
+        """� ÉPICA 4: Maneja clicks en los botones de control"""
+        if event.inaxes != self.ax_controls:
+            return
+            
+        x, y = event.xdata, event.ydata
+        if x is None or y is None:
+            return
+        
+        print(f"🖱️ Click detectado en ({x:.2f}, {y:.2f})")
+        
+        # Verificar qué botón fue clickeado
+        for button_name, button_data in self.buttons.items():
+            x1, x2, y1, y2 = button_data['area']
+            if x1 <= x <= x2 and y1 <= y <= y2:
+                print(f"🎮 Botón clickeado: {button_name}")
+                self._handle_button_click(button_name)
+                break
+    
+    def _handle_button_click(self, button_name):
+        """🎮 Manejar acciones de los botones"""
+        if button_name == 'pause':
+            self._toggle_pause()
+        elif button_name == 'speed1':
+            self._set_speed(1)
+        elif button_name == 'speed5':
+            self._set_speed(5)
+        elif button_name == 'speed10':
+            self._set_speed(10)
+        elif button_name == 'stats':
+            self._toggle_stats()
+        elif button_name == 'reset':
+            self._reset_simulation()
+        elif button_name == 'exit':
+            self._exit_simulation()
+    
+    def _toggle_pause(self):
+        """Alternar estado de pausa"""
+        self.paused = not self.paused
+        
+        # Actualizar botón
+        new_text = '▶️' if self.paused else '⏸️'
+        new_color = 'lightcoral' if self.paused else 'lightgreen'
+        
+        self.buttons['pause']['current_text'] = new_text
+        self.buttons['pause']['rect'].set_facecolor(new_color)
+        
+        status = "⏸️ PAUSADA" if self.paused else f"▶️ EJECUTANDO {self.speed_names[self.speed_multiplier]}"
+        print(f"🎮 {status}")
+        
+        self._update_button_texts()
+        self.fig.canvas.draw()
+    
+    def _set_speed(self, new_speed):
+        """Cambiar velocidad de simulación"""
+        # Resetear colores de botones de velocidad
+        self.buttons['speed1']['rect'].set_facecolor('lightblue')
+        self.buttons['speed5']['rect'].set_facecolor('orange') 
+        self.buttons['speed10']['rect'].set_facecolor('red')
+        
+        # Resaltar botón activo
+        if new_speed == 1:
+            self.buttons['speed1']['rect'].set_facecolor('darkblue')
+        elif new_speed == 5:
+            self.buttons['speed5']['rect'].set_facecolor('darkorange')
+        elif new_speed == 10:
+            self.buttons['speed10']['rect'].set_facecolor('darkred')
+        
+        self.speed_multiplier = new_speed
+        print(f"🚀 Velocidad cambiada a {self.speed_names[new_speed]}")
+        
+        self.fig.canvas.draw()
+    
+    def _toggle_stats(self):
+        """Toggle de estadísticas (simulado - requeriría reconfigurar layout)"""
+        current_text = self.buttons['stats']['current_text']
+        new_text = '📊 OFF' if '📊 ON' in current_text else '📊 ON'
+        self.buttons['stats']['current_text'] = new_text
+        
+        print(f"📊 Estadísticas: {'Activadas' if 'ON' in new_text else 'Desactivadas'}")
+        print("   (Reinicia la simulación para aplicar cambios)")
+        
+        self._update_button_texts()
+        self.fig.canvas.draw()
+    
+    def _reset_simulation(self):
+        """Resetear simulación al estado inicial"""
+        print("🔄 Reiniciando simulación...")
+        self.time = 0
+        self.paused = False
+        self.speed_multiplier = 1
+        
+        # Resetear datos de estadísticas
+        self.riders_now = []
+        self.queued_now = []
+        self.departed_total = []
+        
+        # Resetear visitantes y atracciones
+        spawns = self.terrain.spawn_points
+        exits = self.terrain.exit_points
+        
+        from patrons import PatronType
+        self.patrons = []
+        for i in range(len(self.patrons) if hasattr(self, 'original_patron_count') else 60):
+            patron_type = self._assign_patron_type(i, 60)
+            patron = Patron(name=f"P{i:03d}", spawns=spawns, exits=exits, 
+                          terrain=self.terrain, patron_type=patron_type)
+            self.patrons.append(patron)
+        
+        # Resetear rides
+        for ride in self.rides:
+            ride.queue = []
+            ride.riders = []
+            ride.state = "idle"
+            ride.timer = 0
+        
+        # Actualizar botones
+        self.buttons['pause']['current_text'] = '⏸️'
+        self.buttons['pause']['rect'].set_facecolor('lightgreen')
+        self._set_speed(1)  # Resetear velocidad
+        
+        print("✅ Simulación reiniciada")
+    
+    def _exit_simulation(self):
+        """Salir de la simulación"""
+        print("👋 Cerrando simulación...")
+        self.running = False
+        plt.close('all')
+
     def _on_key_press(self, event):
-        """🎯 ÉPICA 4: Maneja controles de teclado para velocidad y pausa"""
+        """🎯 ÉPICA 4: Maneja controles de teclado (mantenido como alternativa)"""
         if event.key == ' ':  # Barra espaciadora para pausar/reanudar
-            self.paused = not self.paused
-            status = "PAUSADA" if self.paused else f"REANUDADA ({self.speed_names[self.speed_multiplier]})"
-            print(f"🎮 Simulación {status}")
-            
+            self._toggle_pause()
         elif event.key == '1':  # Velocidad normal (1x)
-            self.speed_multiplier = 1
-            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
-            
+            self._set_speed(1)
         elif event.key == '5':  # Velocidad rápida (5x)
-            self.speed_multiplier = 5
-            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
-            
+            self._set_speed(5)
         elif event.key == '0':  # Velocidad muy rápida (10x)
-            self.speed_multiplier = 10
-            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
-            
+            self._set_speed(10)
         elif event.key == 'h':  # Mostrar ayuda
             self._show_controls_help()
+        elif event.key == 'r':  # Reset
+            self._reset_simulation()
+        elif event.key == 'q':  # Quit
+            self._exit_simulation()
 
     def _show_controls_help(self):
-        """🎯 ÉPICA 4: Muestra la ayuda de controles de teclado"""
-        print("\n" + "="*50)
+        """🎯 ÉPICA 4: Muestra la ayuda de controles"""
+        print("\n" + "="*60)
         print("🎮 CONTROLES DE SIMULACIÓN - ÉPICA 4")
-        print("="*50)
-        print("ESPACIO  - Pausar/Reanudar simulación")
-        print("1        - Velocidad normal (1x)")
-        print("5        - Velocidad rápida (5x)") 
-        print("0        - Velocidad muy rápida (10x)")
-        print("H        - Mostrar esta ayuda")
-        print("="*50 + "\n")
+        print("="*60)
+        print("🖱️  CONTROLES POR CLICK:")
+        print("   ⏸️/▶️  - Pausar/Reanudar simulación")
+        print("   🐌 1x  - Velocidad normal")
+        print("   🏃 5x  - Velocidad rápida") 
+        print("   🚀 10x - Velocidad muy rápida")
+        print("   📊     - Toggle estadísticas")
+        print("   🔄     - Reiniciar simulación")
+        print("   ❌     - Salir")
+        print("\n⌨️  CONTROLES POR TECLADO (alternativo):")
+        print("   ESPACIO - Pausar/Reanudar")
+        print("   1,5,0   - Cambiar velocidad")
+        print("   R       - Reiniciar") 
+        print("   Q       - Salir")
+        print("   H       - Mostrar esta ayuda")
+        print("="*60 + "\n")
 
     def step(self):
         for ride in self.rides:
@@ -225,32 +496,63 @@ class Simulation:
         plt.pause(pause_time)
 
     def run(self):
-        # 🎯 ÉPICA 4: Mostrar controles al inicio
+        # � ÉPICA 4: Simulación con controles visuales
         self._show_controls_help()
         print(f"🚀 Iniciando simulación de {self.steps} pasos...")
+        print("🖱️ ¡Haz click en los botones para controlar la simulación!")
         
         step_count = 0
-        while step_count < self.steps:
-            if not self.paused:
-                # Solo avanzar la simulación si no está pausada
-                for _ in range(self.speed_multiplier):  # Múltiples pasos según velocidad
-                    if step_count < self.steps:
-                        self.step()
-                        step_count += 1
-                    else:
-                        break
-            
-            # Siempre dibujar (para mostrar estado de pausa)
-            self.draw()
-            
-            # Si está pausada, pausa más larga para no consumir CPU
-            if self.paused:
-                plt.pause(0.05)
+        try:
+            while step_count < self.steps and self.running:
+                # Verificar si la ventana fue cerrada
+                if not plt.fignum_exists(self.fig.number):
+                    print("👋 Ventana cerrada - terminando simulación")
+                    break
+                
+                if not self.paused:
+                    # Solo avanzar la simulación si no está pausada
+                    for _ in range(self.speed_multiplier):  # Múltiples pasos según velocidad
+                        if step_count < self.steps and self.running:
+                            self.step()
+                            step_count += 1
+                        else:
+                            break
+                
+                # Siempre dibujar (para mostrar estado de pausa)
+                if self.running:
+                    self.draw()
+                
+                # Pausa inteligente según estado
+                if self.paused:
+                    plt.pause(0.1)  # Pausa más larga para no consumir CPU
+                else:
+                    plt.pause(0.01)  # Pausa mínima para fluidez
+                    
+        except KeyboardInterrupt:
+            print("\n⏸️ Simulación interrumpida con Ctrl+C")
+        except Exception as e:
+            print(f"\n❌ Error en simulación: {e}")
         
-        # 🎯 ÉPICA 2: Reporte final mejorado
-        self._print_epic2_report()
-        print("Fin de la simulación. Cierra la ventana para salir.")
-        plt.show()
+        if self.running and step_count >= self.steps:
+            print(f"\n✅ Simulación completada en {step_count} pasos")
+            # 🎯 ÉPICA 2: Reporte final mejorado
+            self._print_epic2_report()
+        
+        if self.running:
+            # Cambiar botón de salir por "Finalizado"
+            self.buttons['exit']['current_text'] = '✅ OK'
+            self.buttons['exit']['rect'].set_facecolor('lightgreen')
+            self._update_button_texts()
+            self.fig.canvas.draw()
+            
+            print("\n🎮 Simulación finalizada - Usa el botón ✅ OK para cerrar")
+            print("   O cierra la ventana manualmente")
+            
+            # Mantener ventana abierta hasta que el usuario decida cerrar
+            while self.running and plt.fignum_exists(self.fig.number):
+                plt.pause(0.1)
+        
+        plt.close('all')
         
     def _print_epic2_report(self):
         """🎯 ÉPICA 2: Reporte detallado de visitantes por tipo"""

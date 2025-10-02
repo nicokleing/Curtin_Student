@@ -1,6 +1,8 @@
 # 🎯 ESTADO ACTUALIZADO DE ÉPICAS - ADVENTUREWORLD
 
-**Última actualización:** 2 de octubre de 2025  
+**Última actualización:** 2 de octub| **3: Atracciones** | **100%** ✅ | 4/4 | 0 | ✅ COMPLETA |
+| **4: Simulación** | **100%** ✅ | 3/3 | 0 | ✅ COMPLETA |
+| **5: Visualización** | **80%** 🟡 | 2/3 | 1 | 🔥 ALTA |de 2025  
 **Progreso Total del Proyecto:** 76% (19/25 HU completadas)
 
 ---
@@ -28,18 +30,11 @@
 - ✅ HU-11: Estados visuales IDLE/LOADING/RUNNING/UNLOADING
 - ✅ HU-12: Arquitectura extensible mejorada
 
-## 🟡 **ÉPICA 4: SIMULACIÓN Y MOTOR - 70% IMPLEMENTADA**
-
-| HU | Historia de Usuario | Estado | Implementación |
-|----|-------------------|--------|---------------|
-| **HU-13** | Simulación paso a paso (ticks) | ✅ **COMPLETA** | Loop principal `sim.step()` - líneas 100-110 |
-| **HU-14** | Fijar semilla aleatoria para reproducibilidad | ✅ **COMPLETA** | `--seed` implementado - líneas 171-172 |
-| **HU-15** | Pausar o acelerar simulación (1×, 5×, 10×) | ❌ **FALTA** | Solo velocidad fija con `plt.pause(0.001)` |
-
-**🔴 Pendiente de Implementar:**
-- Controles de velocidad interactivos
-- Pausa/reanudación de simulación
-- Interfaz de teclado para control en tiempo real
+### ✅ ÉPICA 4: Controles Avanzados de Simulación (COMPLETA)
+**Estado:** 100% Completada (3/3 HU)
+- ✅ HU-13: Simulación paso a paso (ticks) mantenida
+- ✅ HU-14: Semilla aleatoria reproducible mantenida
+- ✅ HU-15: Controles de velocidad (1x/5x/10x) y pausa IMPLEMENTADOS
 
 ---
 
@@ -147,14 +142,14 @@
 
 ## 📝 **CHANGELOG**
 
-### **2025-10-02 - Epic 3 Completada** 
-- ✅ **COMPLETADA:** Epic 2 - Sistema completo de visitantes
-- ✅ **COMPLETADA:** Epic 3 - Sistema avanzado de atracciones
-- ✅ HU-10: Visualización gráfica de colas implementada
-- ✅ HU-11: Estados visuales IDLE/LOADING/RUNNING/UNLOADING
-- ✅ Carga/descarga progresiva y animaciones dinámicas
-- 🎯 **SIGUIENTE:** Epic 4/5 - Simulación y Visualización avanzadas
+### **2025-10-02 - Epic 4 Completada**
+- ✅ **COMPLETADA:** Epic 3 - Sistema avanzado de atracciones  
+- ✅ **COMPLETADA:** Epic 4 - Controles avanzados de simulación
+- ✅ HU-15: Controles de velocidad y pausa implementados
+- ✅ Interfaz de teclado en tiempo real (ESPACIO, 1, 5, 0, H)
+- ✅ Estados visuales de velocidad y pausa
+- 🎯 **SIGUIENTE:** Epic 5 - Funcionalidad de exportación
 
 ---
 
-**🚀 ESTADO ACTUAL:** Épicas 1-3 Completadas (76% progreso) - Listo para Épicas 4-5
+**🚀 ESTADO ACTUAL:** Épicas 1-4 Completadas (80% progreso) - Listo para Épica 5

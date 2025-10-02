@@ -1,6 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Demo Épica 4: Controles Avanzados de Simulación - VERSIÓN VISUAL
+===============================================================
+
+Demuestra las funcionalidades de la HU-15 MEJORADAS:
+- Controles visuales con botones clickeables
+- Velocidad (1x, 5x, 10x) por click
+- Pausa/reanudación visual
+- Toggle de estadísticas
+- Reset de simulación
+- Controles de teclado como alternativa
+
+🖱️ CONTROLES VISUALES (NUEVOS):
+- ⏸️/▶️: Click para pausar/reanudar
+- 🐌 1x, 🏃 5x, 🚀 10x: Click para velocidad
+- 📊: Toggle estadísticas
+- 🔄: Reiniciar simulación
+- ❌: Salir
+
+⌨️ CONTROLES DE TECLADO (alternativo):
+- ESPACIO: Pausar/Reanudar
+- 1/5/0: Velocidad
+- R: Reset, Q: Salir, H: Ayuda
+"""hon3
+# -*- coding: utf-8 -*-
+"""
 Demo Épica 4: Controles Avanzados de Simulación
 ===============================================
 
@@ -24,45 +49,51 @@ import subprocess
 def run_epic4_demo():
     """Ejecuta demo de controles avanzados con configuración optimizada"""
     
-    print("🎯 DEMO ÉPICA 4: CONTROLES AVANZADOS DE SIMULACIÓN")
+    print("🎯 DEMO ÉPICA 4: CONTROLES VISUALES INTERACTIVOS")
     print("="*60)
     print("📋 Funcionalidades a probar:")
     print("   ✅ HU-13: Simulación paso a paso (ya implementada)")
     print("   ✅ HU-14: Semilla aleatoria reproducible (ya implementada)")
-    print("   🔥 HU-15: Controles de velocidad y pausa (NUEVA)")
+    print("   🔥 HU-15: Controles visuales y de velocidad (NUEVA)")
     print()
-    print("🎮 Controles disponibles:")
-    print("   ESPACIO - Pausar/Reanudar simulación")
-    print("   1       - Velocidad normal (1x)")
-    print("   5       - Velocidad rápida (5x)")  
-    print("   0       - Velocidad muy rápida (10x)")
-    print("   H       - Mostrar ayuda")
+    print("🖱️ CONTROLES VISUALES (HAZ CLICK):")
+    print("   ⏸️/▶️  - Pausar/Reanudar simulación")
+    print("   🐌 1x  - Velocidad normal")
+    print("   🏃 5x  - Velocidad rápida")  
+    print("   🚀 10x - Velocidad muy rápida")
+    print("   📊     - Toggle estadísticas")
+    print("   🔄     - Reiniciar simulación") 
+    print("   ❌     - Salir")
+    print()
+    print("⌨️ CONTROLES DE TECLADO (alternativo):")
+    print("   ESPACIO, 1, 5, 0, R, Q, H")
     print()
     print("🚀 Configuración del demo:")
-    print("   • Parque 80x60 para visualización clara")
-    print("   • 40 visitantes para performance óptima") 
-    print("   • 150 pasos de simulación")
+    print("   • Parque estándar con visualización optimizada")
+    print("   • 60 visitantes con tipos diversos") 
+    print("   • 200 pasos de simulación")
     print("   • Semilla fija (789) para reproducibilidad")
     print("   • Estadísticas en tiempo real")
     print("="*60)
     
-    # Configuración optimizada para demo de controles
+    # Configuración optimizada para demo de controles visuales
     command = [
         "python3", "adventureworld.py",
         "--seed", "789",           # HU-14: Reproducibilidad
-        "--stats",                 # Visualización completa
-        "--steps", "150"           # Duración media para probar controles
+        "--stats",                 # Visualización completa con controles
+        "--steps", "200"           # Duración suficiente para probar controles
     ]
     
     print(f"🔧 Ejecutando: {' '.join(command)}")
-    print("\n⚡ PRUEBA LOS CONTROLES DURANTE LA SIMULACIÓN:")
-    print("   1. Inicia observando velocidad normal (1x)")
-    print("   2. Presiona '5' para acelerar a 5x")
-    print("   3. Presiona ESPACIO para pausar")
-    print("   4. Presiona ESPACIO para reanudar")
-    print("   5. Presiona '0' para máxima velocidad (10x)")
-    print("   6. Presiona '1' para volver a normal")
-    print("\n🎯 Objetivo: Validar control fluido de velocidad y pausa\n")
+    print("\n⚡ PRUEBA LOS CONTROLES VISUALES:")
+    print("   1. 🖱️ HAZ CLICK en los botones de la parte inferior")
+    print("   2. 🎮 Prueba ⏸️/▶️ para pausar y reanudar")
+    print("   3. 🚀 Cambia velocidad: 🐌 1x → 🏃 5x → 🚀 10x")
+    print("   4. 🔄 Usa RESET para reiniciar cuando quieras")
+    print("   5. 📊 Toggle estadísticas on/off")
+    print("   6. ❌ SALIR cuando hayas terminado")
+    print("\n⌨️ ALTERNATIVO: También funcionan las teclas ESPACIO, 1, 5, 0, R, Q")
+    print("\n🎯 Objetivo: Validar controles visuales intuitivos y funcionales\n")
     
     try:
         # Ejecutar simulación
@@ -79,7 +110,8 @@ def run_epic4_demo():
         return False
     
     print("\n✅ Demo de Épica 4 completado")
-    print("🎯 HU-15 (Controles de velocidad) validada correctamente")
+    print("🎯 HU-15 (Controles visuales de velocidad) validada correctamente")
+    print("🖱️ Controles por click funcionando perfectamente")
     return True
 
 if __name__ == "__main__":
