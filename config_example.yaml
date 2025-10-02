@@ -1,0 +1,32 @@
+# AdventureWorld Configuration
+# Archivo de ejemplo para configuración completa del parque
+
+# Configuración del parque
+park:
+  width: 120
+  height: 80
+
+# Configuración de atracciones
+rides:
+  - type: pirate
+    capacity: 15
+    duration: 35
+    bbox: [15, 20, 18, 12]
+  - type: ferris
+    capacity: 24
+    duration: 80
+    bbox: [50, 25, 22, 22]
+  - type: pirate
+    capacity: 10
+    duration: 30
+    bbox: [80, 40, 15, 10]
+
+# Configuración de visitantes
+patrons:
+  count: 75
+
+# Configuración de simulación
+simulation:
+  steps: 400
+  seed: 42
+  stats: true

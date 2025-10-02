@@ -1,9 +1,16 @@
 
 # -*- coding: utf-8 -*-
 """
-Utilidades: lectura de CSVs simples y construcción de rides.
+Utilidades: lectura de CSVs simples, configuración YAML y construcción de rides.
 """
 from rides import PirateShip, FerrisWheel
+
+try:
+    import yaml
+    YAML_AVAILABLE = True
+except ImportError:
+    YAML_AVAILABLE = False
+    print("Warning: PyYAML not available. Install with: pip install pyyaml")
 
 def read_rides_csv(path):
     """
@@ -50,6 +57,71 @@ def read_patrons_csv(path):
             except ValueError:
                 pass
     return 60
+
+def load_config_yaml(path):
+    """
+    Carga configuración completa desde archivo YAML.
+    
+    Args:
+        path (str): Ruta al archivo YAML de configuración
+        
+    Returns:
+        dict: Configuración cargada o None si hay error
+    """
+    if not YAML_AVAILABLE:
+        print("Error: PyYAML requerido para cargar archivos YAML")
+        print("Instala con: pip install pyyaml")
+        return None
+        
+    if path is None:
+        return None
+    
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+        return config
+    except FileNotFoundError:
+        print(f"Error: No se encontró el archivo de configuración: {path}")
+        return None
+    except yaml.YAMLError as e:
+        print(f"Error parseando YAML: {e}")
+        return None
+    except Exception as e:
+        print(f"Error inesperado cargando configuración: {e}")
+        return None
+
+
+def print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_source="default"):
+    """
+    Imprime la configuración final utilizada en la simulación.
+    
+    Args:
+        terrain: Objeto Terrain con las dimensiones del parque
+        rides: Lista de objetos Ride
+        num_patrons: Número de visitantes
+        steps: Pasos de simulación
+        seed: Semilla aleatoria (None si no se usó)
+        stats: Si se muestran estadísticas
+        config_source: Fuente de la configuración ("default", "interactive", "yaml", "csv")
+    """
+    print("\n" + "="*50)
+    print("📋 CONFIGURACIÓN FINAL UTILIZADA")
+    print("="*50)
+    print(f"🏗️  Fuente de configuración: {config_source}")
+    print(f"🗺️  Dimensiones del parque: {terrain.width} x {terrain.height}")
+    print(f"🎢 Número de atracciones: {len(rides)}")
+    
+    # Detalles de atracciones
+    for i, ride in enumerate(rides, 1):
+        ride_type = "🏴‍☠️ Barco Pirata" if isinstance(ride, PirateShip) else "🎡 Noria"
+        print(f"   {i}. {ride_type} - Cap: {ride.capacity}, Duración: {ride.duration}")
+    
+    print(f"👥 Visitantes: {num_patrons}")
+    print(f"⏱️  Pasos de simulación: {steps}")
+    print(f"🎲 Semilla aleatoria: {seed if seed is not None else 'Aleatoria'}")
+    print(f"📊 Estadísticas en vivo: {'✅ Sí' if stats else '❌ No'}")
+    print("="*50 + "\n")
+
 
 def build_rides(rides_params, terrain):
     """

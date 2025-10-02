@@ -13,15 +13,23 @@ import matplotlib.pyplot as plt
 
 from terrain import Terrain
 from patrons import Patron
-from utils import read_rides_csv, read_patrons_csv, build_rides
+from utils import read_rides_csv, read_patrons_csv, build_rides, load_config_yaml, print_final_config
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
         description="AdventureWorld - junior modular",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="""
+Ejemplos de uso:
+  python3 adventureworld.py                           # Configuración por defecto
+  python3 adventureworld.py -i                       # Modo interactivo
+  python3 adventureworld.py --config config.yaml     # Configuración desde YAML
+  python3 adventureworld.py --rides-csv rides.csv --stats  # CSV + estadísticas
+        """
     )
     parser.add_argument("-i", "--interactive", action="store_true", help="Modo interactivo")
+    parser.add_argument("--config", default=None, help="Archivo YAML de configuración completa")
     parser.add_argument("--map-csv", default=None, help="CSV del mapa (0=libre,1=barrera)")
     parser.add_argument("--rides-csv", default=None, help="CSV simple de rides")
     parser.add_argument("--patrons-csv", default=None, help="CSV simple de número de personas")
@@ -139,12 +147,88 @@ class Simulation:
 
 if __name__ == "__main__":
     args = parse_args()
+    
+    # Configurar semilla aleatoria si se especifica
     if args.seed is not None:
         random.seed(args.seed)
 
-    if args.interactive:
+    # Determinar fuente de configuración y cargar parámetros
+    config_source = "default"
+    
+    if args.config:
+        # Prioridad 1: Configuración YAML
+        config = load_config_yaml(args.config)
+        if config:
+            config_source = "yaml"
+            
+            # Configuración del parque
+            park_config = config.get('park', {})
+            terrain = Terrain.from_size(
+                park_config.get('width', 100), 
+                park_config.get('height', 70)
+            )
+            
+            # Configuración de atracciones
+            rides_params = []
+            for ride_config in config.get('rides', []):
+                rides_params.append({
+                    'type': ride_config.get('type', 'pirate'),
+                    'capacity': ride_config.get('capacity', 12),
+                    'duration': ride_config.get('duration', 40),
+                    'bbox': tuple(ride_config.get('bbox', [10, 10, 20, 12]))
+                })
+            
+            # Si no hay rides en YAML, usar defaults
+            if not rides_params:
+                rides_params = [
+                    {"type": "pirate", "capacity": 12, "duration": 40, "bbox": (10, 10, 20, 12)},
+                    {"type": "ferris", "capacity": 20, "duration": 70, "bbox": (45, 15, 20, 20)},
+                ]
+            
+            rides = build_rides(rides_params, terrain)
+            
+            # Configuración de visitantes
+            num_patrons = config.get('patrons', {}).get('count', 60)
+            
+            # Configuración de simulación (los argumentos CLI tienen precedencia)
+            simulation_config = config.get('simulation', {})
+            steps = args.steps if args.steps != 300 else simulation_config.get('steps', 300)
+            stats = args.stats or simulation_config.get('stats', False)
+            seed = args.seed if args.seed is not None else simulation_config.get('seed', None)
+            
+            # Aplicar semilla si viene del YAML y no se especificó en CLI
+            if seed is not None and args.seed is None:
+                random.seed(seed)
+        else:
+            # Si falla la carga de YAML, usar configuración por defecto
+            print("Usando configuración por defecto debido a errores en YAML...")
+            config_source = "default"
+            terrain = Terrain.from_size(100, 70)
+            rides_params = [
+                {"type": "pirate", "capacity": 12, "duration": 40, "bbox": (10, 10, 20, 12)},
+                {"type": "ferris", "capacity": 20, "duration": 70, "bbox": (45, 15, 20, 20)},
+            ]
+            rides = build_rides(rides_params, terrain)
+            num_patrons = 60
+            steps = args.steps
+            stats = args.stats
+            seed = args.seed
+    
+    elif args.interactive:
+        # Prioridad 2: Modo interactivo
+        config_source = "interactive"
         terrain, rides, num_patrons = interactive_setup()
+        steps = args.steps
+        stats = args.stats 
+        seed = args.seed
+        
     else:
+        # Prioridad 3: Archivos CSV individuales o defaults
+        if args.rides_csv or args.patrons_csv or args.map_csv:
+            config_source = "csv"
+        else:
+            config_source = "default"
+            
         terrain = Terrain.from_csv(args.map_csv) if args.map_csv else Terrain.from_size(100, 70)
         rides_params = read_rides_csv(args.rides_csv) if args.rides_csv else [
             {"type": "pirate", "capacity": 12, "duration": 40, "bbox": (10, 10, 20, 12)},
@@ -152,6 +236,13 @@ if __name__ == "__main__":
         ]
         rides = build_rides(rides_params, terrain)
         num_patrons = read_patrons_csv(args.patrons_csv) if args.patrons_csv else 60
+        steps = args.steps
+        stats = args.stats
+        seed = args.seed
 
-    sim = Simulation(terrain, rides, num_patrons, steps=args.steps, show_stats=args.stats)
+    # Imprimir configuración final utilizada
+    print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_source)
+
+    # Ejecutar simulación
+    sim = Simulation(terrain, rides, num_patrons, steps=steps, show_stats=stats)
     sim.run()
