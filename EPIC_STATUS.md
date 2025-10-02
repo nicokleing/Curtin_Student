@@ -1,7 +1,7 @@
 # 🎯 ESTADO ACTUALIZADO DE ÉPICAS - ADVENTUREWORLD
 
 **Última actualización:** 2 de octubre de 2025  
-**Progreso Total del Proyecto:** 50% (12/25 HU completadas)
+**Progreso Total del Proyecto:** 68% (17/25 HU completadas)
 
 ---
 
@@ -21,20 +21,24 @@
 
 ---
 
-## 🔄 **ÉPICA 2: VISITANTES - EN DESARROLLO**
+## ✅ **ÉPICA 2: VISITANTES - 100% COMPLETADA**
 
 | HU | Historia de Usuario | Estado | Implementación |
 |----|-------------------|--------|---------------|
-| **HU-04** | Entrar por punto de spawn | ✅ **COMPLETA** | `spawns = terrain.spawn_points` - línea 84 |
-| **HU-05** | Moverse evitando obstáculos | ⚠️ **BÁSICA** | Clase `Patron` básica en `patrons.py` |
-| **HU-06** | Elegir atracción basada en preferencias | 🔄 **EN DESARROLLO** | Implementando sistema de preferencias |
-| **HU-07** | Abandonar cola si espera demasiado | 🔄 **EN DESARROLLO** | Implementando sistema de paciencia |
-| **HU-08** | Salir del parque por puerta de salida | ✅ **COMPLETA** | `exits = terrain.exit_points` - línea 85 |
+| **HU-04** | Entrar por punto de spawn | ✅ **COMPLETA** | `spawns = terrain.spawn_points` - Sistema de spawn aleatorio |
+| **HU-05** | Moverse evitando obstáculos | ✅ **COMPLETA** | Pathfinding con evasión y sistema de rodeos |
+| **HU-06** | Elegir atracción basada en preferencias | ✅ **COMPLETA** | Sistema completo de 4 tipos con preferencias diferenciadas |
+| **HU-07** | Abandonar cola si espera demasiado | ✅ **COMPLETA** | Sistema de paciencia individual y abandono automático |
+| **HU-08** | Salir del parque por puerta de salida | ✅ **COMPLETA** | Salida inteligente basada en satisfacción y tipo |
 
-**🔴 Pendiente de Implementar:**
-- ✅ Sistema de preferencias individuales por visitante
-- ✅ Lógica de abandono de colas con paciencia variable
-- 🔄 Mejorar navegación con pathfinding avanzado
+**✅ Funcionalidades Implementadas:**
+- ✅ 4 tipos de visitantes: Aventurero, Familiar, Impaciente, Explorador
+- ✅ Sistema de preferencias por atracción (pirate/ferris)
+- ✅ Paciencia individual variable (20-150 ticks)
+- ✅ Abandono automático con penalizaciones
+- ✅ Visualización diferenciada por marcadores
+- ✅ Estadísticas avanzadas por tipo
+- ✅ Distribución equilibrada (30%/25%/25%/20%)
 
 ---
 
@@ -118,7 +122,7 @@
 | Épica | Completitud | HU Completas | HU Pendientes | Prioridad |
 |-------|-------------|--------------|---------------|-----------|
 | **1: Configuración** | **100%** ✅ | 3/3 | 0 | ✅ COMPLETA |
-| **2: Visitantes** | **40%** 🔄 | 2/5 | 3 | 🔥 ALTA - EN DESARROLLO |
+| **2: Visitantes** | **100%** ✅ | 5/5 | 0 | ✅ COMPLETA |
 | **3: Atracciones** | **60%** 🟡 | 2/4 | 2 | 🔥 ALTA |
 | **4: Simulación** | **70%** 🟡 | 2/3 | 1 | 🟠 MEDIA |
 | **5: Visualización** | **80%** 🟡 | 2/3 | 1 | 🟠 MEDIA |
@@ -173,11 +177,13 @@
 
 ## 📝 **CHANGELOG**
 
-### **2025-10-02 - Inicio Epic 2**
+### **2025-10-02 - Epic 2 Completada**
 - ✅ Creado sistema de estado de épicas (`EPIC_STATUS.md`)
-- 🔄 **INICIANDO:** Epic 2 - Sistema completo de visitantes
-- 🎯 **SIGUIENTE:** Implementar preferencias y paciencia de visitantes
+- ✅ **COMPLETADA:** Epic 2 - Sistema completo de visitantes
+- ✅ Implementadas todas las HU de visitantes (HU-04 a HU-08)
+- ✅ Sistema de tipos, preferencias y paciencia funcionando
+- 🎯 **SIGUIENTE:** Epic 3 - Sistema avanzado de atracciones
 
 ---
 
-**🚀 ESTADO ACTUAL:** Desarrollando Epic 2 - Sistema de Visitantes Avanzado
+**🚀 ESTADO ACTUAL:** Epic 2 Completada - Iniciando Epic 3 (Atracciones Avanzadas)
