@@ -6,16 +6,18 @@ import matplotlib.patches as patches
 from queues import dequeue
 
 class Ride:
-    def __init__(self, name, capacity, duration, bbox):
+    def __init__(self, name, capacity, duration, bbox, ride_type="generic"):
         self.name = name
         self.capacity = capacity
         self.duration = duration
         self.bbox = bbox  # (x, y, w, h)
+        self.ride_type = ride_type  # 🎯 ÉPICA 2: Tipo de atracción para preferencias
 
         self.state = "idle"      # idle|loading|running|unloading
         self.timer = 0
         self.queue = []          # lista de Patron
         self.riders = []         # lista de Patron
+        self.current_time = 0    # 🎯 ÉPICA 2: Tiempo actual para sistema de paciencia
 
     def admit_riders(self):
         """Toma hasta 'capacity' personas desde la cola con dequeue."""
@@ -33,6 +35,8 @@ class Ride:
         self.riders.clear()
 
     def step_change(self, t):
+        self.current_time = t  # 🎯 ÉPICA 2: Actualizar tiempo actual
+        
         if self.state == "idle":
             if self.queue and len(self.riders) < self.capacity:
                 self.state = "loading"
@@ -83,6 +87,9 @@ class Ride:
 
 class PirateShip(Ride):
     """Barco pirata: se dibuja como un péndulo dentro de la caja."""
+    def __init__(self, name, capacity, duration, bbox):
+        super().__init__(name, capacity, duration, bbox, ride_type="pirate")
+        
     def plot(self, ax, t):
         self._draw_bbox(ax)
         cx, cy = self.center()
@@ -99,7 +106,7 @@ class PirateShip(Ride):
 class FerrisWheel(Ride):
     """Rueda de la fortuna: círculo con cabinas rotando."""
     def __init__(self, name, capacity, duration, bbox, cabins=8):
-        super().__init__(name, capacity, duration, bbox)
+        super().__init__(name, capacity, duration, bbox, ride_type="ferris")
         self.cabins = cabins
 
     def plot(self, ax, t):

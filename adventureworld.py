@@ -81,8 +81,15 @@ class Simulation:
         spawns = terrain.spawn_points
         exits = terrain.exit_points
 
-        self.patrons = [Patron(name=f"P{i:03d}", spawns=spawns, exits=exits, terrain=terrain)
-                        for i in range(num_patrons)]
+        # 🎯 ÉPICA 2: Crear visitantes con tipos diversos
+        from patrons import PatronType
+        self.patrons = []
+        for i in range(num_patrons):
+            # Distribución de tipos de visitantes
+            patron_type = self._assign_patron_type(i, num_patrons)
+            patron = Patron(name=f"P{i:03d}", spawns=spawns, exits=exits, 
+                          terrain=terrain, patron_type=patron_type)
+            self.patrons.append(patron)
 
         if show_stats:
             self.fig = plt.figure(figsize=(10, 6))
@@ -97,18 +104,45 @@ class Simulation:
         self.departed_total = []
         self.time = 0
 
+    def _assign_patron_type(self, index, total):
+        """🎯 ÉPICA 2: Asigna tipos de visitantes con distribución equilibrada"""
+        from patrons import PatronType
+        
+        # Distribución objetivo: 30% familiar, 25% aventurero, 25% explorador, 20% impaciente
+        ratio = index / total
+        
+        if ratio < 0.30:
+            return PatronType.FAMILIAR
+        elif ratio < 0.55:
+            return PatronType.AVENTURERO
+        elif ratio < 0.80:
+            return PatronType.EXPLORADOR
+        else:
+            return PatronType.IMPACIENTE
+
     def step(self):
         for ride in self.rides:
             ride.step_change(self.time)
         for p in self.patrons:
             p.step_change(self.time, self.rides)
 
+        # Estadísticas básicas
         riders = sum(len(r.riders) for r in self.rides)
         queued = sum(len(r.queue) for r in self.rides)
         departed = sum(1 for p in self.patrons if p.state == "left")
+        
+        # 🎯 ÉPICA 2: Estadísticas avanzadas por tipo de visitante
+        abandoned_total = sum(p.abandoned_queues for p in self.patrons)
+        
         self.riders_now.append(riders)
-        self.queued_now.append(queued)
+        self.queued_now.append(queued)  
         self.departed_total.append(departed)
+        
+        # Nuevo: estadísticas de abandono para Epic 2
+        if not hasattr(self, 'abandoned_now'):
+            self.abandoned_now = []
+        self.abandoned_now.append(abandoned_total)
+        
         self.time += 1
 
     def draw(self):
@@ -127,11 +161,17 @@ class Simulation:
 
         if self.ax_stats is not None:
             self.ax_stats.clear()
-            self.ax_stats.set_title("Live Stats")
+            self.ax_stats.set_title("🎯 Epic 2: Stats Avanzadas")
             self.ax_stats.set_xlabel("timestep")
-            self.ax_stats.plot(self.riders_now, label="riding")
-            self.ax_stats.plot(self.queued_now, label="queueing")
-            self.ax_stats.plot(self.departed_total, label="departed")
+            self.ax_stats.plot(self.riders_now, label="riding", color="green")
+            self.ax_stats.plot(self.queued_now, label="queueing", color="orange") 
+            self.ax_stats.plot(self.departed_total, label="departed", color="red")
+            
+            # 🎯 ÉPICA 2: Nueva estadística de abandono
+            if hasattr(self, 'abandoned_now') and self.abandoned_now:
+                self.ax_stats.plot(self.abandoned_now, label="abandoned", 
+                                 color="purple", linestyle="--")
+            
             self.ax_stats.legend(loc="upper left")
             self.ax_stats.grid(True, alpha=0.3)
 
@@ -141,8 +181,57 @@ class Simulation:
         for _ in range(self.steps):
             self.step()
             self.draw()
+        
+        # 🎯 ÉPICA 2: Reporte final mejorado
+        self._print_epic2_report()
         print("Fin de la simulación. Cierra la ventana para salir.")
         plt.show()
+        
+    def _print_epic2_report(self):
+        """🎯 ÉPICA 2: Reporte detallado de visitantes por tipo"""
+        print("\n" + "="*60)
+        print("🎯 ÉPICA 2: REPORTE FINAL DE VISITANTES")
+        print("="*60)
+        
+        # Estadísticas por tipo de visitante
+        from patrons import PatronType
+        type_stats = {ptype: {"count": 0, "completed": 0, "abandoned": 0, "departed": 0} 
+                     for ptype in PatronType}
+        
+        for patron in self.patrons:
+            ptype = patron.patron_type
+            type_stats[ptype]["count"] += 1
+            type_stats[ptype]["completed"] += patron.rides_completed
+            type_stats[ptype]["abandoned"] += patron.abandoned_queues
+            if patron.state == "left":
+                type_stats[ptype]["departed"] += 1
+        
+        print(f"👥 Distribución de visitantes:")
+        for ptype, stats in type_stats.items():
+            icon = {"aventurero": "🏴‍☠️", "familiar": "👨‍👩‍👧", "impaciente": "⚡", "explorador": "🔍"}.get(ptype.value, "👤")
+            avg_rides = stats["completed"] / max(stats["count"], 1)
+            avg_abandoned = stats["abandoned"] / max(stats["count"], 1)
+            
+            print(f"   {icon} {ptype.value.capitalize()}: {stats['count']:2d} visitantes")
+            print(f"      Rides promedio: {avg_rides:.1f}")
+            print(f"      Abandonos promedio: {avg_abandoned:.1f}")
+            print(f"      Salieron del parque: {stats['departed']}")
+        
+        # Estadísticas generales
+        total_rides = sum(p.rides_completed for p in self.patrons)
+        total_abandoned = sum(p.abandoned_queues for p in self.patrons)
+        total_departed = sum(1 for p in self.patrons if p.state == "left")
+        
+        print(f"\n📊 Resumen general:")
+        print(f"   🎢 Total rides completados: {total_rides}")
+        print(f"   🚶 Total abandonos de cola: {total_abandoned}")
+        print(f"   🚪 Visitantes que salieron: {total_departed}/{len(self.patrons)}")
+        
+        if total_rides > 0:
+            abandono_rate = (total_abandoned / (total_rides + total_abandoned)) * 100
+            print(f"   📈 Tasa de abandono: {abandono_rate:.1f}%")
+        
+        print("="*60)
 
 
 if __name__ == "__main__":
