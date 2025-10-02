@@ -5,62 +5,28 @@
 
 ---
 
-## ✅ **ÉPICA 1: CONFIGURACIÓN DEL PARQUE - 100% COMPLETADA**
+## 📊 Estado Actual de Épicas
 
-| HU | Historia de Usuario | Estado | Implementación |
-|----|-------------------|--------|---------------|
-| **HU-01** | Configurar dimensiones del parque (ancho, alto) en modo interactivo | ✅ **COMPLETA** | `interactive_setup()` - líneas 30-57 |
-| **HU-02** | Cargar visitantes y atracciones desde archivos CSV | ✅ **COMPLETA** | `--rides-csv`, `--patrons-csv` - líneas 154-165 |
-| **HU-03** | Ejecutar con archivo de configuración YAML | ✅ **COMPLETA** | `--config` - líneas 106-138 |
+### ✅ ÉPICA 1: Sistema de Configuración (COMPLETA)
+**Estado:** 100% Completada (3/3 HU)
+- ✅ HU-01: Configuración interactiva personalizada
+- ✅ HU-02: Configuración desde archivos CSV  
+- ✅ HU-03: Configuración desde archivos YAML
 
-**✅ Criterios de Aceptación Validados:**
-- ✅ Modo interactivo pide ancho y alto por consola
-- ✅ Argumentos CSV funcionan con manejo de errores  
-- ✅ YAML sobreescribe parámetros con precedencia correcta
-- ✅ Se imprime configuración final usada (`print_final_config()`)
+### ✅ ÉPICA 2: Sistema Avanzado de Visitantes (COMPLETA)  
+**Estado:** 100% Completada (5/5 HU)
+- ✅ HU-04: Tipos de visitantes diferenciados (Aventurero, Familiar, Vip, Explorador)
+- ✅ HU-05: Preferencias de atracciones personalizadas
+- ✅ HU-06: Sistema de paciencia y abandono de colas
+- ✅ HU-07: Comportamiento avanzado en colas
+- ✅ HU-08: Estadísticas detalladas por tipo de visitante
 
----
-
-## ✅ **ÉPICA 2: VISITANTES - 100% COMPLETADA**
-
-| HU | Historia de Usuario | Estado | Implementación |
-|----|-------------------|--------|---------------|
-| **HU-04** | Entrar por punto de spawn | ✅ **COMPLETA** | `spawns = terrain.spawn_points` - Sistema de spawn aleatorio |
-| **HU-05** | Moverse evitando obstáculos | ✅ **COMPLETA** | Pathfinding con evasión y sistema de rodeos |
-| **HU-06** | Elegir atracción basada en preferencias | ✅ **COMPLETA** | Sistema completo de 4 tipos con preferencias diferenciadas |
-| **HU-07** | Abandonar cola si espera demasiado | ✅ **COMPLETA** | Sistema de paciencia individual y abandono automático |
-| **HU-08** | Salir del parque por puerta de salida | ✅ **COMPLETA** | Salida inteligente basada en satisfacción y tipo |
-
-**✅ Funcionalidades Implementadas:**
-- ✅ 4 tipos de visitantes: Aventurero, Familiar, Impaciente, Explorador
-- ✅ Sistema de preferencias por atracción (pirate/ferris)
-- ✅ Paciencia individual variable (20-150 ticks)
-- ✅ Abandono automático con penalizaciones
-- ✅ Visualización diferenciada por marcadores
-- ✅ Estadísticas avanzadas por tipo
-- ✅ Distribución equilibrada (30%/25%/25%/20%)
-
----
-
-## ✅ **ÉPICA 3: ATRACCIONES - 100% COMPLETADA**
-
-| HU | Historia de Usuario | Estado | Implementación |
-|----|-------------------|--------|---------------|
-| **HU-09** | Definir capacidad y duración desde CSV/config | ✅ **COMPLETA** | `build_rides()` con capacity/duration desde archivos |
-| **HU-10** | Hacer cola hasta que llegue el turno | ✅ **COMPLETA** | Visualización gráfica completa con posiciones ordenadas |
-| **HU-11** | Estados IDLE/LOADING/RUNNING/UNLOADING | ✅ **COMPLETA** | 4 estados visuales + carga/descarga progresiva |
-| **HU-12** | Agregar nuevas atracciones fácilmente | ✅ **COMPLETA** | Arquitectura extensible con herencia y ride_type |
-
-**✅ Funcionalidades Implementadas:**
-- ✅ Visualización gráfica de colas con puntos ordenados y colores
-- ✅ 4 estados diferenciados: IDLE(azul), LOADING(verde), RUNNING(naranja), UNLOADING(rosa)
-- ✅ Información detallada: capacidad actual, tamaño de cola, tiempo restante
-- ✅ Carga y descarga progresiva de visitantes (gradual)
-- ✅ Animaciones dinámicas por estado (péndulo/noria)
-- ✅ Logs informativos de transiciones de estado
-- ✅ Tiempos de carga/descarga variables por tipo de atracción
-
----
+### ✅ ÉPICA 3: Sistema Avanzado de Atracciones (COMPLETA)
+**Estado:** 100% Completada (4/4 HU)
+- ✅ HU-09: Capacidad y duración desde CSV/config
+- ✅ HU-10: Visualización gráfica de colas en tiempo real
+- ✅ HU-11: Estados visuales IDLE/LOADING/RUNNING/UNLOADING
+- ✅ HU-12: Arquitectura extensible mejorada
 
 ## 🟡 **ÉPICA 4: SIMULACIÓN Y MOTOR - 70% IMPLEMENTADA**
 
@@ -128,8 +94,8 @@
 | **1: Configuración** | **100%** ✅ | 3/3 | 0 | ✅ COMPLETA |
 | **2: Visitantes** | **100%** ✅ | 5/5 | 0 | ✅ COMPLETA |
 | **3: Atracciones** | **100%** ✅ | 4/4 | 0 | ✅ COMPLETA |
-| **4: Simulación** | **70%** 🟡 | 2/3 | 1 | 🟠 MEDIA |
-| **5: Visualización** | **80%** 🟡 | 2/3 | 1 | 🟠 MEDIA |
+| **4: Simulación** | **70%** 🟡 | 2/3 | 1 | � ALTA |
+| **5: Visualización** | **80%** 🟡 | 2/3 | 1 | � ALTA |
 | **6: Métricas** | **0%** ❌ | 0/2 | 2 | 🟠 MEDIA |
 | **7: Extras** | **0%** ❌ | 0/5 | 5 | 🟢 BAJA |
 

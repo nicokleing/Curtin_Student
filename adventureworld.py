@@ -99,6 +99,14 @@ class Simulation:
             self.fig, self.ax_map = plt.subplots(figsize=(8, 6))
             self.ax_stats = None
 
+        # 🎯 ÉPICA 4: Controles de velocidad y pausa
+        self.paused = False
+        self.speed_multiplier = 1  # 1x, 5x, 10x
+        self.speed_names = {1: "1x", 5: "5x", 10: "10x"}
+        
+        # Conectar eventos de teclado
+        self.fig.canvas.mpl_connect('key_press_event', self._on_key_press)
+
         self.riders_now = []
         self.queued_now = []
         self.departed_total = []
@@ -119,6 +127,40 @@ class Simulation:
             return PatronType.EXPLORADOR
         else:
             return PatronType.IMPACIENTE
+
+    def _on_key_press(self, event):
+        """🎯 ÉPICA 4: Maneja controles de teclado para velocidad y pausa"""
+        if event.key == ' ':  # Barra espaciadora para pausar/reanudar
+            self.paused = not self.paused
+            status = "PAUSADA" if self.paused else f"REANUDADA ({self.speed_names[self.speed_multiplier]})"
+            print(f"🎮 Simulación {status}")
+            
+        elif event.key == '1':  # Velocidad normal (1x)
+            self.speed_multiplier = 1
+            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
+            
+        elif event.key == '5':  # Velocidad rápida (5x)
+            self.speed_multiplier = 5
+            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
+            
+        elif event.key == '0':  # Velocidad muy rápida (10x)
+            self.speed_multiplier = 10
+            print(f"🎮 Velocidad: {self.speed_names[self.speed_multiplier]}")
+            
+        elif event.key == 'h':  # Mostrar ayuda
+            self._show_controls_help()
+
+    def _show_controls_help(self):
+        """🎯 ÉPICA 4: Muestra la ayuda de controles de teclado"""
+        print("\n" + "="*50)
+        print("🎮 CONTROLES DE SIMULACIÓN - ÉPICA 4")
+        print("="*50)
+        print("ESPACIO  - Pausar/Reanudar simulación")
+        print("1        - Velocidad normal (1x)")
+        print("5        - Velocidad rápida (5x)") 
+        print("0        - Velocidad muy rápida (10x)")
+        print("H        - Mostrar esta ayuda")
+        print("="*50 + "\n")
 
     def step(self):
         for ride in self.rides:
@@ -150,7 +192,10 @@ class Simulation:
         self.ax_map.set_xlim(-1, self.terrain.width + 1)
         self.ax_map.set_ylim(-1, self.terrain.height + 1)
         self.ax_map.set_aspect("equal")
-        self.ax_map.set_title("AdventureWorld Park (junior modular)")
+        
+        # 🎯 ÉPICA 4: Mostrar estado de simulación en el título
+        status = "⏸️ PAUSADA" if self.paused else f"▶️ {self.speed_names[self.speed_multiplier]}"
+        self.ax_map.set_title(f"AdventureWorld Park - {status} [T:{self.time}]")
         self.ax_map.grid(True, alpha=0.2)
 
         self.terrain.plot(self.ax_map)
@@ -175,12 +220,32 @@ class Simulation:
             self.ax_stats.legend(loc="upper left")
             self.ax_stats.grid(True, alpha=0.3)
 
-        plt.pause(0.001)
+        # 🎯 ÉPICA 4: Pausa ajustable según velocidad
+        pause_time = 0.001 / self.speed_multiplier if not self.paused else 0.05
+        plt.pause(pause_time)
 
     def run(self):
-        for _ in range(self.steps):
-            self.step()
+        # 🎯 ÉPICA 4: Mostrar controles al inicio
+        self._show_controls_help()
+        print(f"🚀 Iniciando simulación de {self.steps} pasos...")
+        
+        step_count = 0
+        while step_count < self.steps:
+            if not self.paused:
+                # Solo avanzar la simulación si no está pausada
+                for _ in range(self.speed_multiplier):  # Múltiples pasos según velocidad
+                    if step_count < self.steps:
+                        self.step()
+                        step_count += 1
+                    else:
+                        break
+            
+            # Siempre dibujar (para mostrar estado de pausa)
             self.draw()
+            
+            # Si está pausada, pausa más larga para no consumir CPU
+            if self.paused:
+                plt.pause(0.05)
         
         # 🎯 ÉPICA 2: Reporte final mejorado
         self._print_epic2_report()
