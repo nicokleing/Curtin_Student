@@ -24,6 +24,9 @@ Esta carpeta contiene toda la documentación, guías y archivos de referencia de
 - **`test_ferris_visual.png`** - Imagen de prueba de la rueda de la fortuna
 - **`test_pirate_visual.png`** - Imagen de prueba del barco pirata
 
+### 🚨 Normas de Desarrollo
+- **`NORMAS_DESARROLLO.md`** - **CRÍTICO**: Normas estrictas de código profesional
+
 ## 📚 Uso de los Archivos
 
 ### Para Desarrollo:
@@ -40,6 +43,26 @@ Esta carpeta contiene toda la documentación, guías y archivos de referencia de
 1. Ejecuta `test_rides_visual.py` para verificar visualizaciones
 2. Usa `config_example.yaml` como plantilla para nuevas configuraciones
 3. Consulta las imágenes PNG para referencia visual
+
+### **🚨 NORMAS CRÍTICAS DE DESARROLLO:**
+1. **OBLIGATORIO** revisar `NORMAS_DESARROLLO.md` antes de cualquier modificación
+2. **PROHIBIDO** usar emoticones, referencias a IA, o lenguaje no profesional
+3. **VERIFICAR** que el código aparezca naturalmente humano antes de commits
+
+## 🚨 Normas de Desarrollo Profesional
+
+### Código Limpio y Profesional
+- **NO usar emoticones** en el código fuente, comentarios o mensajes
+- **Comentarios técnicos únicamente** - evitar explicaciones excesivas
+- **Mensajes en inglés profesional** - evitar español coloquial
+- **Sin referencias a herramientas de IA** - el código debe aparecer naturalmente humano
+- **Sin marcadores de épicas o HU** excesivos - usar comentarios estándar
+
+### Estándares de Documentación
+- Documentación técnica concisa y directa
+- Sin lenguaje celebratorio o exclamaciones
+- Terminología profesional estándar del sector
+- Referencias técnicas apropiadas sin evidencia de asistencia automatizada
 
 ---
 

@@ -25,6 +25,7 @@
 
 ### 📚 Documentación
 - **`contexto/`** - Documentación de refactorización y análisis
+- **`contexto/NORMAS_DESARROLLO.md`** - Normas estrictas de código profesional
 
 ## 🎮 Cómo Ejecutar
 
