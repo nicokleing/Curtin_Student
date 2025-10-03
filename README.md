@@ -7,7 +7,33 @@
 
 ---
 
-## 📋 Table of Contents
+## � Documentación Organizada
+
+🎯 **Toda la documentación técnica y archivos de contexto están organizados en [`contexto/`](./contexto/)**
+
+Consulta [`contexto/README_CONTEXTO.md`](./contexto/README_CONTEXTO.md) para un índice completo de:
+- 📖 Especificaciones técnicas
+- 🎯 Estado de épicas y desarrollo  
+- ⚙️ Configuraciones de ejemplo
+- 🧪 Archivos de prueba y validación
+
+## 🚀 Inicio Rápido
+
+```bash
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Ejecutar simulación básica
+python run_simulation.py
+
+# Ejecutar con configuración YAML
+python run_simulation.py --config contexto/config_test.yaml
+
+# Modo interactivo
+python run_simulation.py -i
+```
+
+## �📋 Table of Contents
 1. [Project Overview](#-project-overview)
 2. [Key Features](#-key-features)  
 3. [Technical Architecture](#-technical-architecture)
