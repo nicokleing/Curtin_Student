@@ -345,44 +345,44 @@ class MetricsCalculator:
         
         # Park Performance Overview
         park_perf = metrics['park_performance']
-        print(f"📊 RESUMEN DE RENDIMIENTO DEL PARQUE:")
-        print(f"   👥 Visitantes totales: {park_perf['total_visitors']}")
-        print(f"   🎢 Abordajes exitosos: {park_perf['total_successful_boardings']}")
-        print(f"   🚶 Abandonos de cola: {park_perf['total_queue_abandonments']}")
-        print(f"   📈 Tasa de éxito: {park_perf['boarding_success_rate']:.1f}%")
-        print(f"   📉 Tasa de abandono: {park_perf['overall_abandonment_rate']:.1f}%")
-        print(f"   🎠 Rides promedio por visitante: {park_perf['average_rides_per_visitor']:.2f}")
+        print(f"PARK PERFORMANCE SUMMARY:")
+        print(f"   Total visitors: {park_perf['total_visitors']}")
+        print(f"   Successful boardings: {park_perf['total_successful_boardings']}")
+        print(f"   Queue abandonments: {park_perf['total_queue_abandonments']}")
+        print(f"   Success rate: {park_perf['boarding_success_rate']:.1f}%")
+        print(f"   Abandonment rate: {park_perf['overall_abandonment_rate']:.1f}%")
+        print(f"   Average rides per visitor: {park_perf['average_rides_per_visitor']:.2f}")
         
         # Visitor Analytics
         visitor_analytics = metrics['visitor_analytics']
         print(f"\n⏱️ ANÁLISIS DE TIEMPOS DE ESPERA:")
-        print(f"   📊 Tiempo promedio de espera: {visitor_analytics['overall_avg_wait_time']:.1f} minutos")
-        print(f"   📊 Tiempo mediano de espera: {visitor_analytics['median_wait_time']:.1f} minutos")
+        print(f"   Average wait time: {visitor_analytics['overall_avg_wait_time']:.1f} minutes")
+        print(f"   Median wait time: {visitor_analytics['median_wait_time']:.1f} minutes")
         print(f"   ⬆️ Tiempo máximo de espera: {visitor_analytics['max_wait_time']:.1f} minutos")
         
         print(f"\n👤 ANÁLISIS POR TIPO DE VISITANTE:")
         for vtype, stats in visitor_analytics['by_visitor_type'].items():
-            print(f"   {vtype.title()}: {stats['count']} visitantes")
-            print(f"      ⏰ Espera promedio: {stats['avg_wait_time']:.1f} min")
-            print(f"      🎢 Rides promedio: {stats['avg_rides_completed']:.1f}")
-            print(f"      🚶 Abandonos promedio: {stats['abandonment_rate']:.1f}")
+            print(f"   {vtype.title()}: {stats['count']} visitors")
+            print(f"      Average wait time: {stats['avg_wait_time']:.1f} min")
+            print(f"      Average rides: {stats['avg_rides_completed']:.1f}")
+            print(f"      Average abandonments: {stats['abandonment_rate']:.1f}")
         
         # Ride Analytics
         ride_analytics = metrics['ride_analytics']
-        print(f"\n🎡 ANÁLISIS POR ATRACCIÓN:")
+        print(f"\nRIDE ANALYSIS:")
         for ride_name, stats in ride_analytics.items():
             print(f"   {ride_name}:")
-            print(f"      👥 Total visitantes: {stats['total_riders']}")
+            print(f"      Total riders: {stats['total_riders']}")
             print(f"      🔄 Ciclos completados: {stats['total_cycles']}")
-            print(f"      ⏰ Espera promedio: {stats['avg_wait_time']:.1f} min")
-            print(f"      📊 Cola promedio: {stats['avg_queue_length']:.1f}")
+            print(f"      Average wait: {stats['avg_wait_time']:.1f} min")
+            print(f"      Average queue: {stats['avg_queue_length']:.1f}")
             print(f"      ⭐ Puntuación eficiencia: {stats['efficiency_score']:.1f}/100")
         
         # Key Performance Indicators
         kpis = metrics['efficiency_kpis']
         print(f"\n🎯 INDICADORES CLAVE DE RENDIMIENTO (KPIs):")
         print(f"   🏆 Puntuación de eficiencia del parque: {kpis['park_efficiency_score']}/100")
-        print(f"   📈 Throughput promedio: {kpis['avg_throughput_per_minute']:.2f} visitantes/min")
+        print(f"   Average throughput: {kpis['avg_throughput_per_minute']:.2f} visitors/min")
         print(f"   😊 Satisfacción estimada: {kpis['visitor_satisfaction_estimate']:.1f}/100")
         print(f"   🎪 Utilización de capacidad: {kpis['capacity_utilization']:.1f}%")
         

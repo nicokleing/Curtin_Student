@@ -69,7 +69,7 @@ class QueueBehavior:
         
         # Mensaje de abandono por tipo
         type_msg = patron.patron_type.value
-        print(f"🚶 {patron.name} ({type_msg}) abandonó la cola de {ride.name} por impaciencia!")
+        print(f"{patron.name} ({type_msg}) left {ride.name} queue due to impatience!")
         
         # Regenerar paciencia parcialmente tras abandono
         patron.patience = min(patron.max_patience, patron.patience + 5)

@@ -35,7 +35,7 @@ class MapRenderer:
         
         # Update title with current status
         status = "PAUSADO" if paused else f"EJECUTANDO A {speed}x"
-        self.ax_map.set_title(f'🎢 AdventureWorld - Paso: {step} | {status}')
+        self.ax_map.set_title(f'AdventureWorld - Step: {step} | {status}')
         
     def _draw_terrain(self, terrain):
         """Dibuja el fondo del terreno."""

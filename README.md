@@ -1,4 +1,31 @@
-# Adventu## Documentation
+# Adventu## D# AdventureWorld - Simulador de Parque Temá## Table of Contents
+1. [Project Overview](#project-overview)
+2. [Key Features](#key-features)  
+3. [Technical Architecture](#technical-architecture)
+4. [Installation & Setup](#installation--setup)
+5. [Usage Guide](#usage-guide)
+6. [Configuration Options](#configuration-options)
+7. [File Formats](#file-formats)
+8. [Simulation Mechanics](#simulation-mechanics)
+9. [Visual Interface](#visual-interface)
+10. [Troubleshooting](#troubleshooting)
+11. [Technical Implementation](#technical-implementation)
+12. [Academic Learning Outcomes](#academic-learning-outcomes) Project - Fundamentals of Programming (FOP)**  
+**Author:** Nicolás Klein - Curtin University  
+**Course:** Fundamentals of Programming  
+**Academic Year:** 2025
+
+---
+
+## Documentación Organizada
+
+**All technical documentation and context files are organized in [`contexto/`](./contexto/)**
+
+Consulta [`contexto/README_CONTEXTO.md`](./contexto/README_CONTEXTO.md) para un índice completo de:
+- Especificaciones técnicas
+- Epic status and development progress  
+- Example configurations
+- Test and validation filesion
 
 All technical documentation and context files are organized in the `contexto/` folder.
 
@@ -68,7 +95,7 @@ python run_simulation.py -i
 
 ## Key Features
 
-### 🤖 **Sistema de Visitantes**
+### Sistema de Visitantes
 - **Multi-State Behavior**: Visitors transition through realistic states:
   - `EXPLORING`: Random movement and attraction discovery
   - `QUEUING`: Waiting in line with patience mechanics  
@@ -78,7 +105,7 @@ python run_simulation.py -i
 - **Navegación**: Movimiento evitando obstáculos y barreras
 - **Individual Preferences**: Each visitor has unique behavior patterns
 
-### **Mecánicas de Atracciones**
+### Mecánicas de Atracciones
 - **Multiple Ride Types**:
   - `PirateShip`: High-capacity, medium-duration thrill ride
   - `FerrisWheel`: Scenic ride with customizable cabin count
@@ -88,14 +115,14 @@ python run_simulation.py -i
   - Ride duration timing and state management
   - Visual operation indicators (idle/running states)
 
-### 🗺️ **Sistema de Terreno**
+### Sistema de Terreno
 - **Generación de Mapas**: Soporte para layouts personalizados
 - **Barrier Management**: Collision detection and pathfinding obstacles
 - **Spawn Point System**: Configurable visitor entry points
 - **Exit Management**: Multiple park exit locations
 - **Dimensiones Variables**: Tamaño de parque personalizable (defecto: 100x70)
 
-### **Real-Time Analytics Dashboard**
+### Real-Time Analytics Dashboard
 - **Live Statistics Visualization**:
   - Active riders count over time
   - Queue length monitoring  
@@ -104,7 +131,7 @@ python run_simulation.py -i
 - **Performance Metrics**: Real-time simulation statistics
 - **Data Export**: Statistical data for analysis
 
-### **Sistema de Configuración**
+### Sistema de Configuración
 - **Interactive Setup Mode**: Guided configuration wizard
 - **CSV-Based Configuration**: External file-based setup
 - **Command-Line Interface**: Full parameter control via CLI arguments
@@ -112,23 +139,23 @@ python run_simulation.py -i
 
 ---
 
-## 🏗️ Technical Architecture
+## Technical Architecture
 
 ```
 AdventureWorld/
 ├── adventureworld.py     # Main simulation engine and CLI interface
-├── 🗺️ terrain.py           # Park terrain, barriers, and spatial management
-├── 👥 patrons.py           # Visitor AI, behavior states, and pathfinding
+├── terrain.py           # Park terrain, barriers, and spatial management
+├── patrons.py           # Visitor AI, behavior states, and pathfinding
 ├── rides.py             # Ride mechanics, operations, and queue management  
 ├── utils.py             # CSV parsing, ride construction, and utilities
-├── 📖 README.md            # Complete project documentation
-├── 🚫 .gitignore           # Version control exclusions
-├── 🗂️ map1.csv             # Sample terrain configuration
+├── README.md            # Complete project documentation
+├── .gitignore           # Version control exclusions
+├── map1.csv             # Sample terrain configuration
 ├── rides.csv            # Sample ride configuration
-└── 👤 patrons.csv          # Sample visitor count configuration
+└── patrons.csv          # Sample visitor count configuration
 ```
 
-### 🧩 **Core Components**
+### Core Components
 
 #### **Simulation Engine (`adventureworld.py`)**
 - Main event loop with configurable step count
@@ -292,7 +319,7 @@ python3 adventureworld.py --rides-csv rides.csv --patrons-csv patrons.csv --stat
 
 ## Configuration Options
 
-### **📝 Command Line Arguments**
+### Command Line Arguments
 
 | Argument | Type | Default | Description |
 |----------|------|---------|-------------|
@@ -304,7 +331,7 @@ python3 adventureworld.py --rides-csv rides.csv --patrons-csv patrons.csv --stat
 | `--stats` | Flag | False | Enable live statistics visualization |
 | `--seed` | Integer | Random | Random seed for reproducible results |
 
-### **🎛️ Interactive Mode Options**
+### Interactive Mode Options
 
 When using `-i` flag, the system prompts for:
 
@@ -351,9 +378,9 @@ DEFAULT_SETTINGS = {
 
 ---
 
-## 📄 File Formats
+## File Formats
 
-### **Rides Configuration CSV (`rides.csv`)**
+### Rides Configuration CSV (`rides.csv`)
 
 **Format:**
 ```csv
@@ -376,7 +403,7 @@ pirate,8,35,15,50,12,8
 - Capacity must be positive integer
 - Duration must be reasonable (10-120 steps)
 
-### **👥 Patrons Configuration CSV (`patrons.csv`)**
+### Patrons Configuration CSV (`patrons.csv`)
 
 **Format:**
 ```csv
@@ -391,7 +418,7 @@ patron_count,spawn_rate,exit_probability
 60,0.02,0.001
 ```
 
-### **🗺️ Map Configuration CSV (`map1.csv`)**
+### Map Configuration CSV (`map1.csv`)
 
 **Format:**
 ```csv
@@ -407,9 +434,9 @@ patron_count,spawn_rate,exit_probability
 
 ---
 
-## ⚡ Simulation Mechanics
+## Simulation Mechanics
 
-### **Core Simulation Loop**
+### Core Simulation Loop
 
 ```python
 for step in range(total_steps):
@@ -432,7 +459,7 @@ for step in range(total_steps):
         break
 ```
 
-### **🧠 Visitor Behavior State Machine**
+### Visitor Behavior State Machine
 
 **State Transitions:**
 - `EXPLORING → QUEUING`: Probabilistic attraction selection (1% chance per step)
@@ -441,7 +468,7 @@ for step in range(total_steps):
 - `FINISHED_RIDE → EXPLORING`: Return to exploration (90% probability)
 - `ANY_STATE → LEAVING`: Random exit decision (0.1% chance per step)
 
-### **🎠 Ride Operation Cycles**
+### Ride Operation Cycles
 
 **Pirate Ship Cycle:**
 1. `IDLE`: Waiting for visitors (brown color)
@@ -455,7 +482,7 @@ for step in range(total_steps):
 3. `RUNNING`: Wheel rotation (duration steps, orange color)
 4. `UNLOADING`: Cabin unloading (8 steps)
 
-### **📈 Statistics Collection**
+### Statistics Collection
 
 **Per-Step Metrics:**
 - Active riders count
@@ -472,28 +499,28 @@ for step in range(total_steps):
 
 ---
 
-## 🖥️ Visual Interface
+## Visual Interface
 
-### **🎨 Main Simulation Window**
+### Main Simulation Window
 
 **Visual Elements:**
-- **🟢 Green Circles**: Visitor spawn points (entry gates)
-- **🔵 Blue X**: Park exit points
-- **🟤 Brown Rectangles**: Idle rides
-- **🟠 Orange Rectangles**: Active/running rides
+- **Green Circles**: Visitor spawn points (entry gates)
+- **Blue X**: Park exit points
+- **Brown Rectangles**: Idle rides
+- **Orange Rectangles**: Active/running rides
 - **Colored Dots**: Visitors with state-based colors
-  - 🔵 Blue: Exploring the park
-  - 🟡 Yellow: Queuing for rides
-  - 🔴 Red: Currently riding
-  - 🟢 Green: Just finished riding
-- **🔴 Red Squares**: Terrain barriers/obstacles
+  - Blue: Exploring the park
+  - Yellow: Queuing for rides
+  - Red: Currently riding
+  - Green: Just finished riding
+- **Red Squares**: Terrain barriers/obstacles
 
 **Window Controls:**
 - **Mouse Interaction**: Zoom and pan functionality
 - **Real-time Updates**: 60 FPS refresh rate
 - **Auto-scaling**: Adapts to park dimensions
 
-### **📊 Statistics Dashboard (--stats mode)**
+### Statistics Dashboard (--stats mode)
 
 **Live Graphs:**
 1. **Riders Timeline**: Red line showing active riders over time
@@ -506,7 +533,7 @@ for step in range(total_steps):
 - **Performance Indicators**: FPS and step counter
 - **Statistical Summary**: Running averages and peaks
 
-### **⌨️ Keyboard Controls**
+### Keyboard Controls
 - **Space**: Pause/resume simulation
 - **ESC**: Exit simulation early
 - **S**: Save current frame as image
@@ -514,9 +541,9 @@ for step in range(total_steps):
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
-### **❌ Common Issues and Solutions**
+### Common Issues and Solutions
 
 #### **Issue: `ModuleNotFoundError: No module named 'matplotlib'`**
 ```bash
@@ -552,13 +579,13 @@ git remote -v
 git branch
 ```
 
-### **🐛 Debug Mode**
+### Debug Mode
 ```bash
 # Enable verbose output for debugging
 python3 -v adventureworld.py --stats --steps 100
 ```
 
-### **📋 System Requirements Check**
+### System Requirements Check
 ```bash
 # Verify Python version (should be 3.8+)
 python3 --version
@@ -572,9 +599,9 @@ python3 -c "import matplotlib.pyplot as plt; import numpy as np; print('All impo
 
 ---
 
-## 🔬 Technical Implementation
+## Technical Implementation
 
-### **🏗️ Object-Oriented Design Patterns**
+### Object-Oriented Design Patterns
 
 #### **1. State Pattern (Visitor Behavior)**
 ```python
@@ -602,7 +629,7 @@ class StatisticsCollector:
         pass
 ```
 
-### **📊 Data Structures and Algorithms**
+### Data Structures and Algorithms
 
 #### **Spatial Management**
 - **Grid-based Representation**: 2D array for terrain mapping
@@ -619,7 +646,7 @@ class StatisticsCollector:
 - **Datos de Series Temporales**: Almacenamiento para gráficos en vivo
 - **Performance Metrics**: Real-time FPS and memory monitoring
 
-### **🎯 Performance Optimizations**
+### Performance Optimizations
 
 #### **Rendering Optimizations**
 - **Selective Redrawing**: Only update changed elements
@@ -633,58 +660,58 @@ class StatisticsCollector:
 
 ---
 
-## 🎓 Academic Learning Outcomes
+## Academic Learning Outcomes
 
-### **📚 Programming Concepts Demonstrated**
+### Programming Concepts Demonstrated
 
-#### **1. Object-Oriented Programming (OOP)**
-- ✅ **Encapsulation**: Data hiding and method organization
-- ✅ **Inheritance**: Ride base class and specialized implementations
-- ✅ **Polymorphism**: Common interfaces for different ride types
-- ✅ **Abstraction**: Complex behavior simplified into clean interfaces
+#### 1. Object-Oriented Programming (OOP)
+- **Encapsulation**: Data hiding and method organization
+- **Inheritance**: Ride base class and specialized implementations
+- **Polymorphism**: Common interfaces for different ride types
+- **Abstraction**: Complex behavior simplified into clean interfaces
 
-#### **2. Data Structures and Algorithms**
-- ✅ **Arrays and Lists**: Visitor and ride collections
-- ✅ **Dictionaries**: Fast state lookup and parameter storage
-- ✅ **Queues**: FIFO ride queue implementation
-- ✅ **Sets**: Efficient barrier collision detection
+#### 2. Data Structures and Algorithms
+- **Arrays and Lists**: Visitor and ride collections
+- **Dictionaries**: Fast state lookup and parameter storage
+- **Queues**: FIFO ride queue implementation
+- **Sets**: Efficient barrier collision detection
 
-#### **3. File I/O and Data Processing**
-- ✅ **CSV Parsing**: External configuration file handling
-- ✅ **Error Handling**: Robust file reading with validation
-- ✅ **Data Validation**: Input sanitization and bounds checking
+#### 3. File I/O and Data Processing
+- **CSV Parsing**: External configuration file handling
+- **Error Handling**: Robust file reading with validation
+- **Data Validation**: Input sanitization and bounds checking
 
-#### **4. Control Structures**
-- ✅ **State Machines**: Complex visitor behavior modeling
-- ✅ **Event Loops**: Main simulation timing and control
-- ✅ **Conditional Logic**: Decision-making algorithms
-- ✅ **Iteration**: Efficient collection processing
+#### 4. Control Structures
+- **State Machines**: Complex visitor behavior modeling
+- **Event Loops**: Main simulation timing and control
+- **Conditional Logic**: Decision-making algorithms
+- **Iteration**: Efficient collection processing
 
-#### **5. Modular Programming**
-- ✅ **Module Organization**: Logical code separation
-- ✅ **Import Management**: Clean dependency handling
-- ✅ **Code Reusability**: Utility functions and shared methods
-- ✅ **Documentation**: Comprehensive inline and external docs
+#### 5. Modular Programming
+- **Module Organization**: Logical code separation
+- **Import Management**: Clean dependency handling
+- **Code Reusability**: Utility functions and shared methods
+- **Documentation**: Inline and external documentation
 
-### **🔧 Software Engineering Practices**
+### Software Engineering Practices
 
-#### **Version Control**
-- ✅ **Git Workflow**: Branch management and commit practices
-- ✅ **Repository Organization**: Clean project structure
-- ✅ **.gitignore Configuration**: Appropriate file exclusions
+#### Version Control
+- **Git Workflow**: Branch management and commit practices
+- **Repository Organization**: Clean project structure
+- **.gitignore Configuration**: Appropriate file exclusions
 
-#### **Code Quality**
-- ✅ **PEP 8 Compliance**: Python style guide adherence
-- ✅ **Meaningful Naming**: Descriptive variables and functions
-- ✅ **Code Comments**: Clear inline documentation
-- ✅ **Error Handling**: Graceful failure management
+#### Code Quality
+- **PEP 8 Compliance**: Python style guide adherence
+- **Meaningful Naming**: Descriptive variables and functions
+- **Code Comments**: Clear inline documentation
+- **Error Handling**: Graceful failure management
 
-#### **Testing and Debugging**
-- ✅ **Debug Output**: Comprehensive error reporting
-- ✅ **Input Validation**: Robust parameter checking
-- ✅ **Edge Case Handling**: Boundary condition management
+#### Testing and Debugging
+- **Debug Output**: Error reporting and logging
+- **Input Validation**: Robust parameter checking
+- **Edge Case Handling**: Boundary condition management
 
-### **🎮 Project Complexity Analysis**
+### Project Complexity Analysis
 
 **Lines of Code:** ~1000+ (distributed across multiple modules)
 **Classes Implemented:** 6+ (Terrain, Patron, Ride, PirateShip, FerrisWheel, Simulation)
@@ -695,21 +722,21 @@ class StatisticsCollector:
 
 ---
 
-## 📞 Support and Contact
+## Support and Contact
 
-### **🆘 Getting Help**
+### Getting Help
 - **Course Forum**: Post questions in FOP discussion board
 - **Office Hours**: Visit instructor during designated times
 - **Email Support**: Contact course coordinator for technical issues
 
-### **📧 Project Information**
+### Project Information
 - **Developer**: Nicolás Klein
 - **Institution**: Curtin University
 - **Course**: Fundamentals of Programming (FOP)
 - **Project Type**: Final Assignment
 - **Development Period**: 2025 Academic Year
 
-### **🔗 Related Resources**
+### Related Resources
 - [Python Official Documentation](https://docs.python.org/3/)
 - [Matplotlib Gallery](https://matplotlib.org/stable/gallery/index.html)
 - [NumPy Documentation](https://numpy.org/doc/stable/)
@@ -717,7 +744,7 @@ class StatisticsCollector:
 
 ---
 
-## 📄 License and Academic Integrity
+## License and Academic Integrity
 
 **Academic Use Only**: This project is developed for educational purposes as part of the Fundamentals of Programming coursework at Curtin University. 
 

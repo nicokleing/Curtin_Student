@@ -265,10 +265,10 @@ class SimulationEngine:
         total_abandoned = sum(p.abandoned_queues for p in self.patrons)
         total_departed = sum(1 for p in self.patrons if p.state == "left")
         
-        print(f"\n📊 Resumen general:")
-        print(f"   🎢 Total rides completados: {total_completed}")
-        print(f"   🚶 Total abandonos de cola: {total_abandoned}")
-        print(f"   🚪 Visitantes que salieron: {total_departed}/{len(self.patrons)}")
+        print(f"\nGeneral Summary:")
+        print(f"   Total rides completed: {total_completed}")
+        print(f"   Total queue abandonments: {total_abandoned}")
+        print(f"   Visitors departed: {total_departed}/{len(self.patrons)}")
         print("="*60)
         
     # Control methods (called by display/controls)
@@ -366,7 +366,7 @@ class SimulationEngine:
     def _finalize_export(self, comprehensive_metrics=None):
         """Finalize export process and save all files."""
         print("\n" + "="*60)
-        print("📊 ÉPICA 5: EXPORTANDO DATOS DE SIMULACIÓN")
+        print("EPIC 5: EXPORTING SIMULATION DATA")
         print("="*60)
         
         try:

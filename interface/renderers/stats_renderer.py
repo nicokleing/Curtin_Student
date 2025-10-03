@@ -38,7 +38,7 @@ class StatsRenderer:
         else:
             self._render_text_stats(stats, current_step)
             
-        self.ax_stats.set_title('📊 Estadísticas en Tiempo Real')
+        self.ax_stats.set_title('Real-Time Statistics')
         
     def _update_history(self, step, stats):
         """Actualiza el historial de estadísticas."""
@@ -93,9 +93,9 @@ class StatsRenderer:
         ax1.legend(lines, labels, loc='upper left', fontsize=8)
         
         # Mostrar valores actuales en texto
-        current_stats = f"Actual: {self.history['riders'][-1]}👥 {self.history['queued'][-1]}⏳ {self.history['departed'][-1]}🚪"
+        current_stats = f"Current: {self.history['riders'][-1]} riders, {self.history['queued'][-1]} queued, {self.history['departed'][-1]} departed"
         if self.history['abandoned'][-1] > 0:
-            current_stats += f" {self.history['abandoned'][-1]}🚶"
+            current_stats += f", {self.history['abandoned'][-1]} left"
         ax1.text(0.02, 0.98, current_stats, transform=ax1.transAxes, 
                 verticalalignment='top', fontsize=10, 
                 bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8))
@@ -103,11 +103,11 @@ class StatsRenderer:
     def _render_text_stats(self, stats, step):
         """Renderiza estadísticas como texto cuando no hay suficiente historia."""
         stats_text = [
-            f"👥 En atracciones: {stats['riders_now']}",
-            f"⏳ En cola: {stats['queued_now']}", 
-            f"🚪 Salieron: {stats['departed_total']}",
-            f"🚶 Abandonos: {stats['abandoned_now']}",
-            f"📊 Paso: {step}",
+            f"Riding: {stats['riders_now']}",
+            f"Queued: {stats['queued_now']}", 
+            f"Departed: {stats['departed_total']}",
+            f"Abandoned: {stats['abandoned_now']}",
+            f"Step: {step}",
             "",
             "Recolectando datos para gráficos..."
         ]
