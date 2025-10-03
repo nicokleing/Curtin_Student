@@ -3,7 +3,13 @@
 """Rides (junior modular): Ride base + PirateShip + FerrisWheel."""
 import math
 import matplotlib.patches as patches
-from queues import dequeue
+
+# Simple queue implementation
+def dequeue(ride):
+    """Remove and return first patron from ride queue"""
+    if ride.queue:
+        return ride.queue.pop(0)
+    return None
 
 class Ride:
     def __init__(self, name, capacity, duration, bbox, ride_type="generic"):
@@ -106,7 +112,6 @@ class Ride:
                 # Admitir un visitante por vez durante loading
                 free_space = self.capacity - len(self.riders)
                 if free_space > 0 and self.queue:
-                    from queues import dequeue
                     p = dequeue(self)
                     if p:
                         p.board_ride(self)
