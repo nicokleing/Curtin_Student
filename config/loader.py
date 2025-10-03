@@ -6,6 +6,7 @@ Handles loading configuration from YA        patron_types = [PatronType.AVENTURE
                         PatronType.IMPACIENTE, PatronType.EXPLORADOR]/CSV files and argument processing
 """
 import random
+import yaml
 from types import SimpleNamespace
 from simulation import Terrain, read_rides_csv, read_patrons_csv, build_rides, load_config_yaml, print_final_config
 from models import PatronType, Patron
@@ -34,19 +35,22 @@ class ConfigLoader:
         # YAML configuration mode
         elif args.config:
             terrain, rides, num_patrons = self._load_from_yaml(args.config)
+            self.config_source = "yaml"
         
         # CSV configuration mode  
         elif args.map_csv or args.rides_csv or args.patrons_csv:
             terrain, rides, num_patrons = self._load_from_csv(args)
+            self.config_source = "csv"
         
         # Default configuration
         else:
             terrain, rides, num_patrons = self._load_default_config()
+            self.config_source = "default"
         
         # Create configuration object
         config = SimpleNamespace()
         config.terrain = terrain
-        config.rides = rides
+        config.rides = build_rides(rides, terrain)  # Convert ride data to ride objects
         config.num_patrons = num_patrons
         config.steps = args.steps
         config.show_stats = args.stats
@@ -57,13 +61,46 @@ class ConfigLoader:
         
         # Print final configuration
         print_final_config(config.terrain, config.rides, len(config.patrons), 
-                           config.steps, config.seed, config.show_stats)
+                           config.steps, config.seed, config.show_stats, self.config_source)
         
         return config
     
-    def _load_from_yaml(self, yaml_file):
+    def _load_from_yaml(self, file_path):
         """Load configuration from YAML file"""
-        return load_config_yaml(yaml_file)
+        try:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                data = yaml.safe_load(file)
+            
+            # Convert the loaded data to proper objects
+            terrain = Terrain.from_size(
+                width=data['terrain']['width'],
+                height=data['terrain']['height']
+            )
+            
+            rides = [
+                {
+                    "type": ride_data['tipo'],
+                    "capacity": ride_data.get('capacity', 20),
+                    "duration": ride_data.get('duration', 120),
+                    "bbox": (ride_data['position'][0], ride_data['position'][1], 4, 3)
+                } for ride_data in data.get('rides', [])
+            ]
+            
+            num_patrons = data.get('num_patrons', 60)
+            
+
+            
+            return terrain, rides, num_patrons
+        
+        except FileNotFoundError:
+            print(f"❌ Archivo YAML no encontrado: {file_path}")
+            return None
+        except yaml.YAMLError as e:
+            print(f"❌ Error en formato YAML: {e}")
+            return None
+        except KeyError as e:
+            print(f"❌ Campo requerido no encontrado en YAML: {e}")
+            return None
     
     def _load_from_csv(self, args):
         """Load configuration from CSV files"""

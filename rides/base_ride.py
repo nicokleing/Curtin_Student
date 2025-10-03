@@ -28,6 +28,9 @@ class Ride:
 
         # Componente de temporización
         self.timer_manager = RideTimer(self)
+        
+        # Contador para animaciones
+        self.step_counter = 0
 
     def admit_riders(self):
         """Toma hasta 'capacity' personas desde la cola con dequeue."""

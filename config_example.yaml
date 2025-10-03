@@ -1,0 +1,19 @@
+# Configuración de ejemplo para AdventureWorld
+terrain:
+  width: 30
+  height: 8
+
+rides:
+  - tipo: pirate
+    name: Barco Pirata Deluxe
+    capacity: 15
+    duration: 50
+    position: [5, 3]
+  - tipo: ferris
+    name: Noria Gigante
+    capacity: 24
+    duration: 80
+    position: [15, 2]
+
+num_patrons: 80
+  seed: 42

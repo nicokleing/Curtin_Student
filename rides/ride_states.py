@@ -39,6 +39,9 @@ class RideTimer:
         """Actualiza el timer y maneja transiciones de estado."""
         self.ride.current_time = current_time
         
+        # Actualizar contador para animaciones
+        self.ride.step_counter += 1
+        
         if self.timer > 0:
             self.timer -= 1
             return False  # No hay cambio de estado
