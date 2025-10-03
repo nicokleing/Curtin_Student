@@ -16,4 +16,4 @@ rides:
     position: [15, 2]
 
 num_patrons: 80
-  seed: 42
+seed: 42
