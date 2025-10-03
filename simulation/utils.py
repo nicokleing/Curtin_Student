@@ -20,25 +20,45 @@ def read_rides_csv(path):
     rides = []
     if path is None:
         return rides
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            parts = line.split(",")
-            if len(parts) != 7:
-                continue
-            rtype = parts[0].strip().lower()
-            capacity = int(parts[1])
-            duration = int(parts[2])
-            x = int(parts[3]); y = int(parts[4])
-            w = int(parts[5]); h = int(parts[6])
-            rides.append({
-                "type": rtype,
-                "capacity": capacity,
-                "duration": duration,
-                "bbox": (x, y, w, h),
-            })
+    
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            line_num = 0
+            for line in f:
+                line_num += 1
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                
+                parts = line.split(",")
+                if len(parts) != 7:
+                    print(f"Error: Line {line_num} in {path} has {len(parts)} fields, expected 7")
+                    print(f"Expected format: type,capacity,duration,x,y,width,height")
+                    continue
+                
+                try:
+                    rtype = parts[0].strip().lower()
+                    capacity = int(parts[1])
+                    duration = int(parts[2])
+                    x = int(parts[3]); y = int(parts[4])
+                    w = int(parts[5]); h = int(parts[6])
+                    rides.append({
+                        "type": rtype,
+                        "capacity": capacity,
+                        "duration": duration,
+                        "bbox": (x, y, w, h),
+                    })
+                except ValueError as e:
+                    print(f"Error: Invalid numeric value on line {line_num} in {path}: {e}")
+                    continue
+                    
+    except FileNotFoundError:
+        print(f"Error: Rides CSV file not found: {path}")
+        return []
+    except Exception as e:
+        print(f"Error reading rides CSV file {path}: {e}")
+        return []
+        
     return rides
 
 def read_patrons_csv(path):
@@ -47,16 +67,30 @@ def read_patrons_csv(path):
     """
     if path is None:
         return 60
-    with open(path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#"):
-                continue
-            try:
-                return int(line)
-            except ValueError:
-                pass
-    return 60
+        
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            line_num = 0
+            for line in f:
+                line_num += 1
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                try:
+                    return int(line)
+                except ValueError:
+                    print(f"Error: Invalid number format on line {line_num} in {path}: '{line}'")
+                    print(f"Expected: A single integer representing number of patrons")
+                    continue
+        print(f"Warning: No valid patron count found in {path}, using default: 60")
+        return 60
+        
+    except FileNotFoundError:
+        print(f"Error: Patrons CSV file not found: {path}")
+        return 60
+    except Exception as e:
+        print(f"Error reading patrons CSV file {path}: {e}")
+        return 60
 
 def load_config_yaml(path):
     """
