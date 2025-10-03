@@ -12,18 +12,20 @@ HU-03	Ejecutar con archivo de configuración YAML	✅ COMPLETA	--config - línea
 ✅ Argumentos CSV funcionan con manejo de errores
 ✅ YAML sobreescribe parámetros con precedencia correcta
 ✅ Se imprime configuración final usada (print_final_config())
-🟡 ÉPICA 2: VISITANTES - 40% IMPLEMENTADA
+✅ ÉPICA 2: VISITANTES - 100% COMPLETADA
 HU	Historia de Usuario	Estado	Implementación
-HU-04	Entrar por punto de spawn	✅ COMPLETA	spawns = terrain.spawn_points - línea 84
-HU-05	Moverse evitando obstáculos	⚠️ BÁSICA	Clase Patron básica en patrons.py
-HU-06	Elegir atracción basada en preferencias	❌ FALTA	Solo elección aleatoria simple
-HU-07	Abandonar cola si espera demasiado	❌ FALTA	Sistema de paciencia no implementado
-HU-08	Salir del parque por puerta de salida	✅ COMPLETA	exits = terrain.exit_points - línea 85
-🔴 Pendiente de Implementar:
+HU-04	Entrar por punto de spawn	✅ COMPLETA	Terrain.spawn_points + state="spawning" - models/patron.py líneas 118-122
+HU-05	Moverse evitando obstáculos	✅ COMPLETA	MovementBehavior.step_towards() + terrain.is_free_line() - behaviors/movement_behavior.py
+HU-06	Elegir atracción basada en preferencias	✅ COMPLETA	PatronType + RidePreference system - models/patron_types.py + DecisionBehavior
+HU-07	Abandonar cola si espera demasiado	✅ COMPLETA	QueueBehavior.process_queue_patience() - behaviors/queue_behavior.py
+HU-08	Salir del parque por puerta de salida	✅ COMPLETA	state="leaving" → state="left" at exit_points - models/patron.py líneas 153-158
+✅ Criterios de Aceptación Validados:
 
-Sistema de preferencias individuales por visitante
-Lógica de abandono de colas con paciencia variable
-Mejorar navegación con pathfinding avanzado
+✓ Visitantes aparecen en coordenadas verdes (spawn_points)
+✓ Ningún visitante atraviesa barreras (collision detection)  
+✓ Visitantes con preferencia FERRIS buscan noria (RidePreference system)
+✓ Visitantes impacientes abandonan colas (PatronType.IMPACIENTE + patience system)
+✓ Visitantes terminan en puntos azules y desaparecen (exit_points + state="left")
 🟡 ÉPICA 3: ATRACCIONES - 60% IMPLEMENTADA
 HU	Historia de Usuario	Estado	Implementación
 HU-09	Definir capacidad y duración desde CSV/config	✅ COMPLETA	build_rides() con capacity/duration
