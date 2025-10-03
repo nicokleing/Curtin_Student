@@ -22,7 +22,7 @@ class StatsRenderer:
             f"⏳ En cola: {stats['queued_now']}", 
             f"🚪 Salieron: {stats['departed_total']}",
             f"🚶 Abandonos: {stats['abandoned_now']}",
-            f"📊 Paso: {state['step']}"
+            f"Step: {state['step']}"
         ]
         
         # Mostrar texto
@@ -37,4 +37,4 @@ class StatsRenderer:
             self.ax_stats.plot(steps, engine.riders_now, 'r-', alpha=0.7, linewidth=2)
             self.ax_stats.set_ylabel('Riders', color='red')
             
-        self.ax_stats.set_title('📊 Estadísticas en Vivo')
+        self.ax_stats.set_title('Live Statistics')

@@ -46,9 +46,9 @@ class DisplayManager:
         self.controls.setup()
         
         # Configure window
-        self.fig.canvas.manager.set_window_title('🎮 AdventureWorld - Controles Visuales')
+        self.fig.canvas.manager.set_window_title('AdventureWorld - Visual Controls')
         
-        print("🎮 Controles visuales configurados - ¡Haz click en los botones!")
+        print("Visual controls configured - Click the buttons to control simulation!")
         
     def _create_layout(self):
         """Create matplotlib layout based on stats preference."""
@@ -105,7 +105,7 @@ class DisplayManager:
         if self.controls:
             self.controls.set_final_mode()
             
-        print("\n🎮 Simulación finalizada - Usa ✅ OK para cerrar o 🔄 RESET para reiniciar")
+        print("\nSimulation finished - Use OK to close or RESET to restart")
         print("   O cierra la ventana manualmente")
         
     def wait_for_user_action(self):

@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AdventureWorld - Simulación Modular de Parque Temático
-=====================================================
-Arquitectura refactorizada para mantenibilidad profesional
+AdventureWorld - Theme Park Simulation
+======================================
+Modular architecture for professional maintainability
 
-Épicas Implementadas:
-- Épica 1: Configuración del Parque ✅
-- Épica 2: Sistema Avanzado de Visitantes ✅  
-- Épica 3: Sistema Avanzado de Atracciones ✅
-- Épica 4: Controles Interactivos Avanzados ✅
+Implemented Features:
+- Epic 1: Park Configuration System
+- Epic 2: Advanced Visitor System  
+- Epic 3: Advanced Attraction System
+- Epic 4: Advanced Interactive Controls
 """
 
 # Imports de módulos refactorizados

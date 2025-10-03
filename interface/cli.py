@@ -56,7 +56,7 @@ Ejemplos de uso:
             n_rides = int(input("Rides [2]: ") or 2)
             num_patrons = int(input("Personas [60]: ") or 60)
         except (ValueError, EOFError, KeyboardInterrupt):
-            print("\n⚠️  Entrada interrumpida, usando valores por defecto")
+            print("\nInput interrupted, using default values")
             width, height, n_rides, num_patrons = 100, 70, 2, 60
 
         terrain = Terrain.from_size(width, height)

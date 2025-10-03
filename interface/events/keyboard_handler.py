@@ -20,24 +20,24 @@ class KeyboardHandler:
         }
         
         if event.key in key_actions:
-            print(f"⌨️ Tecla presionada: {event.key}")
+            print(f"Key pressed: {event.key}")
             key_actions[event.key]()
             
     def _show_controls_help(self):
         """Muestra información de ayuda de controles."""
         print("\n" + "="*60)
-        print("🎮 CONTROLES DE SIMULACIÓN - ÉPICA 4")
+        print("SIMULATION CONTROLS")
         print("="*60)
-        print("🖱️  CONTROLES POR CLICK:")
-        print("   ⏸️/▶️  - Pausar/Reanudar simulación")
-        print("   🐌 1x  - Velocidad normal")
-        print("   🏃 5x  - Velocidad rápida") 
-        print("   🚀 10x - Velocidad muy rápida")
-        print("   📊     - Toggle estadísticas")
-        print("   🔄     - Reiniciar simulación")
-        print("   ❌     - Salir")
+        print("MOUSE CONTROLS:")
+        print("   PAUSE/PLAY - Pause/Resume simulation")
+        print("   1x  - Normal speed")
+        print("   5x  - Fast speed") 
+        print("   10x - Very fast speed")
+        print("   STATS - Toggle statistics")
+        print("   RESET - Restart simulation")
+        print("   EXIT  - Exit")
         print()
-        print("⌨️  CONTROLES POR TECLADO (alternativo):")
+        print("KEYBOARD CONTROLS (alternative):")
         print("   ESPACIO - Pausar/Reanudar")
         print("   1,5,0   - Cambiar velocidad")
         print("   R       - Reiniciar")

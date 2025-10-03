@@ -90,7 +90,7 @@ class RideVisuals:
         queue_length = len(ride.queue)
         
         # Texto de información con estado detallado
-        info_text = f"🎢 {current_riders}/{ride.capacity}"
+        info_text = f"RIDE {current_riders}/{ride.capacity}"
         
         if queue_length > 0:
             info_text += f" | 🔶 {queue_length}"
@@ -100,7 +100,7 @@ class RideVisuals:
             if ride.state == "loading":
                 info_text += f" | ⏳ Cargando ({ride.timer_manager.timer}s)"
             elif ride.state == "running":
-                info_text += f" | ▶️ Funcionando ({ride.timer_manager.timer}s)"
+                info_text += f" | RUNNING ({ride.timer_manager.timer}s)"
             elif ride.state == "unloading":
                 info_text += f" | ⏬ Descargando ({ride.timer_manager.timer}s)"
         

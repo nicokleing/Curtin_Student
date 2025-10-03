@@ -92,12 +92,12 @@ class Patron:
         self.current_ride = ride
         self.state = "riding"
         self.queue_start_time = 0
-        print(f"🎢 {self.name} subió a {ride.name}")
+        print(f"{self.name} boarded {ride.name}")
 
     def leave_ride(self):
         """Bajar de una atracción"""
         if self.current_ride:
-            print(f"🎢 {self.name} bajó de {self.current_ride.name}")
+            print(f"{self.name} exited {self.current_ride.name}")
             self.current_ride = None
         
         self.state = "roaming"

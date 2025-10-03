@@ -98,14 +98,14 @@ class SimulationEngine:
         self.display = DisplayManager(self)
         self.display.setup()
         
-        print(f"🚀 Iniciando simulación de {self.steps} pasos...")
-        print("🖱️ ¡Haz click en los botones para controlar la simulación!")
+        print(f"Starting simulation with {self.steps} steps...")
+        print("Click the buttons to control the simulation!")
         
         try:
             while self.current_step < self.steps and self.running:
                 # Check if window was closed
                 if not self.display.is_window_open():
-                    print("👋 Ventana cerrada - terminando simulación")
+                    print("Window closed - ending simulation")
                     break
                 
                 # Execute simulation steps based on speed
@@ -126,11 +126,11 @@ class SimulationEngine:
         except KeyboardInterrupt:
             print("\n⏸️ Simulación interrumpida con Ctrl+C")
         except Exception as e:
-            print(f"\n❌ Error en simulación: {e}")
+            print(f"\nSimulation error: {e}")
         
         # Show final results
         if self.running and self.current_step >= self.steps:
-            print(f"\n✅ Simulación completada en {self.current_step} pasos")
+            print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
             
         if self.running:
@@ -184,18 +184,18 @@ class SimulationEngine:
         """Toggle pause state"""
         self.paused = not self.paused
         status = "PAUSADO" if self.paused else f"EJECUTANDO A {self.speed_multiplier}x"
-        print(f"🎮 ⏸️ SIMULACIÓN {status}")
+        print(f"SIMULATION {status}")
         
     def set_speed(self, multiplier):
         """Set simulation speed"""
         self.speed_multiplier = multiplier
         speed_names = {1: "NORMAL", 5: "RÁPIDO", 10: "TURBO"}
         speed_name = speed_names.get(multiplier, f"{multiplier}x")
-        print(f"🚀 Velocidad cambiada a {speed_name} ({multiplier}x)")
+        print(f"Speed changed to {speed_name} ({multiplier}x)")
         
     def reset_simulation(self):
         """Reset simulation to initial state"""
-        print("🔄 Reiniciando simulación...")
+        print("Restarting simulation...")
         self.time = 0
         self.current_step = 0
         self.paused = False
@@ -216,9 +216,9 @@ class SimulationEngine:
             if hasattr(ride, 'reset'):
                 ride.reset()
         
-        print("✅ Simulación reiniciada y ejecutándose a velocidad 1x")
+        print("Simulation restarted and running at 1x speed")
         
     def exit_simulation(self):
         """Exit simulation"""
-        print("👋 Cerrando simulación...")
+        print("Closing simulation...")
         self.running = False

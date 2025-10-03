@@ -18,7 +18,7 @@ class MouseHandler:
         if x is None or y is None:
             return
             
-        print(f"🖱️ Click detectado en ({x:.2f}, {y:.2f})")
+        print(f"Click detected at ({x:.2f}, {y:.2f})")
         
         # Verificar qué botón fue clickeado
         for btn_name in self.button_renderer.buttons:
@@ -26,7 +26,7 @@ class MouseHandler:
             if area:
                 x1, x2, y1, y2 = area
                 if x1 <= x <= x2 and y1 <= y <= y2:
-                    print(f"🎮 Botón clickeado: {btn_name}")
+                    print(f"Button clicked: {btn_name}")
                     self._handle_button_action(btn_name)
                     break
                     
@@ -47,4 +47,4 @@ class MouseHandler:
             
     def _toggle_stats(self):
         """Alterna la visualización de estadísticas (placeholder)."""
-        print("📊 Toggle estadísticas (funcionalidad placeholder)")
+        print("Toggle statistics (placeholder functionality)")

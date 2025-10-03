@@ -141,9 +141,9 @@ class MapRenderer:
         mast_y = y
         self.ax_map.plot([mast_x, mast_x], [mast_y-0.5, mast_y+1.5], 'k-', linewidth=3)
         
-        # Bandera pirata si está funcionando
+        # Pirate flag if running
         if ride.state == 'running':
-            self.ax_map.text(mast_x+0.2, mast_y+1.2, '🏴‍☠️', fontsize=12)
+            self.ax_map.text(mast_x+0.2, mast_y+1.2, 'P', fontsize=12, weight='bold')
     
     def _draw_ferris_wheel(self, ride, x, y):
         """Dibuja la rueda de la fortuna con animación de rotación."""
@@ -185,9 +185,9 @@ class MapRenderer:
                                     facecolor='yellow', edgecolor='black', linewidth=1)
             self.ax_map.add_patch(cabin)
         
-        # Símbolo de rueda si está funcionando
+        # Ferris wheel symbol if running
         if ride.state == 'running':
-            self.ax_map.text(x, y+2.5, '🎡', fontsize=16, ha='center')
+            self.ax_map.text(x, y+2.5, 'F', fontsize=16, ha='center', weight='bold')
     
     def _draw_generic_ride(self, ride, x, y):
         """Dibuja una atracción genérica."""
@@ -210,7 +210,7 @@ class MapRenderer:
                                edgecolor=edge_color, linewidth=edge_width)
         self.ax_map.add_patch(circle)
         
-        self.ax_map.text(x, y, '🎢', fontsize=16, ha='center', va='center')
+        self.ax_map.text(x, y, 'R', fontsize=16, ha='center', va='center', weight='bold')
         
     def _draw_ride_queue(self, ride):
         """Dibuja la cola de una atracción si existe."""

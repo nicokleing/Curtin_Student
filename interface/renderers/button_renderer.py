@@ -71,9 +71,9 @@ class ButtonRenderer:
         
         # Textos de botones según estado actual
         texts = {
-            'pause': '▶️ PLAY' if engine.paused else '⏸️ PAUSA',
-            'reset': '🔄 RESET',
-            'exit': '❌ SALIR',
+            'pause': 'PLAY' if engine.paused else 'PAUSE',
+            'reset': 'RESET',
+            'exit': 'EXIT',
             'speed1': '✓1x' if engine.speed_multiplier == 1 else '1x',
             'speed5': '✓5x' if engine.speed_multiplier == 5 else '5x',
             'speed10': '✓10x' if engine.speed_multiplier == 10 else '10x'

@@ -1,4 +1,8 @@
-# 🎢 AdventureWorld - Advanced Theme Park Simulator
+# Adventu## Documentation
+
+All technical documentation and context files are organized in the `contexto/` folder.
+
+See `contexto/README_CONTEXTO.md` for complete index of technical specifications, development progress, example configurations, and test files. Advanced Theme Park Simulator
 
 **Final Project - Fundamentals of Programming (FOP)**  
 **Author:** Nicolás Klein - Curtin University  
@@ -9,27 +13,27 @@
 
 ## � Documentación Organizada
 
-🎯 **Toda la documentación técnica y archivos de contexto están organizados en [`contexto/`](./contexto/)**
+**All technical documentation and context files are organized in [`contexto/`](./contexto/)**
 
 Consulta [`contexto/README_CONTEXTO.md`](./contexto/README_CONTEXTO.md) para un índice completo de:
 - 📖 Especificaciones técnicas
-- 🎯 Estado de épicas y desarrollo  
-- ⚙️ Configuraciones de ejemplo
-- 🧪 Archivos de prueba y validación
+- Epic status and development progress  
+- Example configurations
+- Test and validation files
 
-## 🚀 Inicio Rápido
+## Quick Start
 
 ```bash
-# Instalar dependencias
+# Install dependencies
 pip install -r requirements.txt
 
-# Ejecutar simulación básica
+# Run basic simulation
 python run_simulation.py
 
-# Ejecutar con configuración YAML
+# Run with YAML configuration
 python run_simulation.py --config contexto/config_test.yaml
 
-# Modo interactivo
+# Interactive mode
 python run_simulation.py -i
 ```
 
@@ -49,11 +53,11 @@ python run_simulation.py -i
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 **AdventureWorld** is a comprehensive, real-time theme park simulation system developed as the final project for Fundamentals of Programming (FOP). The project demonstrates advanced programming concepts through an interactive simulation that models complex visitor behavior, ride operations, and park dynamics.
 
-### 🎨 Simulation Highlights
+### Simulation Highlights
 - **Real-time Visualization**: Dynamic matplotlib-based graphics with live updates
 - **Intelligent AI Agents**: Sophisticated visitor behavior modeling with state machines
 - **Interactive Park Management**: Multiple configuration methods (CLI, CSV, interactive)
@@ -62,7 +66,7 @@ python run_simulation.py -i
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 ### 🤖 **Advanced Visitor AI System**
 - **Multi-State Behavior**: Visitors transition through realistic states:
@@ -74,7 +78,7 @@ python run_simulation.py -i
 - **Pathfinding**: Intelligent movement avoiding obstacles and barriers
 - **Individual Preferences**: Each visitor has unique behavior patterns
 
-### 🎠 **Sophisticated Ride Mechanics**
+### **Sophisticated Ride Mechanics**
 - **Multiple Ride Types**:
   - `PirateShip`: High-capacity, medium-duration thrill ride
   - `FerrisWheel`: Scenic ride with customizable cabin count
@@ -91,7 +95,7 @@ python run_simulation.py -i
 - **Exit Management**: Multiple park exit locations
 - **Scalable Dimensions**: Customizable park size (default: 100x70)
 
-### 📊 **Real-Time Analytics Dashboard**
+### **Real-Time Analytics Dashboard**
 - **Live Statistics Visualization**:
   - Active riders count over time
   - Queue length monitoring  
@@ -100,7 +104,7 @@ python run_simulation.py -i
 - **Performance Metrics**: Real-time simulation statistics
 - **Data Export**: Statistical data for analysis
 
-### ⚙️ **Flexible Configuration System**
+### **Flexible Configuration System**
 - **Interactive Setup Mode**: Guided configuration wizard
 - **CSV-Based Configuration**: External file-based setup
 - **Command-Line Interface**: Full parameter control via CLI arguments
@@ -112,15 +116,15 @@ python run_simulation.py -i
 
 ```
 AdventureWorld/
-├── 🎮 adventureworld.py     # Main simulation engine and CLI interface
+├── adventureworld.py     # Main simulation engine and CLI interface
 ├── 🗺️ terrain.py           # Park terrain, barriers, and spatial management
 ├── 👥 patrons.py           # Visitor AI, behavior states, and pathfinding
-├── 🎠 rides.py             # Ride mechanics, operations, and queue management  
-├── 🔧 utils.py             # CSV parsing, ride construction, and utilities
+├── rides.py             # Ride mechanics, operations, and queue management  
+├── utils.py             # CSV parsing, ride construction, and utilities
 ├── 📖 README.md            # Complete project documentation
 ├── 🚫 .gitignore           # Version control exclusions
 ├── 🗂️ map1.csv             # Sample terrain configuration
-├── 🎢 rides.csv            # Sample ride configuration
+├── rides.csv            # Sample ride configuration
 └── 👤 patrons.csv          # Sample visitor count configuration
 ```
 
@@ -163,7 +167,7 @@ AdventureWorld/
 
 ---
 
-## 🛠️ Installation & Setup
+## Installation & Setup
 
 ### **Prerequisites**
 - **Python 3.8+** (recommended: Python 3.12)
@@ -213,7 +217,7 @@ python3 adventureworld.py --steps 50
 
 ## 📖 Usage Guide
 
-### **🎯 Quick Start**
+### **Quick Start**
 ```bash
 # Basic simulation (300 steps, default settings)
 python3 adventureworld.py
@@ -225,7 +229,7 @@ python3 adventureworld.py --stats --steps 200
 python3 adventureworld.py -i
 ```
 
-### **🎮 Execution Modes**
+### **Execution Modes**
 
 #### **1. Default Mode**
 ```bash
@@ -286,7 +290,7 @@ python3 adventureworld.py --rides-csv rides.csv --patrons-csv patrons.csv --stat
 
 ---
 
-## ⚙️ Configuration Options
+## Configuration Options
 
 ### **📝 Command Line Arguments**
 
@@ -318,7 +322,7 @@ When using `-i` flag, the system prompts for:
 3. **Visitor Settings**
    - Total visitor count (1-200 patrons)
 
-### **📊 Default Configuration Values**
+### **Default Configuration Values**
 
 ```python
 DEFAULT_SETTINGS = {
@@ -349,7 +353,7 @@ DEFAULT_SETTINGS = {
 
 ## 📄 File Formats
 
-### **🎢 Rides Configuration CSV (`rides.csv`)**
+### **Rides Configuration CSV (`rides.csv`)**
 
 **Format:**
 ```csv
@@ -405,7 +409,7 @@ patron_count,spawn_rate,exit_probability
 
 ## ⚡ Simulation Mechanics
 
-### **🔄 Core Simulation Loop**
+### **Core Simulation Loop**
 
 ```python
 for step in range(total_steps):

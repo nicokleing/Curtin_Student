@@ -105,21 +105,21 @@ def print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_s
         config_source: Fuente de la configuración ("default", "interactive", "yaml", "csv")
     """
     print("\n" + "="*50)
-    print("📋 CONFIGURACIÓN FINAL UTILIZADA")
+    print("FINAL CONFIGURATION USED")
     print("="*50)
-    print(f"🏗️  Fuente de configuración: {config_source}")
-    print(f"🗺️  Dimensiones del parque: {terrain.width} x {terrain.height}")
-    print(f"🎢 Número de atracciones: {len(rides)}")
+    print(f"Configuration source: {config_source}")
+    print(f"Park dimensions: {terrain.width} x {terrain.height}")
+    print(f"Number of rides: {len(rides)}")
     
     # Detalles de atracciones
     for i, ride in enumerate(rides, 1):
-        ride_type = "🏴‍☠️ Barco Pirata" if isinstance(ride, PirateShip) else "🎡 Noria"
-        print(f"   {i}. {ride_type} - Cap: {ride.capacity}, Duración: {ride.duration}")
+        ride_type = "Pirate Ship" if isinstance(ride, PirateShip) else "Ferris Wheel"
+        print(f"   {i}. {ride_type} - Capacity: {ride.capacity}, Duration: {ride.duration}")
     
-    print(f"👥 Visitantes: {num_patrons}")
-    print(f"⏱️  Pasos de simulación: {steps}")
-    print(f"🎲 Semilla aleatoria: {seed if seed is not None else 'Aleatoria'}")
-    print(f"📊 Estadísticas en vivo: {'✅ Sí' if stats else '❌ No'}")
+    print(f"Visitors: {num_patrons}")
+    print(f"Simulation steps: {steps}")
+    print(f"Random seed: {seed if seed is not None else 'Random'}")
+    print(f"Live statistics: {'Yes' if stats else 'No'}")
     print("="*50 + "\n")
 
 

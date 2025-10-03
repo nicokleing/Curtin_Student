@@ -69,19 +69,19 @@ class Ride:
             if self.riders:
                 self.state = RideState.RUNNING.value
                 self.timer_manager.start_running()
-                print(f"🎢 {self.name} iniciando con {len(self.riders)}/{self.capacity} pasajeros")
+                print(f"Ride {self.name} starting with {len(self.riders)}/{self.capacity} passengers")
             else:
                 self.state = RideState.IDLE.value
                 
         elif self.state == RideState.RUNNING.value:
             self.state = RideState.UNLOADING.value
             self.timer_manager.start_unloading()
-            print(f"🎢 {self.name} terminando recorrido, descargando pasajeros...")
+            print(f"Ride {self.name} ending cycle, unloading passengers...")
                 
         elif self.state == RideState.UNLOADING.value:
             self.finish_cycle()
             self.state = RideState.IDLE.value
-            print(f"🎢 {self.name} listo para nuevos pasajeros")
+            print(f"Ride {self.name} ready for new passengers")
 
     def _progressive_loading(self):
         """Carga gradual de visitantes durante LOADING."""

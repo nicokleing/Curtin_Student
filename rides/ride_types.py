@@ -7,7 +7,7 @@ from .base_ride import Ride
 from .ride_visuals import RideVisuals
 
 class PirateShip(Ride):
-    """🏴‍☠️ Barco pirata: se dibuja como un péndulo dentro de la caja."""
+    """Pirate ship ride with pendulum motion animation."""
     
     def __init__(self, name, capacity, duration, bbox):
         super().__init__(name, capacity, duration, bbox, ride_type="pirate")
@@ -23,7 +23,7 @@ class PirateShip(Ride):
         self._draw_pirate_ship_animation(ax, t)
         
         # Nombre de la atracción
-        ax.text(self.bbox[0], self.bbox[1] - 8, f"🏴‍☠️ {self.name}", 
+        ax.text(self.bbox[0], self.bbox[1] - 8, f"PIRATE {self.name}", 
                fontsize=9, ha='left', weight='bold')
 
     def _draw_pirate_ship_animation(self, ax, t):
@@ -64,7 +64,7 @@ class PirateShip(Ride):
 
 
 class FerrisWheel(Ride):
-    """🎡 Rueda de la fortuna: círculo con cabinas rotando."""
+    """Ferris wheel ride with rotating cabins."""
     
     def __init__(self, name, capacity, duration, bbox, cabins=8):
         super().__init__(name, capacity, duration, bbox, ride_type="ferris")
@@ -81,7 +81,7 @@ class FerrisWheel(Ride):
         self._draw_ferris_wheel_animation(ax, t)
         
         # Nombre de la atracción  
-        ax.text(self.bbox[0], self.bbox[1] - 8, f"🎡 {self.name}", 
+        ax.text(self.bbox[0], self.bbox[1] - 8, f"FERRIS {self.name}", 
                fontsize=9, ha='left', weight='bold')
 
     def _draw_ferris_wheel_animation(self, ax, t):
