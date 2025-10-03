@@ -61,16 +61,21 @@ Crea summary.json con configuración, estadísticas y timeline completo
 Exporta plot.png con mapa final y gráficos de estadísticas
 README.md documenta el contenido de la exportación
 Integración completa con CLI --save-run
-❌ ÉPICA 6: MÉTRICAS Y REPORTES - 0% IMPLEMENTADA
+✅ ÉPICA 6: MÉTRICAS Y REPORTES - 100% COMPLETA
 HU	Historia de Usuario	Estado	Implementación
-HU-19	Calcular métricas (tiempo espera, throughput, abandono)	❌ FALTA	No existe sistema de métricas
-HU-20	Guardar registro completo de eventos (events.csv)	❌ FALTA	No existe logging de eventos
-🔴 Completamente Pendiente:
+HU-19	Calcular métricas (tiempo espera, throughput, abandono)	✅ COMPLETA	MetricsCalculator con análisis completo de KPIs
+HU-20	Guardar registro completo de eventos (events.csv)	✅ COMPLETA	detailed_visitor_events.csv con audit trail completo
+✅ Completamente Implementado:
 
-Sistema de métricas y KPIs
-Logger de eventos por visitante
-Reportes en JSON y CSV
-Análisis de eficiencia del parque
+MetricsCalculator calcula tiempos de espera promedio, mediano y máximo
+Análisis de throughput por atracción y general del parque
+Tasa de abandono y éxito por tipo de visitante
+KPIs de eficiencia del parque (0-100) basado en abandono y tiempos
+Estimación de satisfacción del visitante
+Utilización de capacidad por atracción
+Reporte completo impreso en consola al finalizar simulación
+detailed_visitor_events.csv exporta chronológicamente cada evento de visitante
+Integración completa con --save-run para análisis post-simulación
 ❌ ÉPICA 7: EXTRAS/PLUS - 0% IMPLEMENTADA
 HU	Historia de Usuario	Estado	Implementación
 HU-21	Nivel de satisfacción por visitante	❌ FALTA	Sistema de satisfacción no existe

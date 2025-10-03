@@ -7,6 +7,7 @@ Handles simulation state, step logic, and statistics
 """
 from models import Patron, PatronType
 from simulation.export import ExportManager
+from simulation.metrics import MetricsCalculator
 import matplotlib.pyplot as plt
 
 
@@ -50,6 +51,15 @@ class SimulationEngine:
                 'show_stats': self.show_stats
             })
         
+        # Metrics calculator for Epic 6: Metrics and Reports
+        self.metrics_calculator = MetricsCalculator()
+        
+        # Initialize visitor tracking for metrics
+        for i, patron in enumerate(self.patrons):
+            self.metrics_calculator.initialize_visitor(
+                patron.id, patron.patron_type.value, 0
+            )
+        
         # Display manager will be set when running
         self.display = None
         
@@ -61,14 +71,32 @@ class SimulationEngine:
         # Store previous states for event logging
         prev_patron_states = {p.id: p.state for p in self.patrons}
         prev_ride_states = {r.name: r.state for r in self.rides}
+        prev_patron_positions = {p.id: (p.current_ride.name if hasattr(p, 'current_ride') and p.current_ride else None) for p in self.patrons}
             
         # Update rides
         for ride in self.rides:
+            prev_ride_rider_count = len(ride.riders)
+            prev_ride_queue_count = len(ride.queue)
             ride.step_change(self.time)
             
-        # Update patrons
+            # Log ride metrics events
+            if len(ride.riders) != prev_ride_rider_count or ride.state != prev_ride_states[ride.name]:
+                self.metrics_calculator.log_ride_event(
+                    ride.name, 'state_change', self.current_step,
+                    {
+                        'new_state': ride.state,
+                        'riders_count': len(ride.riders),
+                        'queue_length': len(ride.queue)
+                    }
+                )
+            
+        # Update patrons and track detailed metrics
         for patron in self.patrons:
+            prev_state = prev_patron_states[patron.id]
             patron.step_change(self.time, self.rides)
+            
+            # Detect and log patron events for metrics
+            self._detect_and_log_patron_events(patron, prev_state, prev_patron_positions)
 
         # Log events if export is enabled
         if self.export_manager:
@@ -190,9 +218,12 @@ class SimulationEngine:
             print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
             
+            # Epic 6: Calculate and display comprehensive metrics
+            comprehensive_metrics = self.metrics_calculator.print_metrics_summary()
+            
             # Handle export if --save-run was used
             if self.export_manager:
-                self._finalize_export()
+                self._finalize_export(comprehensive_metrics)
             
         if self.running:
             self.display.set_final_mode()
@@ -279,12 +310,60 @@ class SimulationEngine:
         
         print("Simulation restarted and running at 1x speed")
         
+    def _detect_and_log_patron_events(self, patron, prev_state, prev_positions):
+        """Detect and log patron events for detailed metrics."""
+        current_state = patron.state
+        patron_id = patron.id
+        
+        # State transition events
+        if prev_state != current_state:
+            if current_state == 'queuing':
+                # Find which ride they joined
+                for ride in self.rides:
+                    if patron in ride.queue:
+                        self.metrics_calculator.log_visitor_event(
+                            patron_id, 'joined_queue', self.current_step,
+                            {'ride_name': ride.name, 'queue_position': len(ride.queue)}
+                        )
+                        break
+                        
+            elif current_state == 'riding':
+                # Find which ride they boarded
+                for ride in self.rides:
+                    if patron in ride.riders:
+                        self.metrics_calculator.log_visitor_event(
+                            patron_id, 'boarded_ride', self.current_step,
+                            {'ride_name': ride.name}
+                        )
+                        break
+                        
+            elif current_state == 'wandering' and prev_state == 'riding':
+                # They completed a ride
+                self.metrics_calculator.log_visitor_event(
+                    patron_id, 'completed_ride', self.current_step,
+                    {'previous_ride': prev_positions.get(patron_id)}
+                )
+                
+            elif current_state == 'wandering' and prev_state == 'queuing':
+                # They abandoned a queue
+                self.metrics_calculator.log_visitor_event(
+                    patron_id, 'abandoned_queue', self.current_step,
+                    {'reason': 'impatience'}
+                )
+                
+            elif current_state == 'left':
+                # They departed the park
+                self.metrics_calculator.log_visitor_event(
+                    patron_id, 'departed', self.current_step,
+                    {'total_rides': patron.rides_completed}
+                )
+        
     def exit_simulation(self):
         """Exit simulation"""
         print("Closing simulation...")
         self.running = False
         
-    def _finalize_export(self):
+    def _finalize_export(self, comprehensive_metrics=None):
         """Finalize export process and save all files."""
         print("\n" + "="*60)
         print("📊 ÉPICA 5: EXPORTANDO DATOS DE SIMULACIÓN")
@@ -294,7 +373,7 @@ class SimulationEngine:
             # Add missing import at the top of method
             import os
             
-            # Prepare final statistics
+            # Prepare final statistics including comprehensive metrics
             final_stats = {
                 'total_steps': self.current_step,
                 'final_riders': self.riders_now[-1] if self.riders_now else 0,
@@ -304,6 +383,10 @@ class SimulationEngine:
                 'patron_breakdown': self._get_patron_breakdown()
             }
             
+            # Add comprehensive metrics from Epic 6 if available
+            if comprehensive_metrics:
+                final_stats['comprehensive_metrics'] = comprehensive_metrics
+            
             # Add timeline data if stats were collected
             timeline_data = None
             if self.show_stats and self.display and hasattr(self.display.stats_renderer, 'get_export_data'):
@@ -311,8 +394,8 @@ class SimulationEngine:
                 
             self.export_manager.set_final_stats(final_stats, timeline_data)
             
-            # Export all formats
-            exported_files = self.export_manager.export_all(self.display)
+            # Export all formats including detailed metrics
+            exported_files = self.export_manager.export_all(self.display, self.metrics_calculator)
             
             print(f"✅ Exportación completada: {len(exported_files)} archivos creados")
             print(f"📁 Directorio: {self.export_manager.output_dir}")

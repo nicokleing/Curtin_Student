@@ -52,7 +52,7 @@ class ExportManager:
         if timeline_data:
             self.final_stats['timeline'] = timeline_data
             
-    def export_all(self, display_manager=None):
+    def export_all(self, display_manager=None, metrics_calculator=None):
         """Export all data formats: CSV, JSON, and PNG."""
         files_created = []
         
@@ -61,6 +61,12 @@ class ExportManager:
             csv_file = self._export_events_csv()
             if csv_file:
                 files_created.append(csv_file)
+                
+            # Epic 6: Export detailed visitor events CSV if metrics available
+            if metrics_calculator:
+                detailed_csv_file = self._export_detailed_visitor_events_csv(metrics_calculator)
+                if detailed_csv_file:
+                    files_created.append(detailed_csv_file)
                 
             # Export summary to JSON
             json_file = self._export_summary_json()
@@ -111,6 +117,52 @@ class ExportManager:
             
         except Exception as e:
             print(f"Error exportando CSV: {e}")
+            return None
+            
+    def _export_detailed_visitor_events_csv(self, metrics_calculator):
+        """Export detailed visitor events CSV for Epic 6 HU-20."""
+        try:
+            csv_path = self.output_dir / "detailed_visitor_events.csv"
+            
+            with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+                fieldnames = [
+                    'visitor_id', 'visitor_type', 'step', 'timestamp', 
+                    'event_type', 'ride_name', 'queue_position', 
+                    'wait_time', 'details'
+                ]
+                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+                writer.writeheader()
+                
+                # Export all visitor events from metrics calculator
+                for visitor_id, visitor_data in metrics_calculator.visitor_metrics.items():
+                    for event in visitor_data['events']:
+                        details = event.get('details', {})
+                        row = {
+                            'visitor_id': visitor_id,
+                            'visitor_type': visitor_data['type'],
+                            'step': event['step'],
+                            'timestamp': event['timestamp'].isoformat(),
+                            'event_type': event['event_type'],
+                            'ride_name': details.get('ride_name', ''),
+                            'queue_position': details.get('queue_position', ''),
+                            'wait_time': '',  # Will be calculated below
+                            'details': json.dumps(details)
+                        }
+                        
+                        # Calculate wait time for boarding events
+                        if event['event_type'] == 'boarded_ride':
+                            ride_name = details.get('ride_name', '')
+                            if ride_name and ride_name in visitor_data['queue_times']:
+                                wait_times = visitor_data['queue_times'][ride_name]
+                                if wait_times:
+                                    row['wait_time'] = wait_times[-1]  # Most recent wait time
+                        
+                        writer.writerow(row)
+                        
+            return str(csv_path)
+            
+        except Exception as e:
+            print(f"Error exportando CSV detallado de visitantes: {e}")
             return None
             
     def _export_summary_json(self):

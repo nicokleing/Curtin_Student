@@ -1,0 +1,238 @@
+{
+  "run_info": {
+    "name": "adventureworld_run_20251003_130438",
+    "export_time": "2025-10-03T13:04:43.180695",
+    "total_events": 117
+  },
+  "configuration": {
+    "terrain_size": "25x5",
+    "num_rides": 2,
+    "num_patrons": 60,
+    "max_steps": 20,
+    "show_stats": true
+  },
+  "final_statistics": {
+    "total_steps": 20,
+    "final_riders": 18,
+    "final_queued": 9,
+    "total_departed": 0,
+    "total_abandoned": 4,
+    "patron_breakdown": {
+      "aventurero": {
+        "count": 15,
+        "total_rides": 0,
+        "total_abandoned": 0,
+        "departed": 0
+      },
+      "familiar": {
+        "count": 15,
+        "total_rides": 0,
+        "total_abandoned": 0,
+        "departed": 0
+      },
+      "impaciente": {
+        "count": 15,
+        "total_rides": 0,
+        "total_abandoned": 4,
+        "departed": 0
+      },
+      "explorador": {
+        "count": 15,
+        "total_rides": 0,
+        "total_abandoned": 0,
+        "departed": 0
+      }
+    },
+    "comprehensive_metrics": {
+      "visitor_analytics": {
+        "overall_avg_wait_time": 0,
+        "median_wait_time": 0.0,
+        "max_wait_time": 0,
+        "min_wait_time": 0,
+        "by_visitor_type": {
+          "aventurero": {
+            "count": 15,
+            "avg_wait_time": 0.0,
+            "avg_rides_completed": 0.0,
+            "abandonment_rate": 0.0
+          },
+          "familiar": {
+            "count": 15,
+            "avg_wait_time": 0.0,
+            "avg_rides_completed": 0.0,
+            "abandonment_rate": 0.0
+          },
+          "impaciente": {
+            "count": 15,
+            "avg_wait_time": 0.0,
+            "avg_rides_completed": 0.0,
+            "abandonment_rate": 0.0
+          },
+          "explorador": {
+            "count": 15,
+            "avg_wait_time": 0.0,
+            "avg_rides_completed": 0.0,
+            "abandonment_rate": 0.0
+          }
+        }
+      },
+      "ride_analytics": {
+        "Ride1": {
+          "total_riders": 9,
+          "total_cycles": 0,
+          "avg_riders_per_cycle": 9.0,
+          "avg_wait_time": 0,
+          "max_wait_time": 0,
+          "avg_queue_length": 0,
+          "max_queue_length": 0,
+          "efficiency_score": 0
+        },
+        "Ride2": {
+          "total_riders": 9,
+          "total_cycles": 0,
+          "avg_riders_per_cycle": 9.0,
+          "avg_wait_time": 0,
+          "max_wait_time": 0,
+          "avg_queue_length": 0,
+          "max_queue_length": 0,
+          "efficiency_score": 0
+        }
+      },
+      "park_performance": {
+        "total_visitors": 60,
+        "total_successful_boardings": 18,
+        "total_queue_abandonments": 0,
+        "overall_abandonment_rate": 0.0,
+        "boarding_success_rate": 30.0,
+        "average_rides_per_visitor": 0.3
+      },
+      "efficiency_kpis": {
+        "park_efficiency_score": 100.0,
+        "avg_throughput_per_minute": 18.0,
+        "visitor_satisfaction_estimate": 50.0,
+        "capacity_utilization": 0
+      }
+    },
+    "timeline": {
+      "steps": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "riders_timeline": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        2,
+        4,
+        11,
+        12,
+        18,
+        18,
+        18,
+        18,
+        18,
+        18,
+        18,
+        18,
+        18
+      ],
+      "queued_timeline": [
+        0,
+        0,
+        0,
+        6,
+        11,
+        12,
+        12,
+        13,
+        13,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        12,
+        11,
+        11,
+        9,
+        9
+      ],
+      "departed_timeline": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "abandoned_timeline": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        2,
+        4,
+        4
+      ]
+    }
+  },
+  "events_summary": {
+    "total_events": 117,
+    "event_types": {
+      "patron_state_change": 113,
+      "ride_state_change": 4
+    },
+    "first_event": "2025-10-03T13:04:38.987758",
+    "last_event": "2025-10-03T13:04:42.629629"
+  }
+}
