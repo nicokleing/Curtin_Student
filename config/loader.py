@@ -50,7 +50,11 @@ class ConfigLoader:
         # Create configuration object
         config = SimpleNamespace()
         config.terrain = terrain
-        config.rides = build_rides(rides, terrain)  # Convert ride data to ride objects
+        # If rides is already a list of Ride objects, use it; otherwise build from data
+        if rides and hasattr(rides[0], 'name'):  # Check if it's already Ride objects
+            config.rides = rides
+        else:
+            config.rides = build_rides(rides, terrain)  # Convert ride data to ride objects
         config.num_patrons = num_patrons
         config.steps = args.steps
         config.show_stats = args.stats
