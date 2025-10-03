@@ -38,16 +38,16 @@ HU-12	Agregar nuevas atracciones fácilmente	✅ COMPLETA	Ride base class + Pira
 ✓ Colas se muestran gráficamente y respetan límites de capacidad (RideVisuals.draw_queue)
 ✓ Estados se visualizan en colores y logs (state_colors + step_change logging)
 ✓ Fácil agregar nuevas atracciones mediante herencia (Ride base class pattern)
-🟡 ÉPICA 4: SIMULACIÓN Y MOTOR - 70% IMPLEMENTADA
+✅ ÉPICA 4: SIMULACIÓN Y MOTOR - 100% COMPLETADA
 HU	Historia de Usuario	Estado	Implementación
-HU-13	Simulación paso a paso (ticks)	✅ COMPLETA	Loop principal sim.step() - líneas 100-110
-HU-14	Fijar semilla aleatoria para reproducibilidad	✅ COMPLETA	--seed implementado - líneas 171-172
-HU-15	Pausar o acelerar simulación (1×, 5×, 10×)	❌ FALTA	Solo velocidad fija con plt.pause(0.001)
-🔴 Pendiente de Implementar:
+HU-13	Simulación paso a paso (ticks)	✅ COMPLETA	SimulationEngine.step() + loop principal - core/engine.py líneas 52-62, 110-119
+HU-14	Fijar semilla aleatoria para reproducibilidad	✅ COMPLETA	ConfigLoader.load_from_args() + random.seed() - config/loader.py línea 24
+HU-15	Pausar o acelerar simulación (1×, 5×, 10×)	✅ COMPLETA	Speed controls + pause system - interface/events/mouse_handler.py + core/engine.py líneas 185-202
+✅ Criterios de Aceptación Validados:
 
-Controles de velocidad interactivos
-Pausa/reanudación de simulación
-Interfaz de teclado para control en tiempo real
+✓ Cada paso actualiza visitantes y rides (step() method calls patron.step_change y ride.step_change)
+✓ Dos corridas con misma semilla generan movimientos idénticos (--seed 123 probado)  
+✓ Teclas/clicks permiten 1×, 5×, 10× y pausa (MouseHandler + speed_multiplier system)
 🟡 ÉPICA 5: VISUALIZACIÓN - 80% IMPLEMENTADA
 HU	Historia de Usuario	Estado	Implementación
 HU-16	Mapa en tiempo real con colores diferenciados	✅ COMPLETA	sim.draw() completo - líneas 112-135
