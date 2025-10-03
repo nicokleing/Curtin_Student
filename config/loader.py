@@ -93,13 +93,13 @@ class ConfigLoader:
             return terrain, rides, num_patrons
         
         except FileNotFoundError:
-            print(f"❌ Archivo YAML no encontrado: {file_path}")
+            print(f" Archivo YAML no encontrado: {file_path}")
             return None
         except yaml.YAMLError as e:
-            print(f"❌ Error en formato YAML: {e}")
+            print(f" Error en formato YAML: {e}")
             return None
         except KeyError as e:
-            print(f"❌ Campo requerido no encontrado en YAML: {e}")
+            print(f" Campo requerido no encontrado en YAML: {e}")
             return None
     
     def _load_from_csv(self, args):

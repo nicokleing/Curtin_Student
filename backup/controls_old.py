@@ -92,9 +92,9 @@ class ControlsManager:
         
         # Button texts based on current state
         texts = {
-            'pause': '▶️ PLAY' if self.engine.paused else '⏸️ PAUSA',
-            'reset': '🔄 RESET',
-            'exit': '❌ SALIR',
+            'pause': 'PLAY' if self.engine.paused else 'PAUSA',
+            'reset': 'RESET',
+            'exit': 'SALIR',
             'speed1': '✓1x' if self.engine.speed_multiplier == 1 else '1x',
             'speed5': '✓5x' if self.engine.speed_multiplier == 5 else '5x',
             'speed10': '✓10x' if self.engine.speed_multiplier == 10 else '10x'
@@ -149,7 +149,7 @@ class ControlsManager:
         if x is None or y is None:
             return
             
-        print(f"🖱️ Click detectado en ({x:.2f}, {y:.2f})")
+        print(f" Click detectado en ({x:.2f}, {y:.2f})")
         
         # Check which button was clicked
         for btn_name, btn_data in self.buttons.items():
@@ -202,7 +202,7 @@ class ControlsManager:
                 
     def _toggle_stats(self):
         """Toggle statistics display (placeholder)"""
-        print("📊 Toggle estadísticas (funcionalidad placeholder)")
+        print("Toggle estadísticas (funcionalidad placeholder)")
         
     def update_display(self, state):
         """Update control display based on simulation state"""
