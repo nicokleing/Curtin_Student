@@ -48,16 +48,19 @@ HU-15	Pausar o acelerar simulación (1×, 5×, 10×)	✅ COMPLETA	Speed controls
 ✓ Cada paso actualiza visitantes y rides (step() method calls patron.step_change y ride.step_change)
 ✓ Dos corridas con misma semilla generan movimientos idénticos (--seed 123 probado)  
 ✓ Teclas/clicks permiten 1×, 5×, 10× y pausa (MouseHandler + speed_multiplier system)
-🟡 ÉPICA 5: VISUALIZACIÓN - 80% IMPLEMENTADA
+✅ ÉPICA 5: VISUALIZACIÓN - 100% COMPLETA
 HU	Historia de Usuario	Estado	Implementación
-HU-16	Mapa en tiempo real con colores diferenciados	✅ COMPLETA	sim.draw() completo - líneas 112-135
-HU-17	Estadísticas gráficas en tiempo real	✅ COMPLETA	--stats subplot implementado - líneas 125-133
-HU-18	Exportar gráficos e informes	❌ FALTA	No existe --save-run
-🔴 Pendiente de Implementar:
+HU-16	Mapa en tiempo real con colores diferenciados	✅ COMPLETA	MapRenderer con actualización en tiempo real
+HU-17	Estadísticas gráficas en tiempo real	✅ COMPLETA	StatsRenderer con gráficos de línea dinámicos
+HU-18	Exportar gráficos e informes	✅ COMPLETA	--save-run implementado con ExportManager
+✅ Completamente Implementado:
 
-Funcionalidad --save-run para generar carpeta con CSV, JSON y PNG
-Exportación automática de métricas
-Guardado de estados de simulación
+ExportManager crea carpeta con timestamp automático
+Genera events.csv con logging de eventos de patrones y atracciones
+Crea summary.json con configuración, estadísticas y timeline completo
+Exporta plot.png con mapa final y gráficos de estadísticas
+README.md documenta el contenido de la exportación
+Integración completa con CLI --save-run
 ❌ ÉPICA 6: MÉTRICAS Y REPORTES - 0% IMPLEMENTADA
 HU	Historia de Usuario	Estado	Implementación
 HU-19	Calcular métricas (tiempo espera, throughput, abandono)	❌ FALTA	No existe sistema de métricas

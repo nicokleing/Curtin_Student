@@ -59,6 +59,7 @@ class ConfigLoader:
         config.steps = args.steps
         config.show_stats = args.stats
         config.seed = args.seed
+        config.save_run = getattr(args, 'save_run', False)
         
         # Create patrons with Epic 2 diversity
         config.patrons = self._create_patrons(config.terrain, num_patrons)

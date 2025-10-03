@@ -6,6 +6,7 @@ Pure simulation logic without UI dependencies
 Handles simulation state, step logic, and statistics
 """
 from models import Patron, PatronType
+from simulation.export import ExportManager
 import matplotlib.pyplot as plt
 
 
@@ -22,6 +23,7 @@ class SimulationEngine:
         self.patrons = config.patrons
         self.steps = config.steps
         self.show_stats = config.show_stats
+        self.save_run = getattr(config, 'save_run', False)
         
         # Simulation state
         self.time = 0
@@ -36,6 +38,18 @@ class SimulationEngine:
         self.departed_total = []
         self.abandoned_now = []
         
+        # Export manager for --save-run
+        self.export_manager = None
+        if self.save_run:
+            self.export_manager = ExportManager()
+            self.export_manager.set_config({
+                'terrain_size': f"{self.terrain.width}x{self.terrain.height}",
+                'num_rides': len(self.rides),
+                'num_patrons': len(self.patrons),
+                'max_steps': self.steps,
+                'show_stats': self.show_stats
+            })
+        
         # Display manager will be set when running
         self.display = None
         
@@ -44,6 +58,10 @@ class SimulationEngine:
         if self.paused or not self.running:
             return
             
+        # Store previous states for event logging
+        prev_patron_states = {p.id: p.state for p in self.patrons}
+        prev_ride_states = {r.name: r.state for r in self.rides}
+            
         # Update rides
         for ride in self.rides:
             ride.step_change(self.time)
@@ -51,6 +69,10 @@ class SimulationEngine:
         # Update patrons
         for patron in self.patrons:
             patron.step_change(self.time, self.rides)
+
+        # Log events if export is enabled
+        if self.export_manager:
+            self._log_state_changes(prev_patron_states, prev_ride_states)
 
         # Calculate statistics
         self._update_statistics()
@@ -69,6 +91,41 @@ class SimulationEngine:
         self.queued_now.append(queued)  
         self.departed_total.append(departed)
         self.abandoned_now.append(abandoned_total)
+        
+    def _log_state_changes(self, prev_patron_states, prev_ride_states):
+        """Log state changes for export."""
+        # Log patron state changes
+        for patron in self.patrons:
+            prev_state = prev_patron_states.get(patron.id, 'unknown')
+            if patron.state != prev_state:
+                self.export_manager.log_event(
+                    self.current_step, 
+                    'patron_state_change',
+                    patron.id,
+                    {
+                        'from_state': prev_state,
+                        'to_state': patron.state,
+                        'patron_type': patron.patron_type.value,
+                        'position': patron.position
+                    }
+                )
+                
+        # Log ride state changes  
+        for ride in self.rides:
+            prev_state = prev_ride_states.get(ride.name, 'unknown')
+            if ride.state != prev_state:
+                self.export_manager.log_event(
+                    self.current_step,
+                    'ride_state_change', 
+                    ride.name,
+                    {
+                        'from_state': prev_state,
+                        'to_state': ride.state,
+                        'capacity': ride.capacity,
+                        'current_riders': len(ride.riders),
+                        'queue_length': len(ride.queue)
+                    }
+                )
         
     def get_current_state(self):
         """Get current simulation state for display"""
@@ -132,6 +189,10 @@ class SimulationEngine:
         if self.running and self.current_step >= self.steps:
             print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
+            
+            # Handle export if --save-run was used
+            if self.export_manager:
+                self._finalize_export()
             
         if self.running:
             self.display.set_final_mode()
@@ -222,3 +283,64 @@ class SimulationEngine:
         """Exit simulation"""
         print("Closing simulation...")
         self.running = False
+        
+    def _finalize_export(self):
+        """Finalize export process and save all files."""
+        print("\n" + "="*60)
+        print("📊 ÉPICA 5: EXPORTANDO DATOS DE SIMULACIÓN")
+        print("="*60)
+        
+        try:
+            # Add missing import at the top of method
+            import os
+            
+            # Prepare final statistics
+            final_stats = {
+                'total_steps': self.current_step,
+                'final_riders': self.riders_now[-1] if self.riders_now else 0,
+                'final_queued': self.queued_now[-1] if self.queued_now else 0,
+                'total_departed': self.departed_total[-1] if self.departed_total else 0,
+                'total_abandoned': self.abandoned_now[-1] if self.abandoned_now else 0,
+                'patron_breakdown': self._get_patron_breakdown()
+            }
+            
+            # Add timeline data if stats were collected
+            timeline_data = None
+            if self.show_stats and self.display and hasattr(self.display.stats_renderer, 'get_export_data'):
+                timeline_data = self.display.stats_renderer.get_export_data()
+                
+            self.export_manager.set_final_stats(final_stats, timeline_data)
+            
+            # Export all formats
+            exported_files = self.export_manager.export_all(self.display)
+            
+            print(f"✅ Exportación completada: {len(exported_files)} archivos creados")
+            print(f"📁 Directorio: {self.export_manager.output_dir}")
+            
+            for file_path in exported_files:
+                file_size = os.path.getsize(file_path) / 1024  # KB
+                print(f"   📄 {os.path.basename(file_path)} ({file_size:.1f} KB)")
+                
+        except Exception as e:
+            print(f"❌ Error en exportación: {e}")
+            
+    def _get_patron_breakdown(self):
+        """Get detailed breakdown of patron statistics."""
+        breakdown = {}
+        for patron in self.patrons:
+            ptype = patron.patron_type.value
+            if ptype not in breakdown:
+                breakdown[ptype] = {
+                    'count': 0,
+                    'total_rides': 0,
+                    'total_abandoned': 0,
+                    'departed': 0
+                }
+            
+            breakdown[ptype]['count'] += 1
+            breakdown[ptype]['total_rides'] += patron.rides_completed  
+            breakdown[ptype]['total_abandoned'] += patron.abandoned_queues
+            if patron.state == "left":
+                breakdown[ptype]['departed'] += 1
+                
+        return breakdown

@@ -44,6 +44,8 @@ Ejemplos de uso:
                                help="Subplot de estadísticas en vivo")
         self.parser.add_argument("--seed", type=int, default=None, 
                                help="Semilla aleatoria (reproducible)")
+        self.parser.add_argument("--save-run", action="store_true",
+                               help="Exportar resultados (CSV, JSON, PNG) al finalizar")
         
         return self.parser.parse_args()
     

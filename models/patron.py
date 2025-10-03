@@ -18,6 +18,7 @@ class Patron:
     
     def __init__(self, name, spawns, exits, terrain, patron_type=None):
         self.name = name
+        self.id = name  # Use name as id for export logging
         self.spawns = spawns
         self.exits = exits
         self.terrain = terrain

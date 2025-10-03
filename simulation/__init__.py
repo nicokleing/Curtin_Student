@@ -3,6 +3,7 @@
 
 from .terrain import Terrain
 from .utils import build_rides, read_rides_csv, read_patrons_csv, load_config_yaml, print_final_config
+from .export import ExportManager
 
 __all__ = [
     'Terrain',
@@ -10,5 +11,6 @@ __all__ = [
     'read_rides_csv',
     'read_patrons_csv', 
     'load_config_yaml',
-    'print_final_config'
+    'print_final_config',
+    'ExportManager'
 ]
