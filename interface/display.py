@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Display Manager - Visualization Module (Refactored)
-==================================================
-Manages all matplotlib visualization using specialized renderers
+Gestor de Visualización - Módulo de Visualización
+================================================
+Control de visualización matplotlib con renderizadores especializados
 """
 import matplotlib.pyplot as plt
 from .renderers import MapRenderer, StatsRenderer
@@ -11,8 +11,8 @@ from .controls import ControlsManager
 
 class DisplayManager:
     """
-    Manages all visualization aspects using specialized renderers.
-    Uses composition to delegate specific rendering tasks.
+    Gestión de visualización con renderizadores especializados.
+    Usa composición para delegar tareas de renderizado específicas.
     """
     
     def __init__(self, engine):

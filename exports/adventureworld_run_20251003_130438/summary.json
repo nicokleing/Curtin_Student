@@ -43,7 +43,7 @@
         "departed": 0
       }
     },
-    "comprehensive_metrics": {
+    "detailed_metrics": {
       "visitor_analytics": {
         "overall_avg_wait_time": 0,
         "median_wait_time": 0.0,

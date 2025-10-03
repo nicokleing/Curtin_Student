@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Metrics and Analytics Module
-==========================
-Calculates advanced park efficiency metrics and KPIs
-Handles detailed event logging for complete audit trail
+Módulo de Métricas y Análisis
+============================
+Cálculo de métricas de eficiencia del parque y KPIs
+Registro detallado de eventos para auditoría completa
 """
 import time
 from datetime import datetime
@@ -12,7 +12,7 @@ import statistics
 
 
 class MetricsCalculator:
-    """Calculates advanced park efficiency metrics and KPIs."""
+    """Cálculo de métricas de eficiencia del parque y KPIs."""
     
     def __init__(self):
         self.visitor_metrics = {}  # Per-visitor detailed tracking
@@ -137,8 +137,8 @@ class MetricsCalculator:
         elif event_type == 'went_idle':
             ride['downtime'] += details.get('idle_duration', 1)
             
-    def calculate_comprehensive_metrics(self):
-        """Calculate all park efficiency metrics and KPIs."""
+    def calculate_all_metrics(self):
+        """Calcula todas las métricas de eficiencia del parque."""
         metrics = {
             'visitor_analytics': self._calculate_visitor_metrics(),
             'ride_analytics': self._calculate_ride_metrics(), 
@@ -336,8 +336,8 @@ class MetricsCalculator:
         }
         
     def print_metrics_summary(self):
-        """Print comprehensive metrics summary to console."""
-        metrics = self.calculate_comprehensive_metrics()
+        """Imprime resumen de métricas en consola."""
+        metrics = self.calculate_all_metrics()
         
         print("\n" + "="*80)
         print("🎯 ÉPICA 6: MÉTRICAS Y REPORTES COMPLETOS")

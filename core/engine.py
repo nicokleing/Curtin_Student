@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Simulation Engine - Core Logic Module
-===================================
-Pure simulation logic without UI dependencies
-Handles simulation state, step logic, and statistics
+Motor de Simulación - Lógica Principal
+=====================================
+Lógica de simulación pura sin dependencias de UI
+Estado de simulación, lógica de pasos y estadísticas
 """
 from models import Patron, PatronType
 from simulation.export import ExportManager
@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 class SimulationEngine:
     """
-    Core simulation engine - pure logic without UI
-    Manages simulation state, step logic, and statistics
+    Motor de simulación - lógica pura sin UI
+    Estado de simulación, pasos y estadísticas
     """
     
     def __init__(self, config):
@@ -218,7 +218,7 @@ class SimulationEngine:
             print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
             
-            # Epic 6: Calculate and display comprehensive metrics
+            # Epic 6: Cálculo y visualización de métricas completas
             comprehensive_metrics = self.metrics_calculator.print_metrics_summary()
             
             # Handle export if --save-run was used
@@ -383,9 +383,9 @@ class SimulationEngine:
                 'patron_breakdown': self._get_patron_breakdown()
             }
             
-            # Add comprehensive metrics from Epic 6 if available
+            # Añadir métricas completas de Epic 6 si están disponibles
             if comprehensive_metrics:
-                final_stats['comprehensive_metrics'] = comprehensive_metrics
+                final_stats['detailed_metrics'] = comprehensive_metrics
             
             # Add timeline data if stats were collected
             timeline_data = None

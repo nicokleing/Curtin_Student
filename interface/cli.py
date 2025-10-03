@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-CLI Module - Command Line Interface Management
-============================================
-Handles argument parsing and interactive configuration
+Módulo CLI - Interfaz de Línea de Comandos
+==========================================
+Parseo de argumentos y configuración interactiva
 """
 import argparse
 from simulation import Terrain, build_rides
 
 
 class CLIManager:
-    """Manages command line arguments and interactive setup"""
+    """Gestiona argumentos de línea de comandos y configuración interactiva"""
     
     def __init__(self):
         self.parser = None

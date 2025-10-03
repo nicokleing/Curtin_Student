@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-AdventureWorld - Theme Park Simulation
-======================================
-Modular architecture for professional maintainability
+AdventureWorld - Simulador de Parque Temático
+=============================================
+Arquitectura modular para mantenibilidad
 
-Implemented Features:
-- Epic 1: Park Configuration System
-- Epic 2: Advanced Visitor System  
-- Epic 3: Advanced Attraction System
-- Epic 4: Advanced Interactive Controls
+Características Implementadas:
+- Epic 1: Sistema de Configuración del Parque
+- Epic 2: Sistema de Visitantes  
+- Epic 3: Sistema de Atracciones
+- Epic 4: Controles Interactivos
 """
 
 # Imports de módulos refactorizados
@@ -20,8 +20,8 @@ from core.engine import SimulationEngine
 
 def main():
     """
-    Función principal - Solo orquestación de módulos
-    Mantiene separación clara de responsabilidades
+    Función principal - Orquestación de módulos
+    Separación de responsabilidades
     """
     # 1. Manejar argumentos de línea de comandos
     cli = CLIManager()

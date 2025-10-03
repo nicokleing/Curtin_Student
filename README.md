@@ -2,7 +2,7 @@
 
 All technical documentation and context files are organized in the `contexto/` folder.
 
-See `contexto/README_CONTEXTO.md` for complete index of technical specifications, development progress, example configurations, and test files. Advanced Theme Park Simulator
+Ver `contexto/README_CONTEXTO.md` para índice completo de especificaciones técnicas, progreso de desarrollo, configuraciones de ejemplo y archivos de prueba. Simulador de Parque Temático
 
 **Final Project - Fundamentals of Programming (FOP)**  
 **Author:** Nicolás Klein - Curtin University  
@@ -55,11 +55,11 @@ python run_simulation.py -i
 
 ## Project Overview
 
-**AdventureWorld** is a comprehensive, real-time theme park simulation system developed as the final project for Fundamentals of Programming (FOP). The project demonstrates advanced programming concepts through an interactive simulation that models complex visitor behavior, ride operations, and park dynamics.
+**AdventureWorld** es un simulador de parque temático en tiempo real desarrollado como proyecto final de Fundamentos de Programación (FOP). El proyecto incluye simulación interactiva de comportamiento de visitantes, operaciones de atracciones y dinámicas del parque.
 
 ### Simulation Highlights
 - **Real-time Visualization**: Dynamic matplotlib-based graphics with live updates
-- **Intelligent AI Agents**: Sophisticated visitor behavior modeling with state machines
+- **Sistema de Visitantes**: Modelado de comportamiento de visitantes con máquinas de estado
 - **Interactive Park Management**: Multiple configuration methods (CLI, CSV, interactive)
 - **Statistical Analysis**: Live performance monitoring and data visualization
 - **Modular Architecture**: Clean, maintainable code following OOP principles
@@ -68,17 +68,17 @@ python run_simulation.py -i
 
 ## Key Features
 
-### 🤖 **Advanced Visitor AI System**
+### 🤖 **Sistema de Visitantes**
 - **Multi-State Behavior**: Visitors transition through realistic states:
   - `EXPLORING`: Random movement and attraction discovery
   - `QUEUING`: Waiting in line with patience mechanics  
   - `RIDING`: Experiencing attractions with timed duration
   - `LEAVING`: Exiting the park through designated exits
 - **Decision Making**: Probabilistic attraction selection and exit decisions
-- **Pathfinding**: Intelligent movement avoiding obstacles and barriers
+- **Navegación**: Movimiento evitando obstáculos y barreras
 - **Individual Preferences**: Each visitor has unique behavior patterns
 
-### **Sophisticated Ride Mechanics**
+### **Mecánicas de Atracciones**
 - **Multiple Ride Types**:
   - `PirateShip`: High-capacity, medium-duration thrill ride
   - `FerrisWheel`: Scenic ride with customizable cabin count
@@ -88,12 +88,12 @@ python run_simulation.py -i
   - Ride duration timing and state management
   - Visual operation indicators (idle/running states)
 
-### 🗺️ **Advanced Terrain System**
-- **Flexible Map Generation**: Support for custom terrain layouts
+### 🗺️ **Sistema de Terreno**
+- **Generación de Mapas**: Soporte para layouts personalizados
 - **Barrier Management**: Collision detection and pathfinding obstacles
 - **Spawn Point System**: Configurable visitor entry points
 - **Exit Management**: Multiple park exit locations
-- **Scalable Dimensions**: Customizable park size (default: 100x70)
+- **Dimensiones Variables**: Tamaño de parque personalizable (defecto: 100x70)
 
 ### **Real-Time Analytics Dashboard**
 - **Live Statistics Visualization**:
@@ -104,7 +104,7 @@ python run_simulation.py -i
 - **Performance Metrics**: Real-time simulation statistics
 - **Data Export**: Statistical data for analysis
 
-### **Flexible Configuration System**
+### **Sistema de Configuración**
 - **Interactive Setup Mode**: Guided configuration wizard
 - **CSV-Based Configuration**: External file-based setup
 - **Command-Line Interface**: Full parameter control via CLI arguments
@@ -615,8 +615,8 @@ class StatisticsCollector:
 - **Capacity Management**: Dynamic queue size limiting
 
 #### **Statistical Analysis**
-- **Running Averages**: Efficient sliding window calculations
-- **Time Series Data**: Optimized storage for live graphing
+- **Promedios Dinámicos**: Cálculos de ventana deslizante
+- **Datos de Series Temporales**: Almacenamiento para gráficos en vivo
 - **Performance Metrics**: Real-time FPS and memory monitoring
 
 ### **🎯 Performance Optimizations**
@@ -624,7 +624,7 @@ class StatisticsCollector:
 #### **Rendering Optimizations**
 - **Selective Redrawing**: Only update changed elements
 - **Batch Operations**: Group similar drawing operations
-- **Efficient Color Mapping**: Pre-computed color schemes
+- **Mapeo de Colores**: Esquemas pre-computados
 
 #### **Simulation Optimizations**
 - **Vectorized Operations**: NumPy-based calculations where applicable

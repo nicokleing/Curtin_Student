@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Export Module - Data Export and Report Generation
-===============================================
-Handles exporting simulation results to various formats
+Módulo de Exportación - Generación de Datos y Reportes
+======================================================
+Exportación de resultados de simulación a varios formatos
 """
 import os
 import json
@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 class ExportManager:
-    """Manages export of simulation data to multiple formats."""
+    """Gestiona exportación de datos de simulación a múltiples formatos."""
     
     def __init__(self, run_name=None):
         """Initialize export manager with optional run name."""

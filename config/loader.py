@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
-Configuration Loader Module
-==========================
-Handles loading configuration from YA        patron_types = [PatronType.AVENTURERO, PatronType.FAMILIAR, 
-                        PatronType.IMPACIENTE, PatronType.EXPLORADOR]/CSV files and argument processing
+Cargador de Configuración
+========================
+Carga configuración desde archivos YAML/CSV y procesa argumentos
 """
 import random
 import yaml
@@ -13,7 +12,7 @@ from models import PatronType, Patron
 
 
 class ConfigLoader:
-    """Loads and manages configuration from various sources"""
+    """Carga y gestiona configuración desde diversas fuentes"""
     
     def __init__(self):
         pass
