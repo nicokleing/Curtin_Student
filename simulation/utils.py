@@ -162,6 +162,8 @@ def build_rides(rides_params, terrain):
     Crea instancias de rides según el dict de parámetros
     y marca sus bounding boxes como barreras en el terreno.
     """
+    from rides.roller_coaster import RollerCoaster
+    
     rides = []
     for i, rp in enumerate(rides_params):
         name = f"Ride{i+1}"
@@ -170,6 +172,8 @@ def build_rides(rides_params, terrain):
             ride = PirateShip(name, rp["capacity"], rp["duration"], rp["bbox"])
         elif rtype.startswith("fer"):
             ride = FerrisWheel(name, rp["capacity"], rp["duration"], rp["bbox"], cabins=8)
+        elif rtype.startswith("coast") or rtype.startswith("roller"):
+            ride = RollerCoaster(name, rp["capacity"], rp["duration"], rp["bbox"])
         else:
             ride = PirateShip(name, rp["capacity"], rp["duration"], rp["bbox"])
         terrain.add_bbox_barrier(ride.bbox)

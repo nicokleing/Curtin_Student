@@ -26,17 +26,18 @@ HU-08	Salir del parque por puerta de salida	✅ COMPLETA	state="leaving" → sta
 ✓ Visitantes con preferencia FERRIS buscan noria (RidePreference system)
 ✓ Visitantes impacientes abandonan colas (PatronType.IMPACIENTE + patience system)
 ✓ Visitantes terminan en puntos azules y desaparecen (exit_points + state="left")
-🟡 ÉPICA 3: ATRACCIONES - 60% IMPLEMENTADA
+✅ ÉPICA 3: ATRACCIONES - 100% COMPLETADA
 HU	Historia de Usuario	Estado	Implementación
-HU-09	Definir capacidad y duración desde CSV/config	✅ COMPLETA	build_rides() con capacity/duration
-HU-10	Hacer cola hasta que llegue el turno	⚠️ BÁSICA	Cola básica existe, falta visualización gráfica
-HU-11	Estados IDLE/LOADING/RUNNING/UNLOADING	⚠️ BÁSICA	step_change() básico, falta visualización de colores
-HU-12	Agregar nuevas atracciones fácilmente	✅ COMPLETA	Arquitectura extensible con herencia
-🔴 Pendiente de Implementar:
+HU-09	Definir capacidad y duración desde CSV/config	✅ COMPLETA	build_rides() + read_rides_csv() - simulation/utils.py líneas 15-35, 160-175
+HU-10	Hacer cola hasta que llegue el turno	✅ COMPLETA	RideVisuals.draw_queue() + capacity limits - rides/ride_visuals.py líneas 25-50
+HU-11	Estados IDLE/LOADING/RUNNING/UNLOADING	✅ COMPLETA	RideState enum + color visualization - rides/ride_states.py + ride_visuals.py líneas 8-20
+HU-12	Agregar nuevas atracciones fácilmente	✅ COMPLETA	Ride base class + PirateShip/FerrisWheel inheritance - rides/ módulos
+✅ Criterios de Aceptación Validados:
 
-Visualización gráfica de colas en tiempo real
-Colores diferenciados por estado de ride
-Estados LOADING y UNLOADING más detallados
+✓ Capacity y duration se leen de CSV/config (read_rides_csv + build_rides)
+✓ Colas se muestran gráficamente y respetan límites de capacidad (RideVisuals.draw_queue)
+✓ Estados se visualizan en colores y logs (state_colors + step_change logging)
+✓ Fácil agregar nuevas atracciones mediante herencia (Ride base class pattern)
 🟡 ÉPICA 4: SIMULACIÓN Y MOTOR - 70% IMPLEMENTADA
 HU	Historia de Usuario	Estado	Implementación
 HU-13	Simulación paso a paso (ticks)	✅ COMPLETA	Loop principal sim.step() - líneas 100-110
