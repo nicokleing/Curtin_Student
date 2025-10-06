@@ -30,3 +30,10 @@ myAccounts.withdraw("Shrubbery", 2000)
 
 print("[STEP 2] Balances after all operations")
 myAccounts.balances()
+
+
+
+# [STEP 3] Test getNumAccounts() and getTotalBalance()
+print("\n[STEP 3] Testing getNumAccounts() and getTotalBalance()")
+print("Number of accounts:", myAccounts.getNumAccounts())
+print("Total balance:", myAccounts.getTotalBalance())

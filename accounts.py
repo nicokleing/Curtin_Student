@@ -84,15 +84,18 @@ class Portfolio ():
         
         enter your code below
         '''
-        ...
-
+        return len(self.accounts)
+    
     def getTotalBalance(self):
         '''
         getNumAccounts - returns the number of accounts in the poartfolio
         
         enter your code below - the balances code may help
         '''
-        ...
+        total = 0
+        for a in self.accounts:
+            total += a.bal
+        return total
 
     
 class BankAccount ():
