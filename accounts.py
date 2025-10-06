@@ -30,9 +30,6 @@ class Portfolio():
     def deposit(self, name, amount):
         '''
         deposit - deposits amount into account with matching name
-        
-        name - name of account (string)
-        amount - amount to be deposited (float/int)
         '''
         temp = None
         for acct in self.accounts:
@@ -45,10 +42,7 @@ class Portfolio():
 
     def withdraw(self, name, amount):
         '''
-        withdraw - withdraws amount into account with matching name
-        
-        name - name of account (string)
-        amount - amount to be withdrawn (float/int)
+        withdraw - withdraws amount from account with matching name
         '''
         temp = None
         for acct in self.accounts:
@@ -56,8 +50,11 @@ class Portfolio():
                 temp = acct
         if temp:
             print(f"---> Withdrawing ${amount} from account {name}")
-            temp.withdraw(amount)
-            print("         Complete")
+            try:
+                temp.withdraw(amount)
+                print("         Complete")
+            except InsufficientFundsError as e:
+                print("         Failed -", e)
 
     def balances(self):
         '''
@@ -103,16 +100,21 @@ class BankAccount():
 
     def withdraw(self, amount):
         '''
-        withdraw - subtracts amount from balance
-        (exception handling will be added later)
+        withdraw - subtracts amount from balance if there are sufficient funds.
+                   Raises InsufficientFundsError if amount exceeds balance.
         '''
-        self.bal = self.bal - amount
+        if amount > self.bal:
+            raise InsufficientFundsError(
+                f"Insufficient funds in account '{self.name}'. "
+                f"Available: ${self.bal}, Requested: ${amount}"
+            )
+        self.bal -= amount
 
     def deposit(self, amount):
         '''
         deposit - adds amount to balance
         '''
-        self.bal = self.bal + amount
+        self.bal += amount
 
 
 class InsufficientFundsError(Exception):
