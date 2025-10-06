@@ -3,9 +3,9 @@
 
   testAccounts.py - program to test functions of accounts.py
   
-  Student Name   :
-  Student Number :
-  Date/prac time :
+  Student Name   : Nicolas Klein Godoy
+  Student Number : 23812181
+  Date/prac time : 07/10/2025
 '''
 from accounts import BankAccount, Portfolio, InsufficientFundsError
 

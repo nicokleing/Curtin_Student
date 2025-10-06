@@ -3,9 +3,9 @@
 
   accounts.py - class for bank account portfolio
   
-  Student Name   :
-  Student Number :
-  Date/prac time :
+  Student Name   : Nicolas Klein Godoy
+  Student Number : 23812181
+  Date/prac time : 07/10/2025
 '''
 
 class Portfolio():
