@@ -8,7 +8,7 @@
   Date/prac time :
 '''
 
-class Portfolio ():
+class Portfolio():
     '''
     Portfolio - holds a collection of BankAccount objects, taking transaction
                 requests and matching to the specific account, then calling the
@@ -24,7 +24,6 @@ class Portfolio ():
         name - name of account (string)
         number - account number (string)
         balance - initial balance (float/int)
-
         '''
         self.accounts.append(BankAccount(name, number, balance))
 
@@ -60,7 +59,6 @@ class Portfolio ():
             temp.withdraw(amount)
             print("         Complete")
 
-
     def balances(self):
         '''
         balances - list and calculate total balances of accounts
@@ -81,44 +79,51 @@ class Portfolio ():
     def getNumAccounts(self):
         '''
         getNumAccounts - returns the number of accounts in the portfolio
-        
-        enter your code below
         '''
         return len(self.accounts)
-    
+
     def getTotalBalance(self):
         '''
-        getNumAccounts - returns the number of accounts in the poartfolio
-        
-        enter your code below - the balances code may help
+        getTotalBalance - returns the total balance of all accounts in the portfolio
         '''
         total = 0
         for a in self.accounts:
             total += a.bal
         return total
 
-    
-class BankAccount ():
 
+class BankAccount():
+    '''
+    BankAccount - represents an individual bank account
+    '''
     def __init__(self, name, number, balance):
         self.name = name
         self.num = number
         self.bal = balance
 
     def withdraw(self, amount):
-            self.bal = self.bal - amount
+        '''
+        withdraw - subtracts amount from balance
+        (exception handling will be added later)
+        '''
+        self.bal = self.bal - amount
 
     def deposit(self, amount):
+        '''
+        deposit - adds amount to balance
+        '''
         self.bal = self.bal + amount
+
 
 class InsufficientFundsError(Exception):
     '''
-    Insufficient Funds error - to be raised where a transaction exceeds available balance
+    InsufficientFundsError - raised when a withdrawal exceeds available balance
     '''
     pass
 
+
 class AccountNotFoundError(Exception):
     '''
-    Account Not Found error - to be raised where account name doesn't match accounts in portfolio
+    AccountNotFoundError - raised when an account name doesn't match any in the portfolio
     '''
     pass

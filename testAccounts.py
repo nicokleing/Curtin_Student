@@ -37,3 +37,18 @@ myAccounts.balances()
 print("\n[STEP 3] Testing getNumAccounts() and getTotalBalance()")
 print("Number of accounts:", myAccounts.getNumAccounts())
 print("Total balance:", myAccounts.getTotalBalance())
+
+
+# [STEP 4] Add 'Grail', withdraw $2000 from it, and re-test summaries
+print("\n[STEP 4] Adding account: Grail (888888-3, $200)")
+myAccounts.addAccount("Grail", "888888-3", 200)
+
+print("[STEP 4] Withdraw $2000 from Grail (exceptions not added yet)")
+myAccounts.withdraw("Grail", 2000)
+
+print("[STEP 4] Balances after Grail operations")
+myAccounts.balances()
+
+print("[STEP 4] Re-check summaries (now 3 accounts)")
+print("Number of accounts:", myAccounts.getNumAccounts())
+print("Total balance:", myAccounts.getTotalBalance())
