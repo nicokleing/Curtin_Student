@@ -10,9 +10,8 @@
 
 class Portfolio():
     '''
-    Portfolio - holds a collection of BankAccount objects, taking transaction
-                requests and matching to the specific account, then calling the
-                BankAccount methods to actually do the transaction.
+    Portfolio - keeps a list of BankAccount objects and manages deposits,
+                withdrawals and balances for each account.
     '''
     def __init__(self):
         self.accounts = []
@@ -91,17 +90,26 @@ class Portfolio():
 
 class BankAccount():
     '''
-    BankAccount - represents an individual bank account
+    BankAccount - class for a single bank account
     '''
     def __init__(self, name, number, balance):
+        '''
+        __init__ - creates the account and sets the starting balance
+
+        name - name of account (string)
+        number - account number (string)
+        balance - initial balance (float/int)
+        '''
         self.name = name
         self.num = number
         self.bal = balance
 
     def withdraw(self, amount):
         '''
-        withdraw - subtracts amount from balance if there are sufficient funds.
-                   Raises InsufficientFundsError if amount exceeds balance.
+        withdraw - subtracts amount from balance if enough funds,
+                   otherwise raises InsufficientFundsError
+
+        amount - amount to withdraw (float/int)
         '''
         if amount > self.bal:
             raise InsufficientFundsError(
@@ -113,8 +121,11 @@ class BankAccount():
     def deposit(self, amount):
         '''
         deposit - adds amount to balance
+
+        amount - amount to deposit (float/int)
         '''
         self.bal += amount
+
 
 
 class InsufficientFundsError(Exception):
