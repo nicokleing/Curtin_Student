@@ -19,3 +19,14 @@ myAccounts.addAccount("Shrubbery", "888888-2", 200)
 
 print("[STEP 1] Initial balances")
 myAccounts.balances()
+
+# [STEP 2] Deposit and withdraw operations
+print("\n[STEP 2] Deposit $200 into Castle and withdraw $20 from Shrubbery")
+myAccounts.deposit("Castle", 200)
+myAccounts.withdraw("Shrubbery", 20)
+
+print("[STEP 2] Attempt to withdraw $2000 from Shrubbery (should fail later once exceptions are added)")
+myAccounts.withdraw("Shrubbery", 2000)
+
+print("[STEP 2] Balances after all operations")
+myAccounts.balances()
