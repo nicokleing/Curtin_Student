@@ -167,10 +167,10 @@ class DisplayManager:
         """Draw a single patron on the map"""
         # Color by patron type
         type_colors = {
-            'aventurero': 'red',
-            'familiar': 'blue', 
-            'impaciente': 'orange',
-            'explorador': 'green'
+            'adventurer': 'red',
+            'family': 'blue', 
+            'impatient': 'orange',
+            'explorer': 'green'
         }
         
         color = type_colors.get(patron.patron_type.value, 'gray')

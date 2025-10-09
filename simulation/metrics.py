@@ -60,6 +60,14 @@ class MetricsCalculator:
         
     def log_visitor_event(self, visitor_id, event_type, step, details=None):
         """Log a detailed visitor event for metrics calculation."""
+        # Debug: check whether visitor exists
+        try:
+            exists = visitor_id in self.visitor_metrics
+            sample_keys = list(self.visitor_metrics.keys())[:5]
+            print(f"[METRICS DEBUG] log_visitor_event called for {visitor_id} (exists={exists}) sample_keys={sample_keys}")
+        except Exception:
+            print(f"[METRICS DEBUG] log_visitor_event called for {visitor_id} (error listing keys)")
+
         if visitor_id not in self.visitor_metrics:
             # Auto-initialize if not done
             self.initialize_visitor(visitor_id, 'unknown', step)
@@ -116,6 +124,8 @@ class MetricsCalculator:
                 wait_time = step - visitor['current_queue_start']
                 visitor['total_wait_time'] += wait_time
                 
+            # Debug: confirm abandonment events are being logged
+            print(f"[METRICS DEBUG] abandoned_queue event for visitor {visitor_id} at step {step}")
             self.park_metrics['total_abandonment_events'] += 1
             
         elif event_type == 'departed':
@@ -337,6 +347,12 @@ class MetricsCalculator:
         
     def print_metrics_summary(self):
         """Imprime resumen de métricas en consola."""
+        # Debug: show internal state before calculation
+        try:
+            print(f"[METRICS DEBUG] MetricsCalculator id={id(self)} park_total_abandonments={self.park_metrics.get('total_abandonment_events', None)} visitor_count={len(self.visitor_metrics)} sum_abandonments_visitors={sum(v.get('abandonment_count',0) for v in self.visitor_metrics.values())}")
+        except Exception as e:
+            print(f"[METRICS DEBUG] Error summarizing internal state: {e}")
+
         metrics = self.calculate_all_metrics()
         
         print("\n" + "="*80)

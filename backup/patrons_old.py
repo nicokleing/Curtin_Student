@@ -13,15 +13,15 @@ from enum import Enum
 
 class PatronType(Enum):
     """Tipos de visitantes con diferentes comportamientos"""
-    AVENTURERO = "aventurero"    # Prefiere rides emocionantes, alta paciencia
-    FAMILIAR = "familiar"        # Prefiere rides seguros, paciencia media
-    IMPACIENTE = "impaciente"    # Baja paciencia, abandona colas rápido
-    EXPLORADOR = "explorador"    # Le gusta probar de todo, paciencia variable
+    AVENTURERO = "adventurer"    # Prefiere rides emocionantes, alta paciencia
+    FAMILIAR = "family"        # Prefiere rides seguros, paciencia media
+    IMPACIENTE = "impatient"    # Baja paciencia, abandona colas rápido
+    EXPLORADOR = "explorer"    # Le gusta probar de todo, paciencia variable
 
 class RidePreference(Enum):
     """Preferencias por tipos de atracciones"""
     PIRATE = "pirate"   # Barco pirata - emocionante
-    FERRIS = "ferris"   # Noria - tranquila y familiar
+    FERRIS = "ferris"   # Noria - tranquila y family
 
 class Patron:
     def __init__(self, name, spawns, exits, terrain, patron_type=None):
@@ -220,7 +220,7 @@ class Patron:
         print(f"🚶 {self.name} ({self.patron_type.value}) abandonó la cola de {ride.ride_type} por impaciencia!")
         
         # Decidir siguiente acción
-        if self.patience < self.max_patience * 0.2:  # Muy impaciente
+        if self.patience < self.max_patience * 0.2:  # Muy impatient
             if random.random() < 0.4:  # 40% chance de irse del parque
                 self.state = "leaving"
                 self.target = random.choice(self.exits)
@@ -340,7 +340,7 @@ class Patron:
         if queue_length > max_acceptable_queue:
             return False
             
-        # Visitantes impacientes son más selectivos
+        # Visitantes impatients son más selectivos
         if self.patron_type == PatronType.IMPACIENTE and queue_length > 3:
             return False
             
@@ -362,10 +362,10 @@ class Patron:
         
         # Marcadores por tipo de visitante
         type_markers = {
-            PatronType.AVENTURERO: "^",      # Triángulo - aventurero
-            PatronType.FAMILIAR: "s",        # Cuadrado - familiar
-            PatronType.IMPACIENTE: "D",      # Diamante - impaciente
-            PatronType.EXPLORADOR: "o",      # Círculo - explorador
+            PatronType.AVENTURERO: "^",      # Triángulo - adventurer
+            PatronType.FAMILIAR: "s",        # Cuadrado - family
+            PatronType.IMPACIENTE: "D",      # Diamante - impatient
+            PatronType.EXPLORADOR: "o",      # Círculo - explorer
         }
         
         color = state_colors.get(self.state, "#7f7f7f")

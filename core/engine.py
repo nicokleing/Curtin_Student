@@ -219,6 +219,25 @@ class SimulationEngine:
             self.print_final_report()
             
             # Epic 6: Cálculo y visualización de métricas completas
+            # Ensure metrics calculator has the same abandonment counts collected at Patron level
+            try:
+                total_abandoned = sum(p.abandoned_queues for p in self.patrons)
+                # Update park-level abandonment count
+                self.metrics_calculator.park_metrics['total_abandonment_events'] = total_abandoned
+
+                # Also sync per-visitor abandonment counts so visitor analytics reflect reality
+                for p in self.patrons:
+                    vid = p.id
+                    if vid in self.metrics_calculator.visitor_metrics:
+                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = p.abandoned_queues
+                    else:
+                        # Initialize if missing
+                        self.metrics_calculator.initialize_visitor(vid, p.patron_type.value, 0)
+                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = p.abandoned_queues
+
+            except Exception as e:
+                print(f"[ENGINE DEBUG] Error syncing abandonment counts to metrics: {e}")
+
             comprehensive_metrics = self.metrics_calculator.print_metrics_summary()
             
             # Handle export if --save-run was used
@@ -281,7 +300,7 @@ class SimulationEngine:
     def set_speed(self, multiplier):
         """Set simulation speed"""
         self.speed_multiplier = multiplier
-        speed_names = {1: "NORMAL", 5: "RÁPIDO", 10: "TURBO"}
+        speed_names = {1: "NORMAL", 5: "Fast", 10: "Turbo"}
         speed_name = speed_names.get(multiplier, f"{multiplier}x")
         print(f"Speed changed to {speed_name} ({multiplier}x)")
         
@@ -314,9 +333,10 @@ class SimulationEngine:
         """Detect and log patron events for detailed metrics."""
         current_state = patron.state
         patron_id = patron.id
-        
         # State transition events
         if prev_state != current_state:
+            # Debug: trace state transitions for metrics debugging
+            print(f"[ENGINE DEBUG] Patron {patron_id} state change: {prev_state} -> {current_state}")
             if current_state == 'queuing':
                 # Find which ride they joined
                 for ride in self.rides:
@@ -337,15 +357,16 @@ class SimulationEngine:
                         )
                         break
                         
-            elif current_state == 'wandering' and prev_state == 'riding':
+            elif current_state == 'roaming' and prev_state == 'riding':
                 # They completed a ride
                 self.metrics_calculator.log_visitor_event(
                     patron_id, 'completed_ride', self.current_step,
                     {'previous_ride': prev_positions.get(patron_id)}
                 )
                 
-            elif current_state == 'wandering' and prev_state == 'queuing':
+            elif current_state == 'roaming' and prev_state == 'queuing':
                 # They abandoned a queue
+                print(f"[ENGINE DEBUG] Detected abandonment for {patron_id} at step {self.current_step}")
                 self.metrics_calculator.log_visitor_event(
                     patron_id, 'abandoned_queue', self.current_step,
                     {'reason': 'impatience'}

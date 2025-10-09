@@ -203,10 +203,10 @@ class Ride:
         # Usar colores diferenciados por tipo si está disponible
         if hasattr(patron, 'patron_type'):
             type_colors = {
-                "aventurero": "#d62728",   # Rojo - aventurero
-                "familiar": "#2ca02c",     # Verde - familiar  
-                "impaciente": "#ff7f0e",   # Naranja - impaciente
-                "explorador": "#1f77b4"    # Azul - explorador
+                "adventurer": "#d62728",   # Rojo - adventurer
+                "family": "#2ca02c",     # Verde - family  
+                "impatient": "#ff7f0e",   # Naranja - impatient
+                "explorer": "#1f77b4"    # Azul - explorer
             }
             return type_colors.get(patron.patron_type.value, "#7f7f7f")
         else:

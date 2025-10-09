@@ -166,10 +166,10 @@ class Patron:
         """Renderiza el visitante en el mapa"""
         # Colores por tipo de visitante  
         type_colors = {
-            PatronType.AVENTURERO: "^",      # Triángulo - aventurero
-            PatronType.FAMILIAR: "s",        # Cuadrado - familiar
-            PatronType.IMPACIENTE: "D",      # Diamante - impaciente
-            PatronType.EXPLORADOR: "o",      # Círculo - explorador
+            PatronType.AVENTURERO: "^",      # Triángulo - adventurer
+            PatronType.FAMILIAR: "s",        # Cuadrado - family
+            PatronType.IMPACIENTE: "D",      # Diamante - impatient
+            PatronType.EXPLORADOR: "o",      # Círculo - explorer
         }
         
         marker = type_colors.get(self.patron_type, "o")
