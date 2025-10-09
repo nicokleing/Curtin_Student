@@ -34,7 +34,7 @@ class MapRenderer:
         self._draw_rides(rides)
         
         # Update title with current status
-        status = "PAUSADO" if paused else f"EJECUTANDO A {speed}x"
+        status = "Paused" if paused else f"Running at {speed}x"
         self.ax_map.set_title(f'AdventureWorld - Step: {step} | {status}')
         
     def _draw_terrain(self, terrain):
@@ -69,25 +69,24 @@ class MapRenderer:
     def _draw_ride(self, ride):
         """Dibuja una atracción individual con animaciones."""
         x, y = ride.center()
-        
-        # Determinar tipo de atracción
+        # Determine ride type
         ride_type = self._get_ride_type(ride)
-        
-        # Dibujar según el tipo
+
+        # Draw depending on type
         if ride_type == 'pirate':
             self._draw_pirate_ship(ride, x, y)
         elif ride_type == 'ferris':
             self._draw_ferris_wheel(ride, x, y)
         else:
             self._draw_generic_ride(ride, x, y)
-        
-        # Información de la atracción
+
+        # Information about the ride
         info = f"{ride.name}\n{ride.state}\n{len(ride.riders)}/{ride.capacity}"
-        self.ax_map.text(x, y-2.5, info, ha='center', va='top', fontsize=8, 
+        self.ax_map.text(x, y-2.5, info, ha='center', va='top', fontsize=8,
                         weight='bold', color='white',
                         bbox=dict(boxstyle="round,pad=0.3", facecolor='black', alpha=0.7))
-        
-        # Dibujar cola si está presente
+
+        # Draw queue if present
         self._draw_ride_queue(ride)
     
     def _get_ride_type(self, ride):
@@ -100,7 +99,7 @@ class MapRenderer:
             elif 'ferris' in ride_type:
                 return 'ferris'
         
-        # Fallback al nombre si no hay ride_type
+        # Fallback to name if ride_type not present
         name_lower = ride.name.lower()
         if 'pirate' in name_lower or 'barco' in name_lower:
             return 'pirate'

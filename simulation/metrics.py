@@ -341,11 +341,10 @@ class MetricsCalculator:
     def print_metrics_summary(self):
         """Imprime resumen de métricas en consola."""
         metrics = self.calculate_all_metrics()
-        
         print("\n" + "="*80)
-        print("🎯 ÉPICA 6: MÉTRICAS Y REPORTES COMPLETOS")
+        print("EPIC 6: Metrics and full reports")
         print("="*80)
-        
+
         # Park Performance Overview
         park_perf = metrics['park_performance']
         print(f"PARK PERFORMANCE SUMMARY:")
@@ -355,40 +354,40 @@ class MetricsCalculator:
         print(f"   Success rate: {park_perf['boarding_success_rate']:.1f}%")
         print(f"   Abandonment rate: {park_perf['overall_abandonment_rate']:.1f}%")
         print(f"   Average rides per visitor: {park_perf['average_rides_per_visitor']:.2f}")
-        
+
         # Visitor Analytics
         visitor_analytics = metrics['visitor_analytics']
-        print(f"\n⏱️ ANÁLISIS DE TIEMPOS DE ESPERA:")
+        print(f"\nWait time analysis:")
         print(f"   Average wait time: {visitor_analytics['overall_avg_wait_time']:.1f} minutes")
         print(f"   Median wait time: {visitor_analytics['median_wait_time']:.1f} minutes")
-        print(f"   ⬆️ Tiempo máximo de espera: {visitor_analytics['max_wait_time']:.1f} minutos")
-        
-        print(f"\n👤 ANÁLISIS POR TIPO DE VISITANTE:")
+        print(f"   Max wait time: {visitor_analytics['max_wait_time']:.1f} minutes")
+
+        print(f"\nVisitor analytics by type:")
         for vtype, stats in visitor_analytics['by_visitor_type'].items():
             print(f"   {vtype.title()}: {stats['count']} visitors")
             print(f"      Average wait time: {stats['avg_wait_time']:.1f} min")
             print(f"      Average rides: {stats['avg_rides_completed']:.1f}")
             print(f"      Average abandonments: {stats['abandonment_rate']:.1f}")
-        
+
         # Ride Analytics
         ride_analytics = metrics['ride_analytics']
         print(f"\nRIDE ANALYSIS:")
         for ride_name, stats in ride_analytics.items():
             print(f"   {ride_name}:")
             print(f"      Total riders: {stats['total_riders']}")
-            print(f"      🔄 Ciclos completados: {stats['total_cycles']}")
+            print(f"      Cycles completed: {stats['total_cycles']}")
             print(f"      Average wait: {stats['avg_wait_time']:.1f} min")
             print(f"      Average queue: {stats['avg_queue_length']:.1f}")
-            print(f"      ⭐ Puntuación eficiencia: {stats['efficiency_score']:.1f}/100")
-        
+            print(f"      Efficiency score: {stats['efficiency_score']:.1f}/100")
+
         # Key Performance Indicators
         kpis = metrics['efficiency_kpis']
-        print(f"\n🎯 INDICADORES CLAVE DE RENDIMIENTO (KPIs):")
-        print(f"   🏆 Puntuación de eficiencia del parque: {kpis['park_efficiency_score']}/100")
+        print(f"\nKey Performance Indicators (KPIs):")
+        print(f"   Park efficiency score: {kpis['park_efficiency_score']}/100")
         print(f"   Average throughput: {kpis['avg_throughput_per_minute']:.2f} visitors/min")
-        print(f"   😊 Satisfacción estimada: {kpis['visitor_satisfaction_estimate']:.1f}/100")
-        print(f"   🎪 Utilización de capacidad: {kpis['capacity_utilization']:.1f}%")
-        
+        print(f"   Visitor satisfaction estimate: {kpis['visitor_satisfaction_estimate']:.1f}/100")
+        print(f"   Capacity utilization: {kpis['capacity_utilization']:.1f}%")
+
         print("="*80)
-        
+
         return metrics

@@ -209,7 +209,7 @@ class SimulationEngine:
                 self.display.pause_for_frame(self.paused)
                     
         except KeyboardInterrupt:
-            print("\n⏸️ Simulación interrumpida con Ctrl+C")
+            print("\nSimulation interrupted by Ctrl+C")
         except Exception as e:
             print(f"\nSimulation error: {e}")
         
@@ -218,7 +218,7 @@ class SimulationEngine:
             print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
             
-            # Epic 6: Cálculo y visualización de métricas completas
+            # Epic 6: calculation and display of comprehensive metrics
             # Ensure metrics calculator has the same abandonment counts collected at Patron level
             try:
                 total_abandoned = sum(p.abandoned_queues for p in self.patrons)
@@ -253,7 +253,7 @@ class SimulationEngine:
     def print_final_report(self):
         """Print Epic 2 final report"""
         print("\n" + "="*60)
-        print("🎯 ÉPICA 2: REPORTE FINAL DE VISITANTES")
+        print("EPIC 2: Final visitor report")
         print("="*60)
         
         # Statistics by patron type
@@ -274,10 +274,10 @@ class SimulationEngine:
                 avg_rides = stats["completed"] / stats["count"]
                 avg_abandoned = stats["abandoned"] / stats["count"]
                 
-                print(f"   {ptype.value} {ptype.name.title()}: {stats['count']} visitantes")
-                print(f"      Rides promedio: {avg_rides:.1f}")
-                print(f"      Abandonos promedio: {avg_abandoned:.1f}")
-                print(f"      Salieron del parque: {stats['departed']}")
+                print(f"   {ptype.value} {ptype.name.title()}: {stats['count']} visitors")
+                print(f"      Avg rides: {avg_rides:.1f}")
+                print(f"      Avg abandonments: {avg_abandoned:.1f}")
+                print(f"      Departed: {stats['departed']}")
         
         # General summary
         total_completed = sum(p.rides_completed for p in self.patrons)
@@ -294,7 +294,7 @@ class SimulationEngine:
     def toggle_pause(self):
         """Toggle pause state"""
         self.paused = not self.paused
-        status = "PAUSADO" if self.paused else f"EJECUTANDO A {self.speed_multiplier}x"
+        status = "Paused" if self.paused else f"Running at {self.speed_multiplier}x"
         print(f"SIMULATION {status}")
         
     def set_speed(self, multiplier):

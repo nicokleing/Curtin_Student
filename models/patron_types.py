@@ -9,13 +9,13 @@ from enum import Enum
 
 class PatronType(Enum):
     """Tipos de visitantes con diferentes comportamientos"""
-    AVENTURERO = "adventurer"    # Prefiere rides emocionantes, alta paciencia
-    FAMILIAR = "family"        # Prefiere rides seguros, paciencia media
-    IMPACIENTE = "impatient"    # Baja paciencia, abandona colas rápido
-    EXPLORADOR = "explorer"    # Le gusta probar de todo, paciencia variable
+    AVENTURERO = "adventurer"    # prefers exciting rides, high patience
+    FAMILIAR = "family"        # prefers safe rides, medium patience
+    IMPACIENTE = "impatient"    # low patience, abandons queues quickly
+    EXPLORADOR = "explorer"    # likes to try everything, variable patience
 
 
 class RidePreference(Enum):
     """Preferencias por tipos de atracciones"""
-    PIRATE = "pirate"   # Barco pirata - emocionante
-    FERRIS = "ferris"   # Noria - tranquila y family
+    PIRATE = "pirate"   # Pirate ship - thrilling
+    FERRIS = "ferris"   # Ferris wheel - calm / family

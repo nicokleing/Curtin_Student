@@ -40,34 +40,34 @@ class Patron:
         self.abandoned_queues = 0
         
     def _setup_patron_characteristics(self):
-        """Configura características según el tipo de visitante"""
+        """Configure characteristics based on visitor type"""
         if self.patron_type == PatronType.AVENTURERO:
             self.speed = 0.8
             self.max_patience = 25
             self.ride_preferences = {
-                RidePreference.PIRATE: 0.9,  # Alta preferencia por emoción
-                RidePreference.FERRIS: 0.3   # Baja preferencia por tranquilidad
+                RidePreference.PIRATE: 0.9,
+                RidePreference.FERRIS: 0.3
             }
         elif self.patron_type == PatronType.FAMILIAR:
             self.speed = 0.6
             self.max_patience = 18
             self.ride_preferences = {
-                RidePreference.PIRATE: 0.2,  # Baja preferencia por emoción  
-                RidePreference.FERRIS: 0.8   # Alta preferencia por tranquilidad
+                RidePreference.PIRATE: 0.2,
+                RidePreference.FERRIS: 0.8
             }
         elif self.patron_type == PatronType.IMPACIENTE:
             self.speed = 1.0
-            self.max_patience = 10  # Muy poca paciencia
+            self.max_patience = 10
             self.ride_preferences = {
                 RidePreference.PIRATE: 0.7,
-                RidePreference.FERRIS: 0.6   # Le gustan ambos pero no espera
+                RidePreference.FERRIS: 0.6
             }
         elif self.patron_type == PatronType.EXPLORADOR:
             self.speed = 0.7
-            self.max_patience = random.randint(12, 22)  # Paciencia variable
+            self.max_patience = random.randint(12, 22)
             self.ride_preferences = {
                 RidePreference.PIRATE: 0.6,
-                RidePreference.FERRIS: 0.6   # Equilibrado, le gusta probar todo
+                RidePreference.FERRIS: 0.6
             }
         
         self.patience = self.max_patience
@@ -164,12 +164,12 @@ class Patron:
 
     def plot(self, ax):
         """Renderiza el visitante en el mapa"""
-        # Colores por tipo de visitante  
+        # Marker by visitor type
         type_colors = {
-            PatronType.AVENTURERO: "^",      # Triángulo - adventurer
-            PatronType.FAMILIAR: "s",        # Cuadrado - family
-            PatronType.IMPACIENTE: "D",      # Diamante - impatient
-            PatronType.EXPLORADOR: "o",      # Círculo - explorer
+            PatronType.AVENTURERO: "^",
+            PatronType.FAMILIAR: "s",
+            PatronType.IMPACIENTE: "D",
+            PatronType.EXPLORADOR: "o",
         }
         
         marker = type_colors.get(self.patron_type, "o")
