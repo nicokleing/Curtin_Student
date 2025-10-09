@@ -1,9 +1,9 @@
 
 # -*- coding: utf-8 -*-
 """
-Terrain (terreno/mapa) – versión junior modular
-- Mapa grilla 0/1; paredes alrededor por defecto
-- Spawns y exits simples
+Terrain module (grid-based, modular).
+- Binary grid map with default boundary walls.
+- Simple spawn and exit points.
 """
 import csv
 import random
@@ -24,9 +24,9 @@ class Terrain:
             row = []
             for x in range(width):
                 if x == 0 or y == 0 or x == width - 1 or y == height - 1:
-                    row.append(1)  # pared
+                    row.append(1)  # wall
                 else:
-                    row.append(0)  # libre
+                    row.append(0)  # open
             grid.append(row)
         spawns = [(1, height // 2), (width - 2, height // 3)]
         exits = [(width - 2, height - 2), (2, 2)]

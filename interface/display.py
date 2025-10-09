@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
 """
-Gestor de Visualización - Módulo de Visualización
-================================================
-Control de visualización matplotlib con renderizadores especializados
+Display Manager - Rendering Module
+===================================
+Matplotlib-based display control with specialized renderers.
 """
+import matplotlib
 import matplotlib.pyplot as plt
+
+matplotlib.rcParams['font.family'] = 'DejaVu Sans'
+# NOTE: forcing a standard font keeps matplotlib from whining about missing emoji glyphs.
 from .renderers import MapRenderer, StatsRenderer
 from .controls import ControlsManager
 
 
 class DisplayManager:
     """
-    Gestión de visualización con renderizadores especializados.
-    Usa composición para delegar tareas de renderizado específicas.
+    Coordinate the visualization pipeline with specialized renderers.
+    Uses composition to delegate rendering responsibilities.
     """
     
     def __init__(self, engine):
@@ -99,14 +103,14 @@ class DisplayManager:
     def set_final_mode(self):
         """Configure display for final mode."""
         # Update title
-        self.fig.suptitle('✅ Simulación Completada', fontsize=16, color='green')
+        self.fig.suptitle('Simulation Complete', fontsize=16, color='green')
         
         # Update controls for final mode
         if self.controls:
             self.controls.set_final_mode()
             
         print("\nSimulation finished - Use OK to close or RESET to restart")
-        print("   O cierra la ventana manualmente")
+        print("   Or close the window manually")
         
     def wait_for_user_action(self):
         """Wait for user to close window or take action."""

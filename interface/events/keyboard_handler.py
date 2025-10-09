@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Manejador de eventos de teclado."""
+"""Keyboard event handler."""
 
 class KeyboardHandler:
-    """Maneja todos los eventos de teclado para los controles."""
+    """Handle all keyboard events for the controls."""
     
     def __init__(self, engine):
         self.engine = engine
         
     def handle_key_press(self, event):
-        """Maneja eventos de presión de tecla."""
+        """Handle a key press event."""
         key_actions = {
-            ' ': self.engine.toggle_pause,    # Barra espaciadora
+            ' ': self.engine.toggle_pause,    # Spacebar
             '1': lambda: self.engine.set_speed(1),
             '5': lambda: self.engine.set_speed(5),
             '0': lambda: self.engine.set_speed(10),
@@ -24,7 +24,7 @@ class KeyboardHandler:
             key_actions[event.key]()
             
     def _show_controls_help(self):
-        """Muestra información de ayuda de controles."""
+        """Show a keyboard and mouse help summary."""
         print("\n" + "="*60)
         print("SIMULATION CONTROLS")
         print("="*60)
@@ -38,9 +38,9 @@ class KeyboardHandler:
         print("   EXIT  - Exit")
         print()
         print("KEYBOARD CONTROLS (alternative):")
-        print("   ESPACIO - Pausar/Reanudar")
-        print("   1,5,0   - Cambiar velocidad")
-        print("   R       - Reiniciar")
-        print("   Q       - Salir")
-        print("   H       - Mostrar esta ayuda")
+        print("   SPACE    - Pause/Resume")
+        print("   1,5,0    - Change speed")
+        print("   R        - Restart")
+        print("   Q        - Quit")
+        print("   H        - Show this help")
         print("="*60)

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
-"""Renderizador del mapa principal de la simulación."""
+"""Renderer for the main simulation map."""
 
 import math
 import numpy as np
 import matplotlib.patches as patches
 
 class MapRenderer:
-    """Renderiza el mapa principal con terreno, visitantes y atracciones."""
+    """Render the main map with terrain, patrons, and rides."""
     
     def __init__(self, ax_map):
         self.ax_map = ax_map
         
     def render(self, state):
-        """Renderiza el mapa completo."""
+        """Render the full map."""
         terrain = state['terrain']
         patrons = state['patrons']
         rides = state['rides']
@@ -38,18 +38,18 @@ class MapRenderer:
         self.ax_map.set_title(f'AdventureWorld - Step: {step} | {status}')
         
     def _draw_terrain(self, terrain):
-        """Dibuja el fondo del terreno."""
+        """Draw terrain background."""
         terrain_map = np.array(terrain.grid)
         self.ax_map.imshow(terrain_map, cmap='terrain', alpha=0.5, 
                           extent=[0, terrain.width, 0, terrain.height], origin='lower')
     
     def _draw_patrons(self, patrons):
-        """Dibuja todos los visitantes."""
+        """Draw every visitor."""
         for patron in patrons:
             self._draw_patron(patron)
             
     def _draw_patron(self, patron):
-        """Dibuja un visitante individual."""
+        """Draw a single visitor."""
         type_colors = {
             'adventurer': 'red',
             'family': 'blue', 
@@ -62,12 +62,12 @@ class MapRenderer:
         self.ax_map.scatter(x, y, c=color, s=15, alpha=0.8)
         
     def _draw_rides(self, rides):
-        """Dibuja todas las atracciones."""
+        """Draw all rides."""
         for ride in rides:
             self._draw_ride(ride)
             
     def _draw_ride(self, ride):
-        """Dibuja una atracción individual con animaciones."""
+        """Draw a single ride with animation."""
         x, y = ride.center()
         # Determine ride type
         ride_type = self._get_ride_type(ride)
@@ -90,8 +90,8 @@ class MapRenderer:
         self._draw_ride_queue(ride)
     
     def _get_ride_type(self, ride):
-        """Determina el tipo de atracción basado en el tipo y el nombre."""
-        # Priorizar el campo ride_type si existe
+        """Determine a ride type using attributes and name."""
+        # Prefer explicit ride_type when present
         if hasattr(ride, 'ride_type'):
             ride_type = ride.ride_type.lower()
             if 'pirate' in ride_type:
@@ -101,41 +101,40 @@ class MapRenderer:
         
         # Fallback to name if ride_type not present
         name_lower = ride.name.lower()
-        if 'pirate' in name_lower or 'barco' in name_lower:
+        if 'pirate' in name_lower or 'ship' in name_lower:
             return 'pirate'
-        elif 'ferris' in name_lower or 'noria' in name_lower or 'rueda' in name_lower:
+        elif 'ferris' in name_lower or 'wheel' in name_lower:
             return 'ferris'
         else:
             return 'generic'
     
     def _draw_pirate_ship(self, ride, x, y):
-        """Dibuja el barco pirata con animación de balanceo."""
-        # Calcular ángulo de balanceo basado en el estado
+        """Draw the pirate ship with a swinging animation."""
+        # Compute swing angle based on state
         if ride.state == 'running':
-            # Animación de balanceo - usar el step para crear movimiento
-            angle = math.sin(getattr(ride, 'step_counter', 0) * 0.3) * 20  # Balanceo de ±20 grados
+            # Swing animation uses step counter for motion
+            angle = math.sin(getattr(ride, 'step_counter', 0) * 0.3) * 20  # +/- 20 degrees
         else:
             angle = 0
         
-        # Colores según estado
+        # Choose colors based on state
         if ride.state == 'running':
-            color = '#8B4513'  # Marrón oscuro para activo
+            color = '#8B4513'  # Dark brown when active
             alpha = 1.0
         elif ride.state == 'loading':
-            color = '#CD853F'  # Marrón claro para cargando
+            color = '#CD853F'  # Lighter brown while loading
             alpha = 0.9
         else:
-            color = '#A0522D'  # Marrón medio para inactivo
+            color = '#A0522D'  # Medium brown when idle
             alpha = 0.7
         
-        # Dibujar el barco como una elipse inclinada
-        from matplotlib.transforms import Affine2D
+        # Draw the ship as a tilted ellipse
         ellipse = patches.Ellipse((x, y), 3, 1.5, angle=angle, 
                                  facecolor=color, alpha=alpha, 
                                  edgecolor='black', linewidth=2)
         self.ax_map.add_patch(ellipse)
         
-        # Dibujar mástil
+        # Draw mast
         mast_x = x + 0.5 * math.cos(math.radians(angle)) if ride.state == 'running' else x + 0.5
         mast_y = y
         self.ax_map.plot([mast_x, mast_x], [mast_y-0.5, mast_y+1.5], 'k-', linewidth=3)
@@ -145,38 +144,38 @@ class MapRenderer:
             self.ax_map.text(mast_x+0.2, mast_y+1.2, 'P', fontsize=12, weight='bold')
     
     def _draw_ferris_wheel(self, ride, x, y):
-        """Dibuja la rueda de la fortuna con animación de rotación."""
-        # Calcular rotación basada en el estado
+        """Draw the ferris wheel with rotating cabins."""
+        # Rotation depends on state
         if ride.state == 'running':
-            rotation = getattr(ride, 'step_counter', 0) * 10  # Rotación continua
+            rotation = getattr(ride, 'step_counter', 0) * 10  # Continuous rotation
         else:
             rotation = 0
         
-        # Colores según estado
+        # Colors vary by state
         if ride.state == 'running':
-            color = '#FF6347'  # Rojo tomate para activo
+            color = '#FF6347'  # Tomato red when active
             alpha = 1.0
         elif ride.state == 'loading':
-            color = '#FFA500'  # Naranja para cargando  
+            color = '#FFA500'  # Orange while loading
             alpha = 0.9
         else:
-            color = '#FF8C00'  # Naranja oscuro para inactivo
+            color = '#FF8C00'  # Dark orange when idle
             alpha = 0.7
         
-        # Dibujar rueda principal
+        # Draw outer wheel
         wheel = patches.Circle((x, y), 1.8, facecolor=color, alpha=alpha,
                               edgecolor='darkred', linewidth=3)
         self.ax_map.add_patch(wheel)
         
-        # Dibujar radios de la rueda
-        for i in range(8):  # 8 radios
+        # Draw wheel spokes
+        for i in range(8):  # 8 spokes
             angle = math.radians(i * 45 + rotation)
             x_end = x + 1.6 * math.cos(angle)
             y_end = y + 1.6 * math.sin(angle)
             self.ax_map.plot([x, x_end], [y, y_end], 'darkred', linewidth=2)
         
-        # Dibujar cabinas de pasajeros
-        for i in range(6):  # 6 cabinas
+        # Draw cabins
+        for i in range(6):  # 6 cabins
             angle = math.radians(i * 60 + rotation)
             cab_x = x + 1.4 * math.cos(angle)
             cab_y = y + 1.4 * math.sin(angle)
@@ -189,8 +188,8 @@ class MapRenderer:
             self.ax_map.text(x, y+2.5, 'F', fontsize=16, ha='center', weight='bold')
     
     def _draw_generic_ride(self, ride, x, y):
-        """Dibuja una atracción genérica."""
-        # Modificar apariencia según estado
+        """Draw a generic ride."""
+        # Adjust appearance by state
         if ride.state == 'running':
             alpha = 1.0
             edge_color = 'red'
@@ -204,7 +203,7 @@ class MapRenderer:
             edge_color = 'black' 
             edge_width = 1
         
-        # Dibujar atracción como círculo grande
+        # Draw ride as a large circle
         circle = patches.Circle((x, y), 1.5, facecolor='magenta', alpha=alpha, 
                                edgecolor=edge_color, linewidth=edge_width)
         self.ax_map.add_patch(circle)
@@ -212,7 +211,7 @@ class MapRenderer:
         self.ax_map.text(x, y, 'R', fontsize=16, ha='center', va='center', weight='bold')
         
     def _draw_ride_queue(self, ride):
-        """Dibuja la cola de una atracción si existe."""
+        """Draw the first part of a ride queue when present."""
         if hasattr(ride, 'queue') and ride.queue:
             queue_positions = [patron.position for patron in ride.queue[:5]]
             if queue_positions:

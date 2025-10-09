@@ -333,7 +333,7 @@ python3 adventureworld.py --rides-csv rides.csv --patrons-csv patrons.csv --stat
 
 ### Interactive Mode Options
 
-When using `-i` flag, the system prompts for:
+When using `-i` flag, the system asks for:
 
 1. **Park Dimensions**
    - Width (10-200 units)

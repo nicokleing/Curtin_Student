@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Cargador de Configuración
-========================
-Carga configuración desde archivos YAML/CSV y procesa argumentos
+Configuration loader.
+=====================
+Loads configuration from YAML/CSV files and command-line arguments.
 """
 import random
 import yaml
@@ -12,7 +12,7 @@ from models import PatronType, Patron
 
 
 class ConfigLoader:
-    """Carga y gestiona configuración desde diversas fuentes"""
+    """Load and manage configuration from various sources."""
     
     def __init__(self):
         pass
@@ -97,13 +97,13 @@ class ConfigLoader:
             return terrain, rides, num_patrons
         
         except FileNotFoundError:
-            print(f" Archivo YAML no encontrado: {file_path}")
+            print(f"YAML file not found: {file_path}")
             return None
         except yaml.YAMLError as e:
-            print(f" Error en formato YAML: {e}")
+            print(f"YAML format error: {e}")
             return None
         except KeyError as e:
-            print(f" Campo requerido no encontrado en YAML: {e}")
+            print(f"Required field missing in YAML: {e}")
             return None
     
     def _load_from_csv(self, args):
@@ -159,6 +159,6 @@ class ConfigLoader:
         """Assign patron type based on Epic 2 distribution"""
         # Epic 2 distribution: 25% each type
         type_index = i % 4
-        patron_types = [PatronType.AVENTURERO, PatronType.FAMILIAR, 
-                       PatronType.IMPACIENTE, PatronType.EXPLORADOR]
+        patron_types = [PatronType.ADVENTURER, PatronType.FAMILY, 
+                       PatronType.IMPATIENT, PatronType.EXPLORER]
         return patron_types[type_index]

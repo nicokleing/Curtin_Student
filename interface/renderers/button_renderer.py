@@ -1,54 +1,54 @@
 # -*- coding: utf-8 -*-
-"""Renderizador de botones de control visual."""
+"""Renderer for visual control buttons."""
 
 import matplotlib.patches as patches
 
 class ButtonRenderer:
-    """Maneja la creación y actualización visual de botones."""
+    """Create and update the visual control buttons."""
     
     def __init__(self, ax_controls):
         self.ax_controls = ax_controls
         self.buttons = {}
         
     def create_layout(self, engine):
-        """Crea el diseño completo de botones."""
-        # Configurar área de controles
+        """Create the full button layout."""
+        # Configure control area
         self.ax_controls.set_xlim(0, 10)
         self.ax_controls.set_ylim(0, 1.6)
         self.ax_controls.axis('off')
         
-        # Dimensiones de botones
+        # Button dimensions
         btn_width = 1.4
         btn_height = 0.45
         
-        # Fila 1: Botones de control
+        # Row 1: main controls
         self._create_button('pause', 0.5, 1.0, btn_width, btn_height, 'lightgreen')
         self._create_button('reset', 2.0, 1.0, btn_width, btn_height, 'orange')  
         self._create_button('exit', 3.5, 1.0, btn_width, btn_height, 'red')
         
-        # Fila 2: Botones de velocidad
+        # Row 2: speed controls
         self._create_button('speed1', 0.5, 0.3, btn_width, btn_height, 'lightblue')
         self._create_button('speed5', 2.0, 0.3, btn_width, btn_height, 'orange')
         self._create_button('speed10', 3.5, 0.3, btn_width, btn_height, 'red')
         
-        # Botón de estadísticas opcional
+        # Optional stats button
         if engine.show_stats:
             self._create_button('stats', 5.0, 0.3, btn_width, btn_height, 'lightgray')
         
-        # Etiquetas de sección
+        # Section labels
         self.ax_controls.text(2.5, 1.55, 'CONTROL', ha='center', va='center', 
                             fontsize=10, weight='bold', color='darkblue')
-        self.ax_controls.text(2.5, 0.05, 'VELOCIDAD', ha='center', va='center', 
+        self.ax_controls.text(2.5, 0.05, 'SPEED', ha='center', va='center', 
                             fontsize=10, weight='bold', color='darkred')
                             
-        # Instrucciones
-        self.ax_controls.text(7.5, 1.3, '👆 CLICK', ha='center', va='center', 
+        # Instructions
+        self.ax_controls.text(7.5, 1.3, 'CLICK', ha='center', va='center', 
                             fontsize=10, weight='bold', color='blue')
-        self.ax_controls.text(7.5, 1.1, 'para controlar', ha='center', va='center', 
+        self.ax_controls.text(7.5, 1.1, 'to control', ha='center', va='center', 
                             fontsize=8, style='italic', color='gray')
         
     def _create_button(self, name, x, y, width, height, color):
-        """Crea un botón individual."""
+        """Create a single button."""
         rect = patches.Rectangle((x, y), width, height, 
                                facecolor=color, edgecolor='black', linewidth=2)
         self.ax_controls.add_patch(rect)
@@ -63,40 +63,40 @@ class ButtonRenderer:
         }
         
     def update_button_texts(self, engine):
-        """Actualiza todos los textos de botones según el estado actual."""
-        # Limpiar textos de botones previos (preservar etiquetas de sección)
+        """Update button labels based on current state."""
+        # Clear previous dynamic button texts (preserve section labels)
         for text in list(self.ax_controls.texts):
-            if not any(keyword in text.get_text() for keyword in ['👆', 'CONTROL', 'VELOCIDAD', 'para controlar']):
+            if not any(keyword in text.get_text() for keyword in ['CLICK', 'CONTROL', 'SPEED', 'to control']):
                 text.remove()
         
-        # Textos de botones según estado actual
+        # Button text for the current state
         texts = {
             'pause': 'PLAY' if engine.paused else 'PAUSE',
             'reset': 'RESET',
             'exit': 'EXIT',
-            'speed1': '✓1x' if engine.speed_multiplier == 1 else '1x',
-            'speed5': '✓5x' if engine.speed_multiplier == 5 else '5x',
-            'speed10': '✓10x' if engine.speed_multiplier == 10 else '10x'
+            'speed1': '1x*' if engine.speed_multiplier == 1 else '1x',
+            'speed5': '5x*' if engine.speed_multiplier == 5 else '5x',
+            'speed10': '10x*' if engine.speed_multiplier == 10 else '10x'
         }
         
-        # Agregar botón de estadísticas si está disponible
+        # Add stats button if available
         if 'stats' in self.buttons:
             texts['stats'] = 'STATS'
             
-        # Agregar textos de botones
+        # Apply button texts
         for btn_name, text in texts.items():
             if btn_name in self.buttons:
                 self._add_button_text(btn_name, text)
                 
     def _add_button_text(self, btn_name, text):
-        """Agrega texto a un botón específico."""
+        """Add text to a specific button."""
         btn = self.buttons[btn_name]
         x, y = btn['text_pos']
         
-        # Tamaño de fuente basado en longitud del texto
+        # Font size based on text length
         fontsize = 12 if len(text) <= 4 else (10 if len(text) <= 8 else 9)
         
-        # Color de texto basado en el botón
+        # Choose text color per button type
         if btn_name == 'exit':
             text_color = 'white'
         elif btn_name == 'pause':
@@ -114,13 +114,13 @@ class ButtonRenderer:
         btn['current_text'] = text
         
     def get_button_area(self, button_name):
-        """Obtiene el área de un botón para detección de clicks."""
+        """Return the clickable area for a button."""
         if button_name in self.buttons:
             return self.buttons[button_name]['area']
         return None
         
     def set_final_mode(self):
-        """Configura botones para modo final."""
-        # Cambiar botón de salida a OK
+        """Adjust buttons for final mode."""
+        # Turn exit button into OK
         if 'exit' in self.buttons:
             self.buttons['exit']['rect'].set_facecolor('lightgreen')

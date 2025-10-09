@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Modelos del sistema
+Model package.
 ==================
-Contiene las clases principales y tipos de datos
+Exposes the main classes and data types.
 """
 from .patron_types import PatronType, RidePreference
 from .patron import Patron

@@ -13,32 +13,32 @@ class PirateShip(Ride):
         super().__init__(name, capacity, duration, bbox, ride_type="pirate")
         
     def plot(self, ax, t):
-     """Draw ride bbox, queue and capacity info."""
-     # Dibujar base (bbox, cola, capacidad)
-     self._draw_bbox(ax)
-     self._draw_queue(ax)
-     self._draw_capacity_info(ax)
+        """Draw ride bounding box, queue, and capacity info."""
+        # Base visuals (bbox, queue, capacity)
+        self._draw_bbox(ax)
+        self._draw_queue(ax)
+        self._draw_capacity_info(ax)
 
-     # Dibujar péndulo específico del barco pirata
-     self._draw_pirate_ship_animation(ax, t)
+        # Pirate-ship specific pendulum animation
+        self._draw_pirate_ship_animation(ax, t)
 
-     # Nombre de la atracción
-     ax.text(self.bbox[0], self.bbox[1] - 8, f"PIRATE {self.name}", 
-         fontsize=9, ha='left', weight='bold')
+        # Ride label
+        ax.text(self.bbox[0], self.bbox[1] - 8, f"PIRATE {self.name}", 
+                fontsize=9, ha='left', weight='bold')
 
     def _draw_pirate_ship_animation(self, ax, t):
         """Draw the pirate ship pendulum animation."""
         cx, cy = self.center()
         
-        # Animación diferente según estado
+        # Adjust amplitude and color by state
         if self.state == "running":
-            amp = math.radians(50)  # Movimiento amplio cuando funciona
+            amp = math.radians(50)  # Wide motion while running
             line_color = "#f58518"
         elif self.state == "loading" or self.state == "unloading":
-            amp = math.radians(15)  # Movimiento suave al cargar/descargar
+            amp = math.radians(15)  # Gentle motion while loading/unloading
             line_color = "#54a24b" if self.state == "loading" else "#e377c2"
         else:
-            amp = math.radians(5)   # Movimiento mínimo cuando está idle
+            amp = math.radians(5)   # Minimal motion when idle
             line_color = "#4c78a8"
             
         theta = amp * math.sin(t / 8.0)
@@ -46,7 +46,7 @@ class PirateShip(Ride):
         x2 = cx + length * math.sin(theta)
         y2 = cy - length * math.cos(theta)
         
-        # Dibujar péndulo con color según estado
+        # Draw pendulum with state-driven color
         ax.plot([cx, x2], [cy, y2], lw=3, color=line_color)
         ax.plot([x2], [y2], marker="o", ms=8, color=line_color)
 
@@ -71,50 +71,50 @@ class FerrisWheel(Ride):
         self.cabins = cabins
 
     def plot(self, ax, t):
-     """Draw ride bbox, queue and capacity info."""
-     # Dibujar base (bbox, cola, capacidad)
-     self._draw_bbox(ax)
-     self._draw_queue(ax)
-     self._draw_capacity_info(ax)
+        """Draw ride bounding box, queue, and capacity info."""
+        # Base visuals (bbox, queue, capacity)
+        self._draw_bbox(ax)
+        self._draw_queue(ax)
+        self._draw_capacity_info(ax)
 
-     # Dibujar noria específica
-     self._draw_ferris_wheel_animation(ax, t)
+        # Ferris-wheel specific animation
+        self._draw_ferris_wheel_animation(ax, t)
 
-     # Nombre de la atracción  
-     ax.text(self.bbox[0], self.bbox[1] - 8, f"FERRIS {self.name}", 
-         fontsize=9, ha='left', weight='bold')
+        # Ride label
+        ax.text(self.bbox[0], self.bbox[1] - 8, f"FERRIS {self.name}", 
+                fontsize=9, ha='left', weight='bold')
 
     def _draw_ferris_wheel_animation(self, ax, t):
         """Draw the ferris wheel rotation and cabins."""
         cx, cy = self.center()
         radius = min(self.bbox[2], self.bbox[3]) * 0.45
         
-        # Velocidad y color según estado
+        # Rotation speed and color depend on state
         if self.state == "running":
-            omega = 0.05      # Velocidad normal
+            omega = 0.05      # Normal speed
             circle_color = "#f58518"
             cabin_color = "#f58518"
         elif self.state == "loading" or self.state == "unloading":
-            omega = 0.02      # Velocidad lenta para cargar/descargar
+            omega = 0.02      # Slow speed while loading/unloading
             circle_color = "#54a24b" if self.state == "loading" else "#e377c2"
             cabin_color = circle_color
         else:
-            omega = 0.005     # Velocidad muy lenta cuando idle
+            omega = 0.005     # Very slow idle speed
             circle_color = "#4c78a8"
             cabin_color = "#999999"
             
-        # Dibujar círculo principal con color según estado
+        # Draw wheel outline with state-based color
         circ = patches.Circle((cx, cy), radius, fill=False, 
                              ec=circle_color, lw=2)
         ax.add_patch(circ)
         
-        # Dibujar cabinas
+        # Draw cabins
         for k in range(self.cabins):
             ang = 2 * math.pi * k / self.cabins + omega * t
             x = cx + radius * math.cos(ang)
             y = cy + radius * math.sin(ang)
             
-            # Cabinas más grandes si hay pasajeros
+            # Larger cabins imply riders present
             cabin_size = 6 if len(self.riders) > k else 4
             ax.plot([x], [y], marker="s", ms=cabin_size, 
                    color=cabin_color, alpha=0.8)

@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Renderizador de estadísticas en tiempo real con gráficos dinámicos."""
+"""Render real-time statistics with dynamic charts."""
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 class StatsRenderer:
-    """Renderiza estadísticas en tiempo real con gráficos de línea."""
+    """Render real-time statistics using line charts."""
     
     def __init__(self, ax_stats):
         self.ax_stats = ax_stats
@@ -16,23 +16,23 @@ class StatsRenderer:
             'departed': [],
             'abandoned': []
         }
-        self.max_history = 100  # Mantener últimos 100 steps
+        self.max_history = 100  # Keep the most recent 100 steps
         
     def render(self, state, engine):
-        """Renderiza estadísticas actuales con gráficos de línea."""
+        """Render the current statistics with line charts."""
         if not self.ax_stats:
             return
             
         stats = state['statistics']
         current_step = state['step']
         
-        # Actualizar historial
+        # Update history
         self._update_history(current_step, stats)
         
-        # Limpiar axes
+        # Clear axes
         self.ax_stats.clear()
         
-        # Si hay suficiente historia, mostrar gráficos
+        # Draw charts if we have enough history
         if len(self.history['steps']) > 1:
             self._render_line_plots()
         else:
@@ -41,54 +41,54 @@ class StatsRenderer:
         self.ax_stats.set_title('Real-Time Statistics')
         
     def _update_history(self, step, stats):
-        """Actualiza el historial de estadísticas."""
-        # Agregar nuevos datos
+        """Update the statistics history."""
+        # Append new data
         self.history['steps'].append(step)
         self.history['riders'].append(stats['riders_now'])
         self.history['queued'].append(stats['queued_now'])
         self.history['departed'].append(stats['departed_total'])
         self.history['abandoned'].append(stats['abandoned_now'])
         
-        # Mantener solo los últimos N valores
+        # Trim to the most recent N values
         for key in self.history:
             if len(self.history[key]) > self.max_history:
                 self.history[key] = self.history[key][-self.max_history:]
                 
     def _render_line_plots(self):
-        """Renderiza gráficos de línea para las estadísticas."""
+        """Render line charts for the statistics."""
         steps = self.history['steps']
         
-        # Configurar subplot principal
+        # Main subplot
         ax1 = self.ax_stats
         
-        # Línea principal: visitantes activos (en atracciones + en cola)
+        # Primary line: active visitors (riding + queued)
         active_visitors = [r + q for r, q in zip(self.history['riders'], self.history['queued'])]
-        line1 = ax1.plot(steps, active_visitors, 'b-', linewidth=2, label='Activos (Total)')
-        line2 = ax1.plot(steps, self.history['riders'], 'r-', linewidth=1.5, label='En Atracciones')
-        line3 = ax1.plot(steps, self.history['queued'], 'orange', linewidth=1.5, label='En Cola')
+        line1 = ax1.plot(steps, active_visitors, 'b-', linewidth=2, label='Active (Total)')
+        line2 = ax1.plot(steps, self.history['riders'], 'r-', linewidth=1.5, label='On Rides')
+        line3 = ax1.plot(steps, self.history['queued'], 'orange', linewidth=1.5, label='In Queue')
         
-        ax1.set_xlabel('Paso de Simulación')
-        ax1.set_ylabel('Visitantes Activos', color='blue')
+        ax1.set_xlabel('Simulation Step')
+        ax1.set_ylabel('Active Visitors', color='blue')
         ax1.tick_params(axis='y', labelcolor='blue')
         ax1.grid(True, alpha=0.3)
         
-        # Eje secundario para visitantes que salieron
+        # Secondary axis for visitors who departed
         ax2 = ax1.twinx()
-        line4 = ax2.plot(steps, self.history['departed'], 'g-', linewidth=1.5, label='Salieron')
+        line4 = ax2.plot(steps, self.history['departed'], 'g-', linewidth=1.5, label='Departed')
         
-        # Solo mostrar abandonos si hay datos
+        # Only show abandons when present
         if max(self.history['abandoned']) > 0:
-            line5 = ax2.plot(steps, self.history['abandoned'], 'm--', linewidth=1, label='Abandonos')
+            ax2.plot(steps, self.history['abandoned'], 'm--', linewidth=1, label='Left Queue')
             
-        ax2.set_ylabel('Visitantes Salidos', color='green')
+        ax2.set_ylabel('Visitors Departed', color='green')
         ax2.tick_params(axis='y', labelcolor='green')
         
-        # Leyenda combinada
+        # Combined legend
         lines = line1 + line2 + line3 + line4
         labels = [l.get_label() for l in lines]
         if max(self.history['abandoned']) > 0:
-            lines += [ax2.get_lines()[-1]]  # Añadir línea de abandonos
-            labels.append('Abandonos')
+            lines += [ax2.get_lines()[-1]]  # Include abandon line
+            labels.append('Left Queue')
             
         ax1.legend(lines, labels, loc='upper left', fontsize=8)
         
@@ -101,7 +101,7 @@ class StatsRenderer:
                 bbox=dict(boxstyle="round,pad=0.3", facecolor='white', alpha=0.8))
         
     def _render_text_stats(self, stats, step):
-        """Renderiza estadísticas como texto cuando no hay suficiente historia."""
+        """Render statistics as text when history is short."""
         stats_text = [
             f"Riding: {stats['riders_now']}",
             f"Queued: {stats['queued_now']}", 
@@ -109,7 +109,7 @@ class StatsRenderer:
             f"Abandoned: {stats['abandoned_now']}",
             f"Step: {step}",
             "",
-            "Recolectando datos para gráficos..."
+            "Collecting data for charts..."
         ]
         
         for i, text in enumerate(stats_text):
@@ -122,7 +122,7 @@ class StatsRenderer:
         self.ax_stats.axis('off')
         
     def get_export_data(self):
-        """Retorna datos de estadísticas para exportación."""
+        """Return statistics for export."""
         return {
             'steps': self.history['steps'].copy(),
             'riders_timeline': self.history['riders'].copy(),

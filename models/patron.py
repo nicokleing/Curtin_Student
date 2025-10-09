@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Clase Patron Refactorizada
-========================
-Visitante del parque con comportamientos modulares
+Patron class (refactored).
+==========================
+Park visitor with modular behaviors.
 """
 import math
 import random
@@ -14,7 +14,7 @@ from behaviors.queue_behavior import QueueBehavior
 
 
 class Patron:
-    """Visitante del parque con comportamientos especializados"""
+    """Park visitor with specialized behaviors."""
     
     def __init__(self, name, spawns, exits, terrain, patron_type=None):
         self.name = name
@@ -23,46 +23,46 @@ class Patron:
         self.exits = exits
         self.terrain = terrain
 
-        # Sistema de tipos y preferencias
+        # Visitor type and preferences
         self.patron_type = patron_type or random.choice(list(PatronType))
         self._setup_patron_characteristics()
 
         self.state = "spawning"
         self.position = (0.0, 0.0)
         self.target = None
-        self.timer = random.randint(3, 8)  # Spawn aleatorio más realista
+        self.timer = random.randint(3, 8)  # Slightly random spawn delay
         self.current_ride = None
         
-        # Sistema de paciencia y abandono
+        # Queue patience tracking
         self.queue_start_time = 0
         self.total_queue_time = 0
         self.rides_completed = 0
         self.abandoned_queues = 0
         
     def _setup_patron_characteristics(self):
-        """Configure characteristics based on visitor type"""
-        if self.patron_type == PatronType.AVENTURERO:
+        """Configure characteristics based on visitor type."""
+        if self.patron_type == PatronType.ADVENTURER:
             self.speed = 0.8
             self.max_patience = 25
             self.ride_preferences = {
                 RidePreference.PIRATE: 0.9,
                 RidePreference.FERRIS: 0.3
             }
-        elif self.patron_type == PatronType.FAMILIAR:
+        elif self.patron_type == PatronType.FAMILY:
             self.speed = 0.6
             self.max_patience = 18
             self.ride_preferences = {
                 RidePreference.PIRATE: 0.2,
                 RidePreference.FERRIS: 0.8
             }
-        elif self.patron_type == PatronType.IMPACIENTE:
+        elif self.patron_type == PatronType.IMPATIENT:
             self.speed = 1.0
             self.max_patience = 10
             self.ride_preferences = {
                 RidePreference.PIRATE: 0.7,
                 RidePreference.FERRIS: 0.6
             }
-        elif self.patron_type == PatronType.EXPLORADOR:
+        elif self.patron_type == PatronType.EXPLORER:
             self.speed = 0.7
             self.max_patience = random.randint(12, 22)
             self.ride_preferences = {
@@ -73,30 +73,30 @@ class Patron:
         self.patience = self.max_patience
 
     def _at_target(self):
-        """Verifica si está cerca del objetivo"""
+        """Check if the patron has reached the target."""
         return MovementBehavior.at_target(self.position, self.target)
 
     def _step_towards(self):
-        """Mueve hacia el objetivo"""
+        """Move toward the target."""
         self.position = MovementBehavior.step_towards(
             self.position, self.target, self.speed, self.terrain
         )
 
     def _choose_target(self, rides):
-        """Elige un objetivo inteligente"""
+        """Pick a target ride using the decision behavior."""
         self.target = DecisionBehavior.choose_target(
             self.position, rides, self.terrain, self.ride_preferences
         )
 
     def board_ride(self, ride):
-        """Subir a una atracción"""
+        """Board a ride."""
         self.current_ride = ride
         self.state = "riding"
         self.queue_start_time = 0
         print(f"{self.name} boarded {ride.name}")
 
     def leave_ride(self):
-        """Bajar de una atracción"""
+        """Leave the current ride."""
         if self.current_ride:
             print(f"{self.name} exited {self.current_ride.name}")
             self.current_ride = None
@@ -104,21 +104,21 @@ class Patron:
         self.state = "roaming"
         self.rides_completed += 1
         
-        # Regenerar paciencia después de un ride
+        # Regain some patience after finishing a ride
         self.patience = min(self.max_patience, self.patience + 8)
 
     def _calculate_exit_probability(self):
-        """Calcula probabilidad de salir del parque"""
+        """Calculate the chance of leaving the park."""
         return DecisionBehavior.calculate_exit_probability(
             self.rides_completed, self.patron_type
         )
 
     def abandon_queue(self, ride):
-        """Abandona la cola de una atracción"""
+        """Leave a ride queue."""
         QueueBehavior.abandon_queue(self, ride)
 
     def step_change(self, t, rides):
-        """Actualización principal del visitante"""
+        """Main per-step update for the visitor."""
         self.timer -= 1
         
         if self.state == "spawning":
@@ -132,7 +132,7 @@ class Patron:
             else:
                 self._step_towards()
                 
-            # Buscar atracciones cercanas para unirse
+            # Look for nearby rides to join
             nearby_rides = MovementBehavior.find_nearby_rides(self.position, rides)
             if nearby_rides:
                 best_ride = DecisionBehavior.choose_best_nearby_ride(
@@ -147,10 +147,10 @@ class Patron:
             self.state = QueueBehavior.process_queue_patience(self, t, rides)
                     
         elif self.state == "riding":
-            pass  # El ride maneja cuando baja
+            pass  # The ride decides when the patron leaves
             
         elif self.state == "roaming":
-            # Decidir si salir del parque
+            # Decide whether to exit the park
             exit_prob = self._calculate_exit_probability()
             if random.random() < exit_prob:
                 self.state = "leaving"
@@ -163,13 +163,13 @@ class Patron:
                 self._step_towards()
 
     def plot(self, ax):
-        """Renderiza el visitante en el mapa"""
+        """Render the visitor on the map."""
         # Marker by visitor type
         type_colors = {
-            PatronType.AVENTURERO: "^",
-            PatronType.FAMILIAR: "s",
-            PatronType.IMPACIENTE: "D",
-            PatronType.EXPLORADOR: "o",
+            PatronType.ADVENTURER: "^",
+            PatronType.FAMILY: "s",
+            PatronType.IMPATIENT: "D",
+            PatronType.EXPLORER: "o",
         }
         
         marker = type_colors.get(self.patron_type, "o")
@@ -177,7 +177,7 @@ class Patron:
                   c='blue', marker=marker, s=25, alpha=0.8)
 
     def get_status_info(self):
-        """Información de estado para debugging"""
+        """Provide a status summary for debugging."""
         return {
             "name": self.name,
             "type": self.patron_type.value,

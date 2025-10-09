@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
-"""Estados y temporización de atracciones."""
+"""Ride states and timing helpers."""
 
 from enum import Enum
 
 class RideState(Enum):
-    """Estados posibles de una atracción."""
+    """Possible states for a ride."""
     IDLE = "idle"
     LOADING = "loading" 
     RUNNING = "running"
     UNLOADING = "unloading"
 
 class RideTimer:
-    """Maneja temporización y transiciones de estado de atracciones."""
+    """Handles timing and state transitions for rides."""
     
     def __init__(self, ride):
         self.ride = ride
@@ -20,43 +20,43 @@ class RideTimer:
         self.unloading_phase = 0
         
     def get_loading_time(self):
-        """Tiempo de carga basado en tipo de atracción."""
+        """Get loading time based on ride type."""
         if self.ride.ride_type == "pirate":
-            return 4  # Barco pirata requiere más tiempo para asegurar pasajeros
+            return 4  # Pirate ship needs extra time to secure riders
         elif self.ride.ride_type == "ferris":
-            return 6  # Noria requiere más tiempo por múltiples cabinas
-        return 3  # Tiempo por defecto
+            return 6  # Ferris wheel loads slower due to multiple cabins
+        return 3  # Default loading time
         
     def get_unloading_time(self):
-        """Tiempo de descarga basado en tipo de atracción."""
+        """Get unloading time based on ride type."""
         if self.ride.ride_type == "pirate":
-            return 3  # Descarga más rápida del barco
+            return 3  # Pirate ship unloads quickly
         elif self.ride.ride_type == "ferris":
-            return 5  # Noria requiere parar en cada cabina
-        return 2  # Tiempo por defecto
+            return 5  # Ferris wheel stops at each cabin
+        return 2  # Default unloading time
 
     def update(self, current_time):
-        """Actualiza el timer y maneja transiciones de estado."""
+        """Update the timer and manage state transitions."""
         self.ride.current_time = current_time
         
-        # Actualizar contador para animaciones
+        # Keep an animation counter in sync
         self.ride.step_counter += 1
         
         if self.timer > 0:
             self.timer -= 1
-            return False  # No hay cambio de estado
-        return True  # Timer completado, permitir transición
+            return False  # No state change yet
+        return True  # Timer completed, allow transition
 
     def start_loading(self):
-        """Inicia fase de carga."""
+        """Start the loading phase."""
         self.timer = self.get_loading_time()
         self.loading_phase = 0
         
     def start_running(self):
-        """Inicia fase de funcionamiento."""
+        """Start the running phase."""
         self.timer = self.ride.duration
         
     def start_unloading(self):
-        """Inicia fase de descarga."""
+        """Start the unloading phase."""
         self.timer = self.get_unloading_time()
         self.unloading_phase = 0

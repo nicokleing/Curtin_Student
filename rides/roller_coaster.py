@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Ejemplo de nueva atracción: Montaña Rusa (Roller Coaster)."""
+"""Example ride: roller coaster with a simple track animation."""
 
 import math
 import matplotlib.patches as patches
@@ -13,56 +13,56 @@ class RollerCoaster(Ride):
         super().__init__(name, capacity, duration, bbox, ride_type="coaster")
         
     def plot(self, ax, t):
-        """Visualización de montaña rusa con pista y vagones."""
-        # Dibujar componentes base
+        """Render the coaster, including track and cars."""
+        # Draw base components
         self._draw_bbox(ax)
         self._draw_queue(ax)
         self._draw_capacity_info(ax)
         
-        # Dibujar animación específica de montaña rusa
+        # Run coaster-specific animation
         self._draw_coaster_animation(ax, t)
         
-        # Nombre de la atracción
+        # Label the ride
         ax.text(self.bbox[0], self.bbox[1] - 8, f"COASTER {self.name}", 
                fontsize=9, ha='left', weight='bold')
 
     def _draw_coaster_animation(self, ax, t):
-        """Dibuja la pista y vagones en movimiento."""
+        """Draw the track and moving cars."""
         x, y, w, h = self.bbox
         
-        # Dibujar pista en forma de óvalo
+        # Draw an oval track
         track_color = "#2ca02c" if self.state == "running" else "#888888"
         
-        # Pista principal (rectángulo redondeado)
+        # Main track (rounded rectangle)
         track_rect = patches.Rectangle((x+0.5, y+0.5), w-1, h-1, 
                                      fill=False, ec=track_color, lw=2)
         ax.add_patch(track_rect)
         
-        # Si está funcionando, mostrar vagones en movimiento
+        # Show moving cars while the ride is running
         if self.state == "running" and self.riders:
-            # Calcular posición del tren en la pista
+            # Compute the train position along the track
             speed = 0.1 if self.state == "running" else 0.02
             progress = (t * speed) % 1.0
             
-            # Posición en el óvalo de la pista
-            if progress < 0.25:  # Lado superior
+            # Position the train along the oval
+            if progress < 0.25:  # Top edge
                 train_x = x + 1 + (w-2) * (progress * 4)
                 train_y = y + h - 0.5
-            elif progress < 0.5:  # Lado derecho
+            elif progress < 0.5:  # Right edge
                 train_x = x + w - 0.5
                 train_y = y + h - 1 - (h-2) * ((progress-0.25) * 4)
-            elif progress < 0.75:  # Lado inferior
+            elif progress < 0.75:  # Bottom edge
                 train_x = x + w - 1 - (w-2) * ((progress-0.5) * 4)
                 train_y = y + 0.5
-            else:  # Lado izquierdo
+            else:  # Left edge
                 train_x = x + 0.5
                 train_y = y + 1 + (h-2) * ((progress-0.75) * 4)
                 
-            # Dibujar vagón principal
+            # Draw the lead car
             ax.plot([train_x], [train_y], marker='s', ms=8, 
                    color='#ff7f0e', markeredgecolor='black')
             
-            # Dibujar vagones adicionales si hay más pasajeros
+            # Draw trailing cars based on rider count
             for i in range(1, min(len(self.riders)//4 + 1, 3)):
                 offset_x = train_x - i * 0.3 * math.cos(progress * 2 * math.pi)
                 offset_y = train_y - i * 0.3 * math.sin(progress * 2 * math.pi)
@@ -70,13 +70,13 @@ class RollerCoaster(Ride):
                        color='#ff7f0e', alpha=0.8)
 
     def _draw_bbox(self, ax):
-        """Dibuja el área base de la atracción."""
+        """Draw the ride base area."""
         RideVisuals.draw_bbox(self, ax)
         
     def _draw_queue(self, ax):
-        """Dibuja la cola visual."""
+        """Draw the queue visualization."""
         RideVisuals.draw_queue(self, ax)
         
     def _draw_capacity_info(self, ax):
-        """Dibuja información de capacidad."""
+        """Draw capacity information."""
         RideVisuals.draw_capacity_info(self, ax)

@@ -88,8 +88,8 @@ def read_patrons_csv(path):
 def load_config_yaml(path):
     """Load configuration from a YAML file and return it as a dict."""
     if not YAML_AVAILABLE:
-        print("Error: PyYAML requerido para cargar archivos YAML")
-        print("Instala con: pip install pyyaml")
+        print("Error: PyYAML is required to load YAML files")
+        print("Install with: pip install pyyaml")
         return None
         
     if path is None:
@@ -100,13 +100,13 @@ def load_config_yaml(path):
             config = yaml.safe_load(f)
         return config
     except FileNotFoundError:
-        print(f"Error: No se encontró el archivo de configuración: {path}")
+        print(f"Error: Configuration file not found: {path}")
         return None
     except yaml.YAMLError as e:
-        print(f"Error parseando YAML: {e}")
+        print(f"Error parsing YAML: {e}")
         return None
     except Exception as e:
-        print(f"Error inesperado cargando configuración: {e}")
+        print(f"Unexpected error loading configuration: {e}")
         return None
 
 
@@ -119,7 +119,7 @@ def print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_s
     print(f"Park dimensions: {terrain.width} x {terrain.height}")
     print(f"Number of rides: {len(rides)}")
     
-    # Detalles de atracciones
+    # Ride details
     for i, ride in enumerate(rides, 1):
         ride_type = "Pirate Ship" if isinstance(ride, PirateShip) else "Ferris Wheel"
         print(f"   {i}. {ride_type} - Capacity: {ride.capacity}, Duration: {ride.duration}")

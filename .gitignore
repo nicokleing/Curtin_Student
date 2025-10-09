@@ -164,3 +164,14 @@ Desktop.ini
 *.bak
 *.backup
 *~
+
+# Local context and tooling
+contexto/
+.continue/
+agents/
+experiments/
+backups/
+.idea/
+*.env
+**/.env
+exports/

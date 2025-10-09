@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Comportamientos del sistema
-=========================
-Contiene la lógica especializada de comportamientos
+Behavior package.
+=================
+Provides specialized visitor behaviors.
 """
 from .movement_behavior import MovementBehavior
 from .decision_behavior import DecisionBehavior

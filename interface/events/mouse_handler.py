@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Manejador de eventos de mouse."""
+"""Mouse event handler."""
 
 class MouseHandler:
-    """Maneja todos los eventos de mouse para los controles."""
+    """Handle all mouse events for the controls."""
     
     def __init__(self, engine, ax_controls, button_renderer):
         self.engine = engine
@@ -10,7 +10,7 @@ class MouseHandler:
         self.button_renderer = button_renderer
         
     def handle_click(self, event):
-        """Maneja eventos de click del mouse."""
+        """Handle mouse click events."""
         if event.inaxes != self.ax_controls:
             return
             
@@ -20,7 +20,7 @@ class MouseHandler:
             
         print(f"Click detected at ({x:.2f}, {y:.2f})")
         
-        # Verificar qué botón fue clickeado
+        # Check which button was clicked
         for btn_name in self.button_renderer.buttons:
             area = self.button_renderer.get_button_area(btn_name)
             if area:
@@ -31,7 +31,7 @@ class MouseHandler:
                     break
                     
     def _handle_button_action(self, button_name):
-        """Ejecuta la acción correspondiente al botón clickeado."""
+        """Execute the action associated with a button click."""
         actions = {
             'pause': self.engine.toggle_pause,
             'reset': self.engine.reset_simulation,
@@ -46,5 +46,5 @@ class MouseHandler:
             actions[button_name]()
             
     def _toggle_stats(self):
-        """Alterna la visualización de estadísticas (placeholder)."""
+        """Toggle the statistics view (placeholder)."""
         print("Toggle statistics (placeholder functionality)")

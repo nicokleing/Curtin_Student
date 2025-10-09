@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 """
-Comportamiento de Movimiento para Visitantes
-==========================================
-Maneja la lógica de pathfinding y navegación
+Movement behavior for visitors.
+================================
+Handles basic pathfinding and navigation.
 """
 import math
 import random
 
 
 class MovementBehavior:
-    """Encapsula la lógica de movimiento de visitantes"""
+    """Encapsulate visitor movement logic."""
     
     @staticmethod
     def at_target(position, target):
-        """Verifica si el visitante está cerca del objetivo"""
+        """Check if the visitor is close to the target."""
         if target is None:
             return True
         dx = target[0] - position[0]
@@ -22,7 +22,7 @@ class MovementBehavior:
 
     @staticmethod
     def step_towards(position, target, speed, terrain):
-        """Mueve al visitante un paso hacia el objetivo"""
+        """Move the visitor a step toward the target."""
         if target is None:
             return position
             
@@ -35,19 +35,19 @@ class MovementBehavior:
         if dist < 1e-6:
             return position
             
-        # Vector unitario hacia el objetivo
+        # Unit vector toward the target
         ux = vx / dist
         uy = vy / dist
         
-        # Nueva posición propuesta
+        # Proposed new position
         nx = px + ux * speed
         ny = py + uy * speed
         
-        # Verificar si el camino está libre
+        # Check whether the path is clear
         if terrain.is_free_line((px, py), (nx, ny)):
             return (nx, ny)
         else:
-            # Pequeño rodeo para evitar obstáculos
+            # Take a small detour to avoid obstacles
             angle = random.choice([-1, 1]) * math.pi / 6
             rx = ux * math.cos(angle) - uy * math.sin(angle)
             ry = ux * math.sin(angle) + uy * math.cos(angle)
@@ -57,11 +57,11 @@ class MovementBehavior:
             if terrain.is_free_point((nx, ny)):
                 return (nx, ny)
             
-        return position  # No se pudo mover
+        return position  # Could not move
 
     @staticmethod
     def find_nearby_rides(position, rides, max_distance=8.0):
-        """Encuentra atracciones cercanas al visitante"""
+        """Find nearby rides for this visitor."""
         nearby = []
         px, py = position
         

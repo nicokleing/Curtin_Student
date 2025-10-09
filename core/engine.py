@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Motor de Simulación - Lógica Principal
+Simulation Engine - Core Logic
 =====================================
-Lógica de simulación pura sin dependencias de UI
-Estado de simulación, lógica de pasos y estadísticas
+Pure simulation logic without UI dependencies.
+Tracks simulation state, step logic, and statistics.
 """
 from models import Patron, PatronType
 from simulation.export import ExportManager
@@ -13,8 +13,8 @@ import matplotlib.pyplot as plt
 
 class SimulationEngine:
     """
-    Motor de simulación - lógica pura sin UI
-    Estado de simulación, pasos y estadísticas
+    Simulation engine with pure logic (no UI dependencies).
+    Manages simulation state, step processing, and statistics.
     """
     
     def __init__(self, config):
@@ -38,6 +38,7 @@ class SimulationEngine:
         self.queued_now = []
         self.departed_total = []
         self.abandoned_now = []
+        # NOTE: keep raw lists so the display can show latest values without extra conversions.
         
         # Export manager for --save-run
         self.export_manager = None
@@ -300,7 +301,7 @@ class SimulationEngine:
     def set_speed(self, multiplier):
         """Set simulation speed"""
         self.speed_multiplier = multiplier
-        speed_names = {1: "NORMAL", 5: "Fast", 10: "Turbo"}
+        speed_names = {1: "NORMAL", 5: "Fast", 10: "Fastest"}
         speed_name = speed_names.get(multiplier, f"{multiplier}x")
         print(f"Speed changed to {speed_name} ({multiplier}x)")
         
@@ -402,7 +403,7 @@ class SimulationEngine:
                 'patron_breakdown': self._get_patron_breakdown()
             }
             
-            # Añadir métricas completas de Epic 6 si están disponibles
+            # Add full Epic 6 metrics when available
             if comprehensive_metrics:
                 final_stats['detailed_metrics'] = comprehensive_metrics
             
@@ -416,15 +417,15 @@ class SimulationEngine:
             # Export all formats including detailed metrics
             exported_files = self.export_manager.export_all(self.display, self.metrics_calculator)
             
-            print(f"✅ Exportación completada: {len(exported_files)} archivos creados")
-            print(f"📁 Directorio: {self.export_manager.output_dir}")
+            print(f"Export completed: {len(exported_files)} files created")
+            print(f"Output directory: {self.export_manager.output_dir}")
             
             for file_path in exported_files:
                 file_size = os.path.getsize(file_path) / 1024  # KB
-                print(f"   📄 {os.path.basename(file_path)} ({file_size:.1f} KB)")
+                print(f"   File: {os.path.basename(file_path)} ({file_size:.1f} KB)")
                 
         except Exception as e:
-            print(f"❌ Error en exportación: {e}")
+            print(f"Export error: {e}")
             
     def _get_patron_breakdown(self):
         """Get detailed breakdown of patron statistics."""

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-Módulo de Exportación - Generación de Datos y Reportes
-======================================================
-Exportación de resultados de simulación a varios formatos
+Export module - generate data and reports.
+==========================================
+Exports simulation results to multiple formats.
 """
 import os
 import json
@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 class ExportManager:
-    """Gestiona exportación de datos de simulación a múltiples formatos."""
+    """Handle simulation data export to multiple formats."""
     
     def __init__(self, run_name=None):
         """Initialize export manager with optional run name."""
@@ -86,7 +86,7 @@ class ExportManager:
             return files_created
             
         except Exception as e:
-            print(f"Error durante la exportación: {e}")
+            print(f"Export error: {e}")
             return files_created
             
     def _export_events_csv(self):
@@ -116,7 +116,7 @@ class ExportManager:
             return str(csv_path)
             
         except Exception as e:
-            print(f"Error exportando CSV: {e}")
+            print(f"Error exporting CSV: {e}")
             return None
             
     def _export_detailed_visitor_events_csv(self, metrics_calculator):
@@ -162,7 +162,7 @@ class ExportManager:
             return str(csv_path)
             
         except Exception as e:
-            print(f"Error exportando CSV detallado de visitantes: {e}")
+            print(f"Error exporting detailed visitor CSV: {e}")
             return None
             
     def _export_summary_json(self):
@@ -188,7 +188,7 @@ class ExportManager:
             return str(json_path)
             
         except Exception as e:
-            print(f"Error exportando JSON: {e}")
+            print(f"Error exporting JSON: {e}")
             return None
             
     def _export_plot_png(self, display_manager=None):
@@ -207,13 +207,13 @@ class ExportManager:
             return str(png_path)
             
         except Exception as e:
-            print(f"Error exportando PNG: {e}")
+            print(f"Error exporting PNG: {e}")
             return None
             
     def _create_summary_plot(self, png_path):
         """Create a summary plot with timeline data."""
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
-        fig.suptitle(f'AdventureWorld - Resumen de Simulación\n{self.run_name}', fontsize=14)
+        fig.suptitle(f'AdventureWorld - Simulation Summary\n{self.run_name}', fontsize=14)
         
         # Extract timeline data if available
         timeline = self.final_stats.get('timeline', {})
@@ -221,34 +221,34 @@ class ExportManager:
         if timeline and 'steps' in timeline:
             steps = timeline['steps']
             
-            # Plot 1: Visitantes activos
-            ax1.plot(steps, timeline.get('riders_timeline', []), 'r-', linewidth=2, label='En Atracciones')
-            ax1.plot(steps, timeline.get('queued_timeline', []), 'orange', linewidth=2, label='En Cola')
+            # Plot 1: Active visitors
+            ax1.plot(steps, timeline.get('riders_timeline', []), 'r-', linewidth=2, label='On Rides')
+            ax1.plot(steps, timeline.get('queued_timeline', []), 'orange', linewidth=2, label='In Queue')
             
             active = [r + q for r, q in zip(timeline.get('riders_timeline', []), 
                                           timeline.get('queued_timeline', []))]
-            ax1.plot(steps, active, 'b-', linewidth=2, label='Total Activos')
+            ax1.plot(steps, active, 'b-', linewidth=2, label='Active Total')
             
-            ax1.set_ylabel('Visitantes Activos')
-            ax1.set_title('Visitantes en el Parque')
+            ax1.set_ylabel('Active Visitors')
+            ax1.set_title('Visitors in the Park')
             ax1.legend()
             ax1.grid(True, alpha=0.3)
             
-            # Plot 2: Visitantes que salieron
-            ax2.plot(steps, timeline.get('departed_timeline', []), 'g-', linewidth=2, label='Salieron')
+            # Plot 2: Departing visitors
+            ax2.plot(steps, timeline.get('departed_timeline', []), 'g-', linewidth=2, label='Departed')
             
             if max(timeline.get('abandoned_timeline', [0])) > 0:
-                ax2.plot(steps, timeline.get('abandoned_timeline', []), 'm--', linewidth=2, label='Abandonos')
+                ax2.plot(steps, timeline.get('abandoned_timeline', []), 'm--', linewidth=2, label='Left Queue')
                 
-            ax2.set_xlabel('Paso de Simulación')
-            ax2.set_ylabel('Visitantes Salidos')
-            ax2.set_title('Flujo de Salida')
+            ax2.set_xlabel('Simulation Step')
+            ax2.set_ylabel('Visitors Departed')
+            ax2.set_title('Exit Flow')
             ax2.legend()
             ax2.grid(True, alpha=0.3)
             
         else:
             # Create basic info plot if no timeline
-            ax1.text(0.5, 0.5, 'Simulación Completada\nVer summary.json para detalles', 
+            ax1.text(0.5, 0.5, 'Simulation Complete\nSee summary.json for details', 
                     ha='center', va='center', fontsize=16, transform=ax1.transAxes)
             ax1.axis('off')
             ax2.axis('off')
@@ -279,46 +279,46 @@ class ExportManager:
         try:
             readme_path = self.output_dir / "README.md"
             
-            content = f"""# AdventureWorld - Exportación de Simulación
-            
-## Información de Ejecución
-- **Nombre de ejecución**: {self.run_name}
-- **Fecha de exportación**: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-- **Archivos generados**: {len(files_created)}
+            content = f"""# AdventureWorld - Simulation Export
 
-## Archivos Incluidos
+## Run Information
+- **Run name**: {self.run_name}
+- **Export date**: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- **Files generated**: {len(files_created)}
+
+## Included Files
 
 ### events.csv
-Registro cronológico de todos los eventos de la simulación:
-- Movimientos de visitantes
-- Cambios de estado de atracciones  
-- Entrada y salida de visitantes
+Chronological log of all simulation events:
+- Visitor movements
+- Ride state changes
+- Entries and exits
 
 ### summary.json
-Resumen completo de la simulación incluyendo:
-- Configuración utilizada
-- Estadísticas finales
-- Análisis de eventos
-- Timeline de datos (si se usó --stats)
+Complete simulation summary including:
+- Configuration used
+- Final statistics
+- Event analysis
+- Timeline data (when --stats is enabled)
 
 ### plot.png
-Visualización gráfica de la simulación:
-- Estado final del mapa con visitantes y atracciones
-- Gráficos de estadísticas en tiempo real (si se usó --stats)
+Visual overview of the simulation:
+- Final map with visitors and rides
+- Statistics charts (when --stats is enabled)
 
-## Uso de los Datos
+## Working With The Data
 
-Los archivos CSV y JSON pueden ser importados en herramientas de análisis como:
+CSV and JSON files can be loaded in tools like:
 - Excel / LibreOffice Calc
 - Python pandas
 - R
 - Tableau
 - Power BI
 
-## Reproducibilidad
+## Reproducibility
 
-Para reproducir esta simulación, usar los mismos parámetros de configuración 
-incluidos en summary.json, especialmente el valor de semilla (seed) si se utilizó.
+Reuse the parameters shown in summary.json to reproduce this run,
+especially the seed value when one was provided.
 """
 
             with open(readme_path, 'w', encoding='utf-8') as readme_file:
@@ -327,5 +327,5 @@ incluidos en summary.json, especialmente el valor de semilla (seed) si se utiliz
             return str(readme_path)
             
         except Exception as e:
-            print(f"Error creando README: {e}")
+            print(f"Error creating README: {e}")
             return None

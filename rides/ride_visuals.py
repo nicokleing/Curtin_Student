@@ -1,65 +1,66 @@
 # -*- coding: utf-8 -*-
-"""Visualización y renderizado de atracciones."""
+"""Ride visualization and rendering helpers."""
 
 import matplotlib.patches as patches
 
 class RideVisuals:
-    """Maneja toda la visualización de atracciones."""
+    """Handle all ride visualization tasks."""
     
     @staticmethod
     def draw_bbox(ride, ax):
-        """Estados visuales diferenciados por colores."""
+        """Render ride bounding box with state colors."""
         x, y, w, h = ride.bbox
         
         state_colors = {
-            "idle": "#4c78a8",      # Azul - inactivo
-            "loading": "#54a24b",   # Verde - cargando
-            "running": "#f58518",   # Naranja - funcionando  
-            "unloading": "#e377c2"  # Rosa - descargando
+            "idle": "#4c78a8",      # Blue - idle
+            "loading": "#54a24b",   # Green - loading
+            "running": "#f58518",   # Orange - running
+            "unloading": "#e377c2"  # Pink - unloading
         }
         
         color = state_colors.get(ride.state, "#7f7f7f")
         
-        # Dibujar rectángulo con borde más grueso para mejor visibilidad
+        # Draw rectangle with a thicker border for readability
         rect = patches.Rectangle((x, y), w, h, fill=False, ec=color, lw=3)
         ax.add_patch(rect)
         
-        # Agregar texto del estado para mejor comprensión
+        # Label the ride state above the box
         state_text = ride.state.upper()
         ax.text(x + w/2, y - 2, state_text, ha='center', va='top', 
                 fontsize=8, color=color, weight='bold')
 
     @staticmethod
     def draw_queue(ride, ax):
-        """Visualización gráfica de colas en tiempo real."""
+        """Draw the current queue next to the ride."""
         if not ride.queue:
             return
             
         x, y, w, h = ride.bbox
         
-        # Calcular posiciones de cola (línea vertical al lado de la atracción)
-        queue_start_x = x + w + 2  # 2 unidades a la derecha de la atracción
-        queue_start_y = y + h/2    # Centrado verticalmente
+        # Position queue as a vertical line next to the ride
+        queue_start_x = x + w + 2  # Offset queue slightly to the right
+        queue_start_y = y + h/2    # Center queue vertically
         
-        # Dibujar cada persona en la cola
+        # Draw each person in the queue
         for i, patron in enumerate(ride.queue):
-            # Posición en la cola (cada persona ocupa 0.8 unidades verticalmente)
+            # Each person takes 0.8 units vertically
             patron_x = queue_start_x
             patron_y = queue_start_y + i * 0.8
             
-            # Color basado en tipo de visitante si está disponible
+            # Choose color by visitor type when available
             patron_color = RideVisuals._get_patron_queue_color(patron)
             
-            # Dibujar punto del visitante en cola
+            # Plot the visitor marker
             ax.plot([patron_x], [patron_y], marker='o', ms=4, 
                    color=patron_color, alpha=0.8)
                    
-            # Número en la cola para los primeros 10
+            # Number the first few queue positions
             if i < 10:
+                # NOTE: lightweight labels help spot long queues when tuning the sim.
                 ax.text(patron_x + 0.3, patron_y, f"{i+1}", 
                        fontsize=6, va='center', alpha=0.7)
         
-        # Dibujar línea de cola si hay más de 1 persona
+        # Draw a queue guide line when there is more than one person
         if len(ride.queue) > 1:
             queue_end_y = queue_start_y + (len(ride.queue) - 1) * 0.8
             ax.plot([queue_start_x - 0.2, queue_start_x - 0.2], 
@@ -68,43 +69,43 @@ class RideVisuals:
 
     @staticmethod
     def _get_patron_queue_color(patron):
-        """Obtiene color del visitante para visualización en cola."""
+        """Return the color used to draw a visitor in the queue."""
         if hasattr(patron, 'patron_type'):
             type_colors = {
-                "adventurer": "#d62728",   # Rojo - adventurer
-                "family": "#2ca02c",     # Verde - family  
-                "impatient": "#ff7f0e",   # Naranja - impatient
-                "explorer": "#1f77b4"    # Azul - explorer
+                "adventurer": "#d62728",   # Red - adventurer
+                "family": "#2ca02c",      # Green - family
+                "impatient": "#ff7f0e",   # Orange - impatient
+                "explorer": "#1f77b4"     # Blue - explorer
             }
             return type_colors.get(patron.patron_type.value, "#7f7f7f")
         else:
-            return "#ff7f0e"  # Naranja por defecto para colas
+            return "#ff7f0e"  # Default queue color
 
     @staticmethod
     def draw_capacity_info(ride, ax):
-        """Información de capacidad, cola y estado detallado."""
+        """Display capacity, queue, and state details."""
         x, y, w, h = ride.bbox
         
-        # Información de capacidad actual
+        # Current capacity info
         current_riders = len(ride.riders)
         queue_length = len(ride.queue)
         
-        # Texto de información con estado detallado
+        # Compose info text with state details
         info_text = f"RIDE {current_riders}/{ride.capacity}"
         
         if queue_length > 0:
-            info_text += f" | 🔶 {queue_length}"
+            info_text += f" | Queue {queue_length}"
             
-        # Agregar información de tiempo restante si está en progreso
+        # Append remaining-time info while active
         if ride.state in ["loading", "running", "unloading"] and hasattr(ride.timer_manager, 'timer'):
             if ride.state == "loading":
-                info_text += f" | ⏳ Cargando ({ride.timer_manager.timer}s)"
+                info_text += f" | Loading ({ride.timer_manager.timer}s)"
             elif ride.state == "running":
                 info_text += f" | RUNNING ({ride.timer_manager.timer}s)"
             elif ride.state == "unloading":
-                info_text += f" | ⏬ Descargando ({ride.timer_manager.timer}s)"
+                info_text += f" | Unloading ({ride.timer_manager.timer}s)"
         
-        # Color de fondo según estado para mejor visibilidad
+        # Use a background color tied to the state
         state_bg_colors = {
             "idle": "lightblue",
             "loading": "lightgreen", 
@@ -113,7 +114,7 @@ class RideVisuals:
         }
         bg_color = state_bg_colors.get(ride.state, "white")
             
-        # Mostrar información encima de la atracción
+        # Show info above the ride
         ax.text(x + w/2, y + h + 6, info_text, ha='center', va='bottom',
                fontsize=8, bbox=dict(boxstyle="round,pad=0.3", 
                facecolor=bg_color, alpha=0.9, edgecolor='gray'))
