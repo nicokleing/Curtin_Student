@@ -175,3 +175,6 @@ backups/
 *.env
 **/.env
 exports/
+
+
+.github/instructions/
