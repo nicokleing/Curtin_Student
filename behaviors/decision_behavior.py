@@ -5,68 +5,85 @@ Decision behavior for visitors.
 Handles target selection and ride choices.
 """
 import random
-from models.patron_types import PatronType, RidePreference
+from models.patron_types import PatronType, RideCategory, RIDE_CATEGORY_MAP
 
 
 class DecisionBehavior:
     """Encapsulate visitor decision-making logic."""
+    EXPLORE_PROBABILITY = 0.25
+    MIN_COMMIT_SCORE = 0.25
+    UTILITY_WEIGHTS = {
+        "preference": 0.55,
+        "rating": 0.25,
+        "queue": -0.4,
+        "distance": -0.3,
+    }
     
-    @staticmethod
-    def choose_target(position, rides, terrain, ride_preferences):
+    @classmethod
+    def choose_target(cls, position, rides, terrain, ride_preferences):
         """Pick a target based on preferences."""
-        if not rides or random.random() < 0.3:  # 30% chance to explore freely
-            return terrain.random_free_point()
-            
-        # Filter rides by visitor preference
-        preferred_rides = []
-        other_rides = []
-        
-        for ride in rides:
-            ride_type = RidePreference(ride.ride_type)
-            preference_score = ride_preferences.get(ride_type, 0.1)
-            
-            # Consider queue size
-            queue_length = len(ride.queue)
-            queue_penalty = min(queue_length * 0.1, 0.5)  # Penalize long queues
-            
-            final_score = preference_score - queue_penalty
-            
-            if final_score > 0.4:  # Threshold for attractive rides
-                preferred_rides.append((ride, final_score))
-            else:
-                other_rides.append((ride, final_score))
-        
-        # Choose ride with weighted probability
-        target_rides = preferred_rides if preferred_rides else other_rides
-        
-        if target_rides:
-            # Sort by score and choose one of the top three
-            target_rides.sort(key=lambda x: x[1], reverse=True)
-            top_rides = target_rides[:min(3, len(target_rides))]
-            chosen_ride = random.choice(top_rides)[0]
-            
-            x, y, w, h = chosen_ride.bbox
-            return (x + w / 2.0, y + h + 1.5)
-        else:
+        if not rides:
             return terrain.random_free_point()
 
-    @staticmethod
-    def choose_best_nearby_ride(nearby_rides, ride_preferences):
+        if random.random() < cls.EXPLORE_PROBABILITY:
+            return terrain.random_free_point()
+            
+        scored_rides = []
+        for ride in rides:
+            score = cls.compute_ride_score(position, ride, terrain, ride_preferences)
+            scored_rides.append((ride, score))
+
+        if not scored_rides:
+            return terrain.random_free_point()
+
+        scored_rides.sort(key=lambda item: item[1], reverse=True)
+        top_score = scored_rides[0][1]
+        if top_score < cls.MIN_COMMIT_SCORE:
+            return terrain.random_free_point()
+
+        top_candidates = [ride for ride, score in scored_rides if score >= top_score - 0.1]
+        chosen = random.choice(top_candidates)
+        return cls._queue_entry_point(chosen)
+
+    @classmethod
+    def choose_best_nearby_ride(cls, position, nearby_rides, terrain, ride_preferences):
         """Select the best nearby ride."""
         if not nearby_rides:
             return None
-            
-        scored_rides = []
+
+        best_ride = None
+        best_score = None
         for ride in nearby_rides:
-            ride_type = RidePreference(ride.ride_type)
-            preference = ride_preferences.get(ride_type, 0.1)
-            queue_penalty = len(ride.queue) * 0.1
-            score = preference - queue_penalty
-            scored_rides.append((ride, score))
-        
-        # Pick the ride with the best score
-        best_ride = max(scored_rides, key=lambda x: x[1])
-        return best_ride[0] if best_ride[1] > 0.2 else None
+            score = cls.compute_ride_score(position, ride, terrain, ride_preferences)
+            if best_score is None or score > best_score:
+                best_ride = ride
+                best_score = score
+
+        if best_score is None or best_score < cls.MIN_COMMIT_SCORE:
+            return None
+        return best_ride
+
+    @classmethod
+    def compute_ride_score(cls, position, ride, terrain, ride_preferences):
+        """Score a ride combining preference, rating, queue, and distance."""
+        category = cls._resolve_category(ride)
+        preference = ride_preferences.get(category, 0.2)
+        rating = getattr(ride, "rating", 0.5)
+        queue_ratio = len(ride.queue) / max(1, ride.capacity)
+
+        rx, ry = ride.center()
+        px, py = position
+        distance = abs(px - rx) + abs(py - ry)
+        normaliser = max(1.0, terrain.width + terrain.height)
+        distance_score = distance / normaliser
+
+        w = cls.UTILITY_WEIGHTS
+        return (
+            w["preference"] * preference
+            + w["rating"] * rating
+            + w["queue"] * queue_ratio
+            + w["distance"] * distance_score
+        )
 
     @staticmethod
     def calculate_exit_probability(rides_completed, patron_type):
@@ -88,3 +105,18 @@ class DecisionBehavior:
                 return 0.8  # 80% chance to leave
                 
         return 0.1  # Base probability
+
+    @staticmethod
+    def _queue_entry_point(ride):
+        x, y, w, h = ride.bbox
+        return (x + w / 2.0, y + h + 1.0)
+
+    @staticmethod
+    def _resolve_category(ride):
+        category = getattr(ride, "category", None)
+        if category:
+            return category
+        category = RIDE_CATEGORY_MAP.get(ride.ride_type)
+        if category:
+            return category
+        return RideCategory.GENTLE

@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Utilities for CSV reading, YAML config loading and ride construction."""
 from rides import PirateShip, FerrisWheel
+from models.patron_types import RIDE_CATEGORY_MAP
 
 try:
     import yaml
@@ -9,6 +10,13 @@ try:
 except ImportError:
     YAML_AVAILABLE = False
     print("Warning: PyYAML not available. Install with: pip install pyyaml")
+
+
+RIDE_RATINGS = {
+    "pirate": 0.8,
+    "ferris": 0.6,
+    "coaster": 0.9,
+}
 
 def read_rides_csv(path):
     """Read rides CSV: type,capacity,duration,x,y,width,height per line."""
@@ -147,6 +155,11 @@ def build_rides(rides_params, terrain):
             ride = RollerCoaster(name, rp["capacity"], rp["duration"], rp["bbox"])
         else:
             ride = PirateShip(name, rp["capacity"], rp["duration"], rp["bbox"])
-        terrain.add_bbox_barrier(ride.bbox)
+        ride.rating = RIDE_RATINGS.get(ride.ride_type, 0.6)
+        ride.category = RIDE_CATEGORY_MAP.get(ride.ride_type)
+        try:
+            terrain.add_ride(ride)
+        except ValueError as err:
+            raise ValueError(f"Cannot place ride {name}: {err}") from err
         rides.append(ride)
     return rides

@@ -77,5 +77,9 @@ Examples:
                 "type": rtype, "capacity": cap, "duration": dur, "bbox": (x, y, w, h)
             })
 
-        rides = build_rides(rides_params, terrain)
+        try:
+            rides = build_rides(rides_params, terrain)
+        except ValueError as err:
+            print(f"Configuration error: {err}")
+            raise
         return terrain, rides, num_patrons

@@ -5,7 +5,6 @@ Configuration loader.
 Loads configuration from YAML/CSV files and command-line arguments.
 """
 import random
-import yaml
 from types import SimpleNamespace
 from simulation import Terrain, read_rides_csv, read_patrons_csv, build_rides, load_config_yaml, print_final_config
 from models import PatronType, Patron
@@ -71,49 +70,79 @@ class ConfigLoader:
     
     def _load_from_yaml(self, file_path):
         """Load configuration from YAML file"""
-        try:
-            with open(file_path, 'r', encoding='utf-8') as file:
-                data = yaml.safe_load(file)
-            
-            # Convert the loaded data to proper objects
-            terrain = Terrain.from_size(
-                width=data['terrain']['width'],
-                height=data['terrain']['height']
-            )
-            
-            rides = [
-                {
-                    "type": ride_data['tipo'],
-                    "capacity": ride_data.get('capacity', 20),
-                    "duration": ride_data.get('duration', 120),
-                    "bbox": (ride_data['position'][0], ride_data['position'][1], 4, 3)
-                } for ride_data in data.get('rides', [])
-            ]
-            
-            num_patrons = data.get('num_patrons', 60)
-            
+        data = load_config_yaml(file_path)
+        if data is None:
+            raise ValueError(f"Failed to read configuration file: {file_path}")
 
-            
-            return terrain, rides, num_patrons
-        
-        except FileNotFoundError:
-            print(f"YAML file not found: {file_path}")
-            return None
-        except yaml.YAMLError as e:
-            print(f"YAML format error: {e}")
-            return None
-        except KeyError as e:
-            print(f"Required field missing in YAML: {e}")
-            return None
+        terrain_cfg = data.get('terrain', {})
+        if not terrain_cfg:
+            raise ValueError("YAML missing 'terrain' section")
+
+        if 'grid' in terrain_cfg:
+            raw_grid = terrain_cfg['grid']
+            if not isinstance(raw_grid, list):
+                raise ValueError("Terrain grid must be a list of rows")
+            grid = [[int(cell) for cell in row] for row in raw_grid]
+            if not grid:
+                raise ValueError("Terrain grid is empty")
+            width = len(grid[0])
+            height = len(grid)
+            if any(len(row) != width for row in grid):
+                raise ValueError("Terrain grid rows must be the same length")
+            spawns = [tuple(int(v) for v in p) for p in terrain_cfg.get('entrances', [])]
+            exits = [tuple(int(v) for v in p) for p in terrain_cfg.get('exits', [])]
+            terrain = Terrain(width, height, grid, spawns or None, exits or None)
+        else:
+            width = terrain_cfg.get('width')
+            height = terrain_cfg.get('height')
+            if width is None or height is None:
+                raise ValueError("Terrain definition requires width and height")
+            obstacles = [tuple(b) for b in terrain_cfg.get('obstacles', [])]
+            spawns = [tuple(int(v) for v in p) for p in terrain_cfg.get('entrances', [])]
+            exits = [tuple(int(v) for v in p) for p in terrain_cfg.get('exits', [])]
+            border = terrain_cfg.get('border', True)
+            terrain = Terrain.from_definition(
+                width,
+                height,
+                obstacles=obstacles,
+                entrances=spawns,
+                exits=exits,
+                border=border,
+            )
+
+        rides = []
+        for ride_data in data.get('rides', []):
+            rtype = ride_data.get('type') or ride_data.get('tipo')
+            if not rtype:
+                raise ValueError("Ride entry missing 'type'")
+            capacity = int(ride_data.get('capacity', 20))
+            duration = int(ride_data.get('duration', 120))
+            if 'bbox' in ride_data:
+                bbox_values = ride_data['bbox']
+            else:
+                position = ride_data.get('position', [0, 0])
+                size = ride_data.get('size', [4, 3])
+                bbox_values = [position[0], position[1], size[0], size[1]]
+            bbox = tuple(int(v) for v in bbox_values)
+            rides.append({
+                "type": str(rtype).lower(),
+                "capacity": capacity,
+                "duration": duration,
+                "bbox": bbox
+            })
+
+        num_patrons = int(data.get('num_patrons', 60))
+
+        return terrain, rides, num_patrons
     
     def _load_from_csv(self, args):
         """Load configuration from CSV files"""
         
         # Load terrain
         if args.map_csv:
-            terrain = Terrain(args.map_csv)
+            terrain = Terrain.from_csv(args.map_csv)
         else:
-            terrain = Terrain('data/map1.csv')  # Default
+            terrain = Terrain.from_csv('data/map1.csv')  # Default
             
         # Load rides
         if args.rides_csv:

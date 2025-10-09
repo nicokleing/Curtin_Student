@@ -1,21 +1,49 @@
 # -*- coding: utf-8 -*-
-"""
-Visitor enums for the patron system.
-=====================================
-Defines visitor types and their ride preferences.
-"""
+"""Enums and tables that describe visitors and ride categories."""
 from enum import Enum
 
 
 class PatronType(Enum):
-    """Visitor types with different behaviors."""
-    ADVENTURER = "adventurer"    # prefers exciting rides, high patience
-    FAMILY = "family"           # prefers safe rides, medium patience
-    IMPATIENT = "impatient"     # low patience, abandons queues quickly
-    EXPLORER = "explorer"       # likes to try everything, variable patience
+    ADVENTURER = "adventurer"
+    FAMILY = "family"
+    IMPATIENT = "impatient"
+    EXPLORER = "explorer"
 
 
-class RidePreference(Enum):
-    """Ride preferences by patron type."""
-    PIRATE = "pirate"   # Pirate ship - thrilling
-    FERRIS = "ferris"   # Ferris wheel - calm / family
+class RideCategory(Enum):
+    THRILL = "thrill"
+    FAMILY = "family"
+    GENTLE = "gentle"
+
+
+DEFAULT_CATEGORY_WEIGHTS = {
+    PatronType.ADVENTURER: {
+        RideCategory.THRILL: 0.9,
+        RideCategory.FAMILY: 0.3,
+        RideCategory.GENTLE: 0.4,
+    },
+    PatronType.FAMILY: {
+        RideCategory.THRILL: 0.25,
+        RideCategory.FAMILY: 0.85,
+        RideCategory.GENTLE: 0.7,
+    },
+    PatronType.IMPATIENT: {
+        RideCategory.THRILL: 0.75,
+        RideCategory.FAMILY: 0.5,
+        RideCategory.GENTLE: 0.35,
+    },
+    PatronType.EXPLORER: {
+        RideCategory.THRILL: 0.6,
+        RideCategory.FAMILY: 0.6,
+        RideCategory.GENTLE: 0.6,
+    },
+}
+
+
+RIDE_CATEGORY_MAP = {
+    "pirate": RideCategory.THRILL,
+    "coaster": RideCategory.THRILL,
+    "ferris": RideCategory.FAMILY,
+    "gentle": RideCategory.GENTLE,
+    "family": RideCategory.FAMILY,
+}
