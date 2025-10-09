@@ -107,6 +107,16 @@ class Ride:
                 rider = self.riders.pop(0)
                 rider.leave_ride()
 
+    def reset(self):
+        """Reset ride state between simulation runs."""
+        self.state = RideState.IDLE.value
+        self.queue.clear()
+        self.riders.clear()
+        self.current_time = 0
+        self.step_counter = 0
+        if hasattr(self, 'timer_manager'):
+            self.timer_manager.reset()
+
     def center(self):
         """Return the center of the ride."""
         x, y, w, h = self.bbox

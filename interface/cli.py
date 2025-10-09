@@ -21,23 +21,22 @@ class CLIManager:
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
             epilog="""
 Examples:
-  python3 adventureworld.py                           # Default configuration
-  python3 adventureworld.py -i                       # Interactive mode
+  python3 adventureworld.py -i                       # Interactive mode with UI
+  python3 adventureworld.py -f data/map1.csv -r data/rides.csv --seed 7 --steps 300 --save-run
   python3 adventureworld.py --config config.yaml     # Load full YAML configuration
-  python3 adventureworld.py --rides-csv rides.csv --stats  # CSV + live stats
             """
         )
         
-        self.parser.add_argument("-i", "--interactive", action="store_true", 
-                               help="Interactive mode")
-        self.parser.add_argument("--config", default=None, 
-                               help="Full configuration YAML file")
-        self.parser.add_argument("--map-csv", default=None, 
-                               help="Map CSV (0=free,1=blocked)")
-        self.parser.add_argument("--rides-csv", default=None, 
-                               help="Simple rides CSV")
-        self.parser.add_argument("--patrons-csv", default=None, 
-                               help="CSV with total number of patrons")
+        self.parser.add_argument("-i", "--interactive", action="store_true",
+                                  help="Interactive mode with UI controls")
+        self.parser.add_argument("--config", default=None,
+                                  help="Full configuration YAML file")
+        self.parser.add_argument("-f", "--map-csv", dest="map_csv", default=None,
+                                  help="Map CSV (0=free,1=blocked)")
+        self.parser.add_argument("-r", "--rides-csv", dest="rides_csv", default=None,
+                                  help="Simple rides CSV")
+        self.parser.add_argument("-p", "--patrons-csv", dest="patrons_csv", default=None,
+                                  help="CSV with total number of patrons")
         self.parser.add_argument("--steps", type=int, default=300, 
                                help="Simulation steps")
         self.parser.add_argument("--stats", action="store_true", 

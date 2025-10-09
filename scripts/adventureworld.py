@@ -32,7 +32,7 @@ def main():
     
     # 3. Create and run the simulation engine
     engine = SimulationEngine(config)
-    engine.run()
+    engine.run(interactive=config.interactive)
 
 
 if __name__ == "__main__":

@@ -66,3 +66,9 @@ class RideTimer:
         """Start the unloading phase."""
         self.timer = self.get_unloading_time()
         self.unloading_phase = 0
+
+    def reset(self):
+        """Reset timer state for a fresh simulation run."""
+        self.timer = 0
+        self.loading_phase = 0
+        self.unloading_phase = 0

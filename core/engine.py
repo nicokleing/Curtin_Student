@@ -25,6 +25,7 @@ class SimulationEngine:
         self.steps = config.steps
         self.show_stats = config.show_stats
         self.save_run = getattr(config, 'save_run', False)
+        self.interactive = getattr(config, 'interactive', False)
         
         # Simulation state
         self.time = 0
@@ -41,25 +42,18 @@ class SimulationEngine:
         # NOTE: keep raw lists so the display can show latest values without extra conversions.
         
         # Export manager for --save-run
+        self._export_config_payload = {
+            'terrain_size': f"{self.terrain.width}x{self.terrain.height}",
+            'num_rides': len(self.rides),
+            'num_patrons': len(self.patrons),
+            'max_steps': self.steps,
+            'show_stats': self.show_stats
+        }
         self.export_manager = None
-        if self.save_run:
-            self.export_manager = ExportManager()
-            self.export_manager.set_config({
-                'terrain_size': f"{self.terrain.width}x{self.terrain.height}",
-                'num_rides': len(self.rides),
-                'num_patrons': len(self.patrons),
-                'max_steps': self.steps,
-                'show_stats': self.show_stats
-            })
+        self._prepare_export_manager()
         
         # Metrics calculator for Epic 6: Metrics and Reports
-        self.metrics_calculator = MetricsCalculator()
-        
-        # Initialize visitor tracking for metrics
-        for i, patron in enumerate(self.patrons):
-            self.metrics_calculator.initialize_visitor(
-                patron.id, patron.patron_type.value, 0
-            )
+        self._reset_metrics()
         
         # Display manager will be set when running
         self.display = None
@@ -108,6 +102,16 @@ class SimulationEngine:
         
         self.time += 1
         self.current_step += 1
+        
+    def perform_tick(self):
+        """Advance the simulation using the current speed multiplier."""
+        if self.paused or not self.running:
+            return
+        for _ in range(self.speed_multiplier):
+            if self.current_step < self.steps and self.running:
+                self.step()
+            else:
+                break
         
     def _update_statistics(self):
         """Update simulation statistics"""
@@ -175,81 +179,99 @@ class SimulationEngine:
             }
         }
     
-    def run(self):
-        """Main simulation loop with display"""
-        # Import display manager here to avoid circular imports
+    def run(self, interactive=False):
+        """Run the simulation in interactive or batch mode."""
+        if interactive:
+            self._run_interactive()
+        else:
+            self._run_batch()
+
+    def _run_interactive(self):
+        """Interactive loop that renders the UI and handles input."""
         from interface.display import DisplayManager
-        
-        # Create display manager
+
         self.display = DisplayManager(self)
         self.display.setup()
-        
+
         print(f"Starting simulation with {self.steps} steps...")
         print("Click the buttons to control the simulation!")
-        
+
         try:
             while self.current_step < self.steps and self.running:
-                # Check if window was closed
                 if not self.display.is_window_open():
                     print("Window closed - ending simulation")
+                    self.running = False
                     break
-                
-                # Execute simulation steps based on speed
-                if not self.paused:
-                    for _ in range(self.speed_multiplier):
-                        if self.current_step < self.steps and self.running:
-                            self.step()
-                        else:
-                            break
-                
-                # Update display
+
+                self.perform_tick()
+
                 if self.running:
                     self.display.update(self.get_current_state())
-                
-                # Control frame rate
+
                 self.display.pause_for_frame(self.paused)
-                    
         except KeyboardInterrupt:
             print("\nSimulation interrupted by Ctrl+C")
-        except Exception as e:
-            print(f"\nSimulation error: {e}")
-        
-        # Show final results
-        if self.running and self.current_step >= self.steps:
+            self.running = False
+        except Exception as exc:
+            print(f"\nSimulation error: {exc}")
+            self.running = False
+        finally:
+            self._finish_run(interactive=True)
+
+    def _run_batch(self):
+        """Execute the simulation without opening the UI."""
+        print(f"Running simulation for {self.steps} steps (batch mode)...")
+        self.paused = False
+        try:
+            while self.current_step < self.steps and self.running:
+                self.perform_tick()
+        except KeyboardInterrupt:
+            print("\nSimulation interrupted by Ctrl+C")
+            self.running = False
+        except Exception as exc:
+            print(f"\nSimulation error: {exc}")
+            self.running = False
+        finally:
+            self._finish_run(interactive=False)
+
+    def _finish_run(self, interactive=False):
+        """Handle reporting, exports, and cleanup after a run finishes."""
+        completed = self.current_step >= self.steps
+        comprehensive_metrics = None
+
+        if self.running and completed:
             print(f"\nSimulation completed in {self.current_step} steps")
             self.print_final_report()
-            
-            # Epic 6: calculation and display of comprehensive metrics
-            # Ensure metrics calculator has the same abandonment counts collected at Patron level
             try:
                 total_abandoned = sum(p.abandoned_queues for p in self.patrons)
-                # Update park-level abandonment count
                 self.metrics_calculator.park_metrics['total_abandonment_events'] = total_abandoned
-
-                # Also sync per-visitor abandonment counts so visitor analytics reflect reality
-                for p in self.patrons:
-                    vid = p.id
+                for patron in self.patrons:
+                    vid = patron.id
                     if vid in self.metrics_calculator.visitor_metrics:
-                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = p.abandoned_queues
+                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = patron.abandoned_queues
                     else:
-                        # Initialize if missing
-                        self.metrics_calculator.initialize_visitor(vid, p.patron_type.value, 0)
-                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = p.abandoned_queues
-
-            except Exception as e:
-                print(f"[ENGINE DEBUG] Error syncing abandonment counts to metrics: {e}")
+                        self.metrics_calculator.initialize_visitor(vid, patron.patron_type.value, 0)
+                        self.metrics_calculator.visitor_metrics[vid]['abandonment_count'] = patron.abandoned_queues
+            except Exception as exc:
+                print(f"[ENGINE DEBUG] Error syncing abandonment counts to metrics: {exc}")
 
             comprehensive_metrics = self.metrics_calculator.print_metrics_summary()
-            
-            # Handle export if --save-run was used
             if self.export_manager:
                 self._finalize_export(comprehensive_metrics)
-            
-        if self.running:
-            self.display.set_final_mode()
-            self.display.wait_for_user_action()
-        
-        self.display.cleanup()
+        elif not self.running and not completed:
+            print(f"\nSimulation stopped at step {self.current_step}")
+        elif self.running and not completed:
+            print(f"\nSimulation ended early at step {self.current_step}")
+
+        if interactive and self.display:
+            if self.running and completed:
+                self.display.set_final_mode()
+                self.display.wait_for_user_action()
+            self.display.cleanup()
+            self.display = None
+        elif self.display:
+            self.display.cleanup()
+            self.display = None
         
     def print_final_report(self):
         """Print Epic 2 final report"""
@@ -320,13 +342,26 @@ class SimulationEngine:
         self.departed_total = []
         self.abandoned_now = []
         
-        # Reset entities
-        for patron in self.patrons:
-            if hasattr(patron, 'reset'):
-                patron.reset()
+        # Reset terrain and entities
+        if hasattr(self.terrain, 'reset'):
+            self.terrain.reset()
         for ride in self.rides:
             if hasattr(ride, 'reset'):
                 ride.reset()
+        for patron in self.patrons:
+            if hasattr(patron, 'reset'):
+                patron.reset()
+
+        # Clear movement caches after repositioning
+        try:
+            from behaviors.movement_behavior import MovementBehavior
+            MovementBehavior.clear_cache(self.terrain)
+        except Exception:
+            pass
+
+        # Rebuild metrics and exports
+        self._reset_metrics()
+        self._prepare_export_manager()
         
         print("Simulation restarted and running at 1x speed")
         
@@ -456,3 +491,24 @@ class SimulationEngine:
                 breakdown[ptype]['departed'] += 1
                 
         return breakdown
+
+    def _prepare_export_manager(self):
+        """Initialize or refresh the export manager based on current settings."""
+        if not self.save_run:
+            self.export_manager = None
+            return
+
+        payload = self._export_config_payload.copy()
+        payload['max_steps'] = self.steps
+        self._export_config_payload = payload
+
+        self.export_manager = ExportManager()
+        self.export_manager.set_config(payload)
+
+    def _reset_metrics(self):
+        """Recreate the metrics tracker and register all visitors."""
+        self.metrics_calculator = MetricsCalculator()
+        for patron in self.patrons:
+            self.metrics_calculator.initialize_visitor(
+                patron.id, patron.patron_type.value, 0
+            )

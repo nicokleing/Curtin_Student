@@ -17,6 +17,10 @@ class Terrain:
         self.spawn_points = list(spawns) if spawns else []
         self.exit_points = list(exits) if exits else []
         self._ride_bboxes = []  # Track placed ride bounding boxes for collision checks
+        self._baseline_grid = None
+        self._baseline_spawns = None
+        self._baseline_exits = None
+        self._baseline_bboxes = None
 
         if not self.spawn_points and self.width > 2 and self.height > 2:
             self.spawn_points = [(1, self.height // 2)]
@@ -133,6 +137,24 @@ class Terrain:
 
         self._ride_bboxes.append(bbox)
         self.add_bbox_barrier(bbox)
+
+    def capture_baseline(self):
+        """Store the current grid layout so resets can restore it."""
+        self._baseline_grid = [row[:] for row in self.grid]
+        self._baseline_spawns = list(self.spawn_points)
+        self._baseline_exits = list(self.exit_points)
+        self._baseline_bboxes = [tuple(b) for b in self._ride_bboxes]
+
+    def reset(self):
+        """Restore the saved layout after a simulation reset."""
+        if self._baseline_grid is None:
+            self.capture_baseline()
+            return
+        self.grid = [row[:] for row in self._baseline_grid]
+        self.spawn_points = list(self._baseline_spawns or [])
+        self.exit_points = list(self._baseline_exits or [])
+        bboxes = self._baseline_bboxes or []
+        self._ride_bboxes = [tuple(b) for b in bboxes]
 
     def _bbox_inside(self, bbox):
         x, y, w, h = bbox

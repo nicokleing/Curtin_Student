@@ -27,6 +27,7 @@ class ConfigLoader:
         if args.interactive:
             if cli_manager:
                 terrain, rides, num_patrons = cli_manager.interactive_setup()
+                self.config_source = "interactive"
             else:
                 raise ValueError("CLI manager required for interactive mode")
         
@@ -53,11 +54,17 @@ class ConfigLoader:
             config.rides = rides
         else:
             config.rides = build_rides(rides, terrain)  # Convert ride data to ride objects
+
+        # Store baseline state for resets once rides are placed
+        if hasattr(config.terrain, 'capture_baseline'):
+            config.terrain.capture_baseline()
         config.num_patrons = num_patrons
         config.steps = args.steps
         config.show_stats = args.stats
         config.seed = args.seed
         config.save_run = getattr(args, 'save_run', False)
+        config.interactive = bool(args.interactive)
+        config.mode = 'interactive' if args.interactive else 'batch'
         
         # Create patrons with Epic 2 diversity
         config.patrons = self._create_patrons(config.terrain, num_patrons)

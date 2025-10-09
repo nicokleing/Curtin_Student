@@ -165,6 +165,20 @@ class Patron:
             else:
                 self._step_towards()
 
+    def reset(self):
+        """Restore original visitor state for a new run."""
+        self.state = "spawning"
+        self.position = (0.0, 0.0)
+        self.target = None
+        self.timer = random.randint(3, 8)
+        self.current_ride = None
+        self.last_abandon_event = None
+        self.queue_start_time = 0
+        self.total_queue_time = 0
+        self.rides_completed = 0
+        self.abandoned_queues = 0
+        self.patience = self.max_patience
+
     def plot(self, ax):
         """Render the visitor on the map."""
         # Marker by visitor type

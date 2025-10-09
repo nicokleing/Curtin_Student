@@ -12,8 +12,8 @@ class KeyboardHandler:
         key_actions = {
             ' ': self.engine.toggle_pause,    # Spacebar
             '1': lambda: self.engine.set_speed(1),
-            '5': lambda: self.engine.set_speed(5),
-            '0': lambda: self.engine.set_speed(10),
+            '2': lambda: self.engine.set_speed(5),
+            '3': lambda: self.engine.set_speed(10),
             'r': self.engine.reset_simulation,
             'q': self.engine.exit_simulation,
             'h': self._show_controls_help
@@ -39,7 +39,7 @@ class KeyboardHandler:
         print()
         print("KEYBOARD CONTROLS (alternative):")
         print("   SPACE    - Pause/Resume")
-        print("   1,5,0    - Change speed")
+        print("   1,2,3    - Change speed (1x,5x,10x)")
         print("   R        - Restart")
         print("   Q        - Quit")
         print("   H        - Show this help")

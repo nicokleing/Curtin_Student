@@ -12,6 +12,14 @@ class MovementBehavior:
     """Encapsulate visitor movement logic."""
     PATH_CACHE_LIMIT = 256
     _path_cache = {}
+
+    @classmethod
+    def clear_cache(cls, terrain=None):
+        """Clear cached paths, optionally for a specific terrain."""
+        if terrain is None:
+            cls._path_cache.clear()
+        else:
+            cls._path_cache.pop(id(terrain), None)
     
     @staticmethod
     def at_target(position, target):
