@@ -92,7 +92,7 @@ Nº en cola total, nº en ride total, nº salidos; actualizados en vivo. (HU-15)
 
 **RNF-01.** Usabilidad: CLI clara, --help, mensajes de error legibles.
 
-**RNF-02.** Robustez: ante CSV inválido, abortar con explicación.
+**RNF-02.** Input validation: if a CSV is invalid, stop and show a clear error message explaining the problem.
 
 **RNF-03.** Rendimiento: 60–200 patrons y 2–6 rides deben correr fluido (actualización y render sin parpadeos notables).
 
@@ -219,7 +219,7 @@ python adventureworld.py --rides-csv data/rides.csv --patrons-csv data/patrons.c
 
 ## 13. Pruebas (alto nivel)
 
-- **T-01 (Ride State Machine)**: transiciones IDLE→LOADING→RUNNING→UNLOADING→IDLE en los ticks esperados.
+- **T-01 (Ride States)**: transitions IDLE→LOADING→RUNNING→UNLOADING→IDLE occur at the expected ticks.
 - **T-02 (Queue Capacity)**: cuando la cola está llena, nuevos patrons no se encolan.
 - **T-03 (Boarding)**: embarca como máximo capacity.
 - **T-04 (Patron States)**: cambios ROAMING→QUEUE→RIDING→EXITED.

@@ -1,7 +1,7 @@
 # Adventu## D# AdventureWorld - Simulador de Parque Temá## Table of Contents
 1. [Project Overview](#project-overview)
 2. [Key Features](#key-features)  
-3. [Technical Architecture](#technical-architecture)
+3. [Technical Overview](#technical-overview)
 4. [Installation & Setup](#installation--setup)
 5. [Usage Guide](#usage-guide)
 6. [Configuration Options](#configuration-options)
@@ -67,7 +67,7 @@ python run_simulation.py -i
 ## �📋 Table of Contents
 1. [Project Overview](#-project-overview)
 2. [Key Features](#-key-features)  
-3. [Technical Architecture](#-technical-architecture)
+3. [Technical Overview](#-technical-overview)
 4. [Installation & Setup](#-installation--setup)
 5. [Usage Guide](#-usage-guide)
 6. [Configuration Options](#-configuration-options)
@@ -89,7 +89,7 @@ python run_simulation.py -i
 - **Sistema de Visitantes**: Modelado de comportamiento de visitantes con máquinas de estado
 - **Interactive Park Management**: Multiple configuration methods (CLI, CSV, interactive)
 - **Statistical Analysis**: Live performance monitoring and data visualization
-- **Modular Architecture**: Clean, maintainable code following OOP principles
+- **Modular design**: Clean, maintainable code following OOP principles
 
 ---
 
@@ -101,7 +101,7 @@ python run_simulation.py -i
   - `QUEUING`: Waiting in line with patience mechanics  
   - `RIDING`: Experiencing attractions with timed duration
   - `LEAVING`: Exiting the park through designated exits
-- **Decision Making**: Probabilistic attraction selection and exit decisions
+- **Decision Rules**: Random-based attraction selection and exit decisions
 - **Navegación**: Movimiento evitando obstáculos y barreras
 - **Individual Preferences**: Each visitor has unique behavior patterns
 
@@ -139,7 +139,7 @@ python run_simulation.py -i
 
 ---
 
-## Technical Architecture
+## Technical Overview
 
 ```
 AdventureWorld/
@@ -172,8 +172,8 @@ AdventureWorld/
 - CSV-based terrain loading capabilities
 
 #### **Visitor AI System (`patrons.py`)**
-- State machine implementation for visitor behavior
-- Probabilistic decision-making algorithms
+- Finite-state implementation for visitor behavior
+- Randomized choice for attraction selection and exits
 - Queue management and ride selection logic
 - Individual visitor tracking and persistence
 - Movement validation and constraint handling
@@ -459,10 +459,10 @@ for step in range(total_steps):
         break
 ```
 
-### Visitor Behavior State Machine
+### Visitor Behavior
 
 **State Transitions:**
-- `EXPLORING → QUEUING`: Probabilistic attraction selection (1% chance per step)
+- `EXPLORING → QUEUING`: Small random chance to pick an attraction each step (1%)
 - `QUEUING → RIDING`: When ride becomes available and has capacity
 - `RIDING → FINISHED_RIDE`: After ride duration completes
 - `FINISHED_RIDE → EXPLORING`: Return to exploration (90% probability)
@@ -678,11 +678,11 @@ class StatisticsCollector:
 
 #### 3. File I/O and Data Processing
 - **CSV Parsing**: External configuration file handling
-- **Error Handling**: Robust file reading with validation
+- **Error Handling**: validate CSV inputs and provide clear error messages
 - **Data Validation**: Input sanitization and bounds checking
 
 #### 4. Control Structures
-- **State Machines**: Complex visitor behavior modeling
+- **State Logic**: Visitor behavior modeled with clear states
 - **Event Loops**: Main simulation timing and control
 - **Conditional Logic**: Decision-making algorithms
 - **Iteration**: Efficient collection processing
@@ -708,7 +708,7 @@ class StatisticsCollector:
 
 #### Testing and Debugging
 - **Debug Output**: Error reporting and logging
-- **Input Validation**: Robust parameter checking
+- **Input Validation**: check parameters and fail fast with helpful messages
 - **Edge Case Handling**: Boundary condition management
 
 ### Project Complexity Analysis

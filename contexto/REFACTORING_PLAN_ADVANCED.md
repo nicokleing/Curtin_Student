@@ -74,7 +74,7 @@ renderers/
 - **Máximo 120 líneas por archivo**
 - **Responsabilidades claras y separadas**
 - **Fácil testing unitario**
-- **Código más profesional y escalable**
+- **Código más profesional y extensible**
 
 ## 🚀 **Orden de Implementación Recomendado:**
 

@@ -13,7 +13,7 @@
 - ❌ **Un solo archivo:** Inmantenible para estudiante
 - ❌ **Mezcla de responsabilidades:** UI, lógica, configuración, todo junto
 - ❌ **Difícil de debuggear:** Errores se propagan por todo el archivo
-- ❌ **No escalable:** Agregar funcionalidades es complejo
+- ❌ **Not easily extensible:** Adding features is complex
 
 ### **Métricas Realistas para Estudiante (1 mes):**
 - 🟢 **Programador Junior/Estudiante:** 150-500 líneas/mes (código funcional)

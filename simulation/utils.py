@@ -1,8 +1,6 @@
 
 # -*- coding: utf-8 -*-
-"""
-Utilidades: lectura de CSVs simples, configuración YAML y construcción de rides.
-"""
+"""Utilities for CSV reading, YAML config loading and ride construction."""
 from rides import PirateShip, FerrisWheel
 
 try:
@@ -13,10 +11,7 @@ except ImportError:
     print("Warning: PyYAML not available. Install with: pip install pyyaml")
 
 def read_rides_csv(path):
-    """
-    Formato simple por línea:
-    tipo,capacidad,duracion,x,y,ancho,alto
-    """
+    """Read rides CSV: type,capacity,duration,x,y,width,height per line."""
     rides = []
     if path is None:
         return rides
@@ -62,9 +57,7 @@ def read_rides_csv(path):
     return rides
 
 def read_patrons_csv(path):
-    """
-    Un solo número con la cantidad total de personas.
-    """
+    """Read patrons CSV: single integer with total number of patrons."""
     if path is None:
         return 60
         
@@ -93,15 +86,7 @@ def read_patrons_csv(path):
         return 60
 
 def load_config_yaml(path):
-    """
-    Carga configuración completa desde archivo YAML.
-    
-    Args:
-        path (str): Ruta al archivo YAML de configuración
-        
-    Returns:
-        dict: Configuración cargada o None si hay error
-    """
+    """Load configuration from a YAML file and return it as a dict."""
     if not YAML_AVAILABLE:
         print("Error: PyYAML requerido para cargar archivos YAML")
         print("Instala con: pip install pyyaml")
@@ -126,18 +111,7 @@ def load_config_yaml(path):
 
 
 def print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_source="default"):
-    """
-    Imprime la configuración final utilizada en la simulación.
-    
-    Args:
-        terrain: Objeto Terrain con las dimensiones del parque
-        rides: Lista de objetos Ride
-        num_patrons: Número de visitantes
-        steps: Pasos de simulación
-        seed: Semilla aleatoria (None si no se usó)
-        stats: Si se muestran estadísticas
-        config_source: Fuente de la configuración ("default", "interactive", "yaml", "csv")
-    """
+    """Print the final configuration used for the simulation."""
     print("\n" + "="*50)
     print("FINAL CONFIGURATION USED")
     print("="*50)
@@ -158,10 +132,7 @@ def print_final_config(terrain, rides, num_patrons, steps, seed, stats, config_s
 
 
 def build_rides(rides_params, terrain):
-    """
-    Crea instancias de rides según el dict de parámetros
-    y marca sus bounding boxes como barreras en el terreno.
-    """
+    """Create ride instances from params and mark their bounding boxes on the terrain."""
     from rides.roller_coaster import RollerCoaster
     
     rides = []

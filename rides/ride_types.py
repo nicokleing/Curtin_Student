@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Implementaciones específicas de atracciones: PirateShip y FerrisWheel."""
+"""Specific ride implementations: PirateShip and FerrisWheel."""
 
 import math
 import matplotlib.patches as patches
@@ -7,27 +7,27 @@ from .base_ride import Ride
 from .ride_visuals import RideVisuals
 
 class PirateShip(Ride):
-    """Pirate ship ride with pendulum motion animation."""
+    """Pirate ship ride with pendulum animation."""
     
     def __init__(self, name, capacity, duration, bbox):
         super().__init__(name, capacity, duration, bbox, ride_type="pirate")
         
     def plot(self, ax, t):
-        """Visualización mejorada con cola y estados."""
-        # Dibujar base (bbox, cola, capacidad)
-        self._draw_bbox(ax)
-        self._draw_queue(ax)
-        self._draw_capacity_info(ax)
-        
-        # Dibujar péndulo específico del barco pirata
-        self._draw_pirate_ship_animation(ax, t)
-        
-        # Nombre de la atracción
-        ax.text(self.bbox[0], self.bbox[1] - 8, f"PIRATE {self.name}", 
-               fontsize=9, ha='left', weight='bold')
+     """Draw ride bbox, queue and capacity info."""
+     # Dibujar base (bbox, cola, capacidad)
+     self._draw_bbox(ax)
+     self._draw_queue(ax)
+     self._draw_capacity_info(ax)
+
+     # Dibujar péndulo específico del barco pirata
+     self._draw_pirate_ship_animation(ax, t)
+
+     # Nombre de la atracción
+     ax.text(self.bbox[0], self.bbox[1] - 8, f"PIRATE {self.name}", 
+         fontsize=9, ha='left', weight='bold')
 
     def _draw_pirate_ship_animation(self, ax, t):
-        """Dibuja la animación específica del barco pirata."""
+        """Draw the pirate ship pendulum animation."""
         cx, cy = self.center()
         
         # Animación diferente según estado
@@ -51,15 +51,15 @@ class PirateShip(Ride):
         ax.plot([x2], [y2], marker="o", ms=8, color=line_color)
 
     def _draw_bbox(self, ax):
-        """Dibuja el área base de la atracción."""
+        """Draw ride bounding box."""
         RideVisuals.draw_bbox(self, ax)
         
     def _draw_queue(self, ax):
-        """Dibuja la cola visual."""
+        """Draw visual queue."""
         RideVisuals.draw_queue(self, ax)
         
     def _draw_capacity_info(self, ax):
-        """Dibuja información de capacidad."""
+        """Draw capacity information."""
         RideVisuals.draw_capacity_info(self, ax)
 
 
@@ -71,21 +71,21 @@ class FerrisWheel(Ride):
         self.cabins = cabins
 
     def plot(self, ax, t):
-        """Visualización mejorada con cola y estados."""
-        # Dibujar base (bbox, cola, capacidad)
-        self._draw_bbox(ax)
-        self._draw_queue(ax)
-        self._draw_capacity_info(ax)
-        
-        # Dibujar noria específica
-        self._draw_ferris_wheel_animation(ax, t)
-        
-        # Nombre de la atracción  
-        ax.text(self.bbox[0], self.bbox[1] - 8, f"FERRIS {self.name}", 
-               fontsize=9, ha='left', weight='bold')
+     """Draw ride bbox, queue and capacity info."""
+     # Dibujar base (bbox, cola, capacidad)
+     self._draw_bbox(ax)
+     self._draw_queue(ax)
+     self._draw_capacity_info(ax)
+
+     # Dibujar noria específica
+     self._draw_ferris_wheel_animation(ax, t)
+
+     # Nombre de la atracción  
+     ax.text(self.bbox[0], self.bbox[1] - 8, f"FERRIS {self.name}", 
+         fontsize=9, ha='left', weight='bold')
 
     def _draw_ferris_wheel_animation(self, ax, t):
-        """Dibuja la animación específica de la noria."""
+        """Draw the ferris wheel rotation and cabins."""
         cx, cy = self.center()
         radius = min(self.bbox[2], self.bbox[3]) * 0.45
         
@@ -120,13 +120,13 @@ class FerrisWheel(Ride):
                    color=cabin_color, alpha=0.8)
 
     def _draw_bbox(self, ax):
-        """Dibuja el área base de la atracción."""
+        """Draw ride bounding box."""
         RideVisuals.draw_bbox(self, ax)
         
     def _draw_queue(self, ax):
-        """Dibuja la cola visual."""
+        """Draw visual queue."""
         RideVisuals.draw_queue(self, ax)
         
     def _draw_capacity_info(self, ax):
-        """Dibuja información de capacidad."""
+        """Draw capacity information."""
         RideVisuals.draw_capacity_info(self, ax)

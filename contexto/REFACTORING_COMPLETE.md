@@ -71,7 +71,7 @@ AdventureWorld/
 ### 🔧 Mantenibilidad
 - Código organizado por responsabilidades
 - Fácil debugging y modificación
-- Estructura profesional escalable
+- Professional structure designed to be extensible
 
 ### 🏗️ Extensibilidad  
 - Nuevas features fáciles de agregar
