@@ -10,14 +10,17 @@ pip install -r requirements.txt
 
 ## How to Run
 
-Interactive:
+Interactive UI:
 
-python adventureworld.py -i --seed 42 --steps 120
+```bash
+python run_simulation.py -i --seed 42 --steps 120 --stats
+```
 
+Batch/headless:
 
-Batch:
-
-python adventureworld.py -f data/map_s1.csv -p data/params_s1.csv --seed 11 --steps 80 --stats --save-run
+```bash
+python run_simulation.py -f data/map_s1.csv -r data/rides.csv -p data/params_s1.csv --seed 11 --steps 80 --stats --save-run
+```
 
 
 ## Scenarios (reproducible)

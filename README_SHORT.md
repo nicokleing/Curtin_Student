@@ -17,16 +17,16 @@ source adventure_env/bin/activate
 pip install -r requirements.txt
 ```
 
-## Run the simulator (basic)
+## Run the simulator (batch mode by default)
 ```bash
-python run_simulation.py
+python run_simulation.py --steps 200 --seed 42 --stats
 ```
 
-## Run with example CSVs
+## Open the interactive UI
 ```bash
-python run_simulation.py --rides-csv data/rides.csv --patrons-csv data/patrons.csv --steps 200 --seed 42 --stats
+python run_simulation.py -i --seed 42 --steps 200 --stats
 ```
 
 ## Notes
-- Use `--help` for available CLI options.
-- To reproduce runs, pass `--seed` and `--save-run` to export results.
+- `-f/-r/-p` let you load custom map, rides, and patron CSV files.
+- `--save-run` writes CSV/JSON/PNG exports for reproducible batches.
