@@ -18,25 +18,25 @@
     "total_departed": 0,
     "total_abandoned": 40,
     "patron_breakdown": {
-      "adventurer": {
+      "aventurero": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 12,
         "departed": 0
       },
-      "family": {
+      "familiar": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 0,
         "departed": 0
       },
-      "impatient": {
+      "impaciente": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 17,
         "departed": 0
       },
-      "explorer": {
+      "explorador": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 11,

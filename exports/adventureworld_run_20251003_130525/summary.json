@@ -18,25 +18,25 @@
     "total_departed": 0,
     "total_abandoned": 27,
     "patron_breakdown": {
-      "adventurer": {
+      "aventurero": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 0,
         "departed": 0
       },
-      "family": {
+      "familiar": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 8,
         "departed": 0
       },
-      "impatient": {
+      "impaciente": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 15,
         "departed": 0
       },
-      "explorer": {
+      "explorador": {
         "count": 15,
         "total_rides": 0,
         "total_abandoned": 4,
@@ -50,25 +50,25 @@
         "max_wait_time": 0,
         "min_wait_time": 0,
         "by_visitor_type": {
-          "adventurer": {
+          "aventurero": {
             "count": 15,
             "avg_wait_time": 0.0,
             "avg_rides_completed": 0.0,
             "abandonment_rate": 0.0
           },
-          "family": {
+          "familiar": {
             "count": 15,
             "avg_wait_time": 0.0,
             "avg_rides_completed": 0.0,
             "abandonment_rate": 0.0
           },
-          "impatient": {
+          "impaciente": {
             "count": 15,
             "avg_wait_time": 0.0,
             "avg_rides_completed": 0.0,
             "abandonment_rate": 0.0
           },
-          "explorer": {
+          "explorador": {
             "count": 15,
             "avg_wait_time": 0.0,
             "avg_rides_completed": 0.0,
