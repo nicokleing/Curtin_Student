@@ -335,8 +335,7 @@ class SimulationEngine:
         patron_id = patron.id
         # State transition events
         if prev_state != current_state:
-            # Debug: trace state transitions for metrics debugging
-            print(f"[ENGINE DEBUG] Patron {patron_id} state change: {prev_state} -> {current_state}")
+            # trace state transitions for metrics debugging (removed verbose prints)
             if current_state == 'queuing':
                 # Find which ride they joined
                 for ride in self.rides:
@@ -366,7 +365,6 @@ class SimulationEngine:
                 
             elif current_state == 'roaming' and prev_state == 'queuing':
                 # They abandoned a queue
-                print(f"[ENGINE DEBUG] Detected abandonment for {patron_id} at step {self.current_step}")
                 self.metrics_calculator.log_visitor_event(
                     patron_id, 'abandoned_queue', self.current_step,
                     {'reason': 'impatience'}
