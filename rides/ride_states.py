@@ -21,6 +21,9 @@ class RideTimer:
         
     def get_loading_time(self):
         """Get loading time based on ride type."""
+        override = getattr(self.ride, "loading_time", None)
+        if override is not None:
+            return max(0, int(override))
         if self.ride.ride_type == "pirate":
             return 4  # Pirate ship needs extra time to secure riders
         elif self.ride.ride_type == "ferris":
@@ -29,6 +32,9 @@ class RideTimer:
         
     def get_unloading_time(self):
         """Get unloading time based on ride type."""
+        override = getattr(self.ride, "unloading_time", None)
+        if override is not None:
+            return max(0, int(override))
         if self.ride.ride_type == "pirate":
             return 3  # Pirate ship unloads quickly
         elif self.ride.ride_type == "ferris":

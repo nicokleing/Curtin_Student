@@ -44,27 +44,35 @@ class QueueBehavior:
             
         # Check if the visitor should leave due to impatience
         queue_position = current_ride.queue.index(patron) + 1
+        queue_length = len(current_ride.queue)
         
         # Factors that impact the abandonment decision
-        patience_factor = patron.patience / patron.max_patience
+        patience_factor = patron.patience / max(1, patron.max_patience)
         queue_factor = min(queue_position / 10.0, 0.5)  # Penalize long queues
         
         abandon_threshold = 0.1 + queue_factor  # Between 10% and 60%
         
         if patience_factor < abandon_threshold:
-            QueueBehavior.abandon_queue(patron, current_ride)
+            QueueBehavior.abandon_queue(patron, current_ride, current_time, queue_length)
             return "roaming"
             
         return "queueing"  # Stay in queue
     
     @staticmethod
-    def abandon_queue(patron, ride):
+    def abandon_queue(patron, ride, current_time, queue_length):
         """Leave a ride queue."""
         if patron in ride.queue:
             ride.queue.remove(patron)
             
         patron.abandoned_queues += 1
         patron.state = "roaming"
+        patron.target = None
+        patron.last_abandon_event = {
+            "time": current_time,
+            "ride_id": ride.name,
+            "queue_len": queue_length,
+            "patience_at_leave": patron.patience,
+        }
         
         # Abandonment message includes type for quick debugging
         type_msg = patron.patron_type.value

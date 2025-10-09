@@ -91,10 +91,7 @@ class RideVisuals:
         queue_length = len(ride.queue)
         
         # Compose info text with state details
-        info_text = f"RIDE {current_riders}/{ride.capacity}"
-        
-        if queue_length > 0:
-            info_text += f" | Queue {queue_length}"
+        info_text = f"RIDE {current_riders}/{ride.capacity} | Queue {queue_length}"
             
         # Append remaining-time info while active
         if ride.state in ["loading", "running", "unloading"] and hasattr(ride.timer_manager, 'timer'):

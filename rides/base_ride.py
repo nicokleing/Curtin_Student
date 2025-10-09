@@ -14,12 +14,17 @@ def dequeue(ride):
 class Ride:
     """Base class used by every ride in the park."""
     
-    def __init__(self, name, capacity, duration, bbox, ride_type="generic"):
+    def __init__(self, name, capacity, duration, bbox, ride_type="generic", *,
+                 loading_time=None, unloading_time=None):
         self.name = name
         self.capacity = capacity
         self.duration = duration
         self.bbox = bbox  # (x, y, w, h)
         self.ride_type = ride_type
+        self.category = None
+        self.rating = 0.6
+        self.loading_time = loading_time
+        self.unloading_time = unloading_time
 
         self.state = RideState.IDLE.value
         self.queue = []          # Holds Patron instances
@@ -113,7 +118,7 @@ class Ride:
         self._draw_queue(ax)
         self._draw_capacity_info(ax)
 
-    def _draw_bbox(self):
+    def _draw_bbox(self, ax):
         """Draw the ride area; subclasses must implement."""
         raise NotImplementedError("Subclasses must implement _draw_bbox")
         

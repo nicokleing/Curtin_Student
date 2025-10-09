@@ -337,7 +337,7 @@ class SimulationEngine:
         # State transition events
         if prev_state != current_state:
             # trace state transitions for metrics debugging (removed verbose prints)
-            if current_state == 'queuing':
+            if current_state == 'queueing':
                 # Find which ride they joined
                 for ride in self.rides:
                     if patron in ride.queue:
@@ -364,11 +364,15 @@ class SimulationEngine:
                     {'previous_ride': prev_positions.get(patron_id)}
                 )
                 
-            elif current_state == 'roaming' and prev_state == 'queuing':
+            elif current_state == 'roaming' and prev_state == 'queueing':
                 # They abandoned a queue
+                payload = {'reason': 'impatience'}
+                if getattr(patron, 'last_abandon_event', None):
+                    payload.update(patron.last_abandon_event)
+                    patron.last_abandon_event = None
                 self.metrics_calculator.log_visitor_event(
                     patron_id, 'abandoned_queue', self.current_step,
-                    {'reason': 'impatience'}
+                    payload
                 )
                 
             elif current_state == 'left':
@@ -389,6 +393,9 @@ class SimulationEngine:
         print("EPIC 5: EXPORTING SIMULATION DATA")
         print("="*60)
         
+        if not self.export_manager:
+            return
+
         try:
             # Add missing import at the top of method
             import os
@@ -409,8 +416,10 @@ class SimulationEngine:
             
             # Add timeline data if stats were collected
             timeline_data = None
-            if self.show_stats and self.display and hasattr(self.display.stats_renderer, 'get_export_data'):
-                timeline_data = self.display.stats_renderer.get_export_data()
+            if self.show_stats and self.display:
+                renderer = getattr(self.display, 'stats_renderer', None)
+                if renderer and hasattr(renderer, 'get_export_data'):
+                    timeline_data = renderer.get_export_data()
                 
             self.export_manager.set_final_stats(final_stats, timeline_data)
             
