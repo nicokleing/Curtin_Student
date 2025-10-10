@@ -110,12 +110,20 @@ class SimulationEngine:
         prev_ride_states = {r.name: r.state for r in self.rides}
         prev_patron_positions = {p.id: (p.current_ride.name if hasattr(p, 'current_ride') and p.current_ride else None) for p in self.patrons}
             
-        # Update rides
+        # First update patrons (spawn/leave, movement, queueing/boarding)
+        for patron in self.patrons:
+            prev_state = prev_patron_states[patron.id]
+            patron.step_change(self.time, self.rides)
+
+            # Detect and log patron events for metrics
+            self._detect_and_log_patron_events(patron, prev_state, prev_patron_positions)
+
+        # Then update rides (state transitions, loading/unloading)
         for ride in self.rides:
             prev_ride_rider_count = len(ride.riders)
             prev_ride_queue_count = len(ride.queue)
             ride.step_change(self.time)
-            
+
             # Log ride metrics events
             if len(ride.riders) != prev_ride_rider_count or ride.state != prev_ride_states[ride.name]:
                 self.metrics_calculator.log_ride_event(
@@ -126,14 +134,6 @@ class SimulationEngine:
                         'queue_length': len(ride.queue)
                     }
                 )
-            
-        # Update patrons and track detailed metrics
-        for patron in self.patrons:
-            prev_state = prev_patron_states[patron.id]
-            patron.step_change(self.time, self.rides)
-            
-            # Detect and log patron events for metrics
-            self._detect_and_log_patron_events(patron, prev_state, prev_patron_positions)
 
         # Log events if export is enabled
         if self.export_manager:

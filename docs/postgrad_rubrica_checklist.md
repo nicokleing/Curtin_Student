@@ -58,7 +58,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
 - [x] Simple pathing: avoid crossing blocked cells
 
 ## 6) Simulation
-- [ ] Consistent timestep order: (engine.step updates rides before patrons; reorder to match rubric)
+- [x] Consistent timestep order: (engine.step updates rides before patrons; reorder to match rubric)
   - spawn/leave -> patrons (target/move/queue/ride) -> rides (state/cycle) -> plot+stats
 - [x] step_change hooks present in rides/patrons
 - [x] Parameters to vary: patrons, ride mix, durations, speeds, map, seed (via presets, CSV/YAML, CLI flags)
