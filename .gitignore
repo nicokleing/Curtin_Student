@@ -186,3 +186,13 @@ tests/ui/*.png
 
 # Ignore run output artifacts
 out/
+
+
+# Virtual environments
+adventure_env/
+.venv/
+venv/
+env/
+.env/
+# Local outputs
+out/
