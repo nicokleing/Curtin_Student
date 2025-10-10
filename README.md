@@ -37,3 +37,10 @@ Minimal stats: queue abandonments, patrons served, average wait (steps).
 
 Tested on Python 3.11.
 
+## Satisfaction metric
+
+- `satisfaction_now` scores each tick (0-100) using `100 - α·wait_norm - β·abandon_penalty - γ·crowd_norm`.
+- Wait and crowd pressures use a rolling min/max window with a fallback based on ride capacity and visitor count.
+- `satisfaction_ema` applies exponential smoothing (λ defaults to 0.9) for the live chart and exports.
+- CLI knobs: `--sat-alpha`, `--sat-beta`, `--sat-gamma`, `--sat-ema`, plus `--kpi-style colorblind` for a safe palette.
+

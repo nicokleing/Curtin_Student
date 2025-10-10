@@ -9,6 +9,12 @@ from models import Patron, PatronType
 from simulation.export import ExportManager
 from simulation.metrics import MetricsCalculator
 import matplotlib.pyplot as plt
+from pathlib import Path
+import csv
+from datetime import datetime
+from collections import deque
+import math
+import statistics
 
 
 class SimulationEngine:
@@ -25,7 +31,24 @@ class SimulationEngine:
         self.steps = config.steps
         self.show_stats = config.show_stats
         self.save_run = getattr(config, 'save_run', False)
-        self.interactive = getattr(config, 'interactive', False)
+        self.interactive = bool(getattr(config, 'interactive', False))
+        self.headless = bool(getattr(config, 'headless', False))
+        self.mode = getattr(config, 'mode', 'interactive' if self.interactive else 'batch')
+        self.kpi_buffer_size = max(1, getattr(config, 'kpi_buffer_size', 240))
+        self.kpi_warmup = max(0, getattr(config, 'kpi_warmup', 5))
+        self.kpi_interval = max(0.0, getattr(config, 'kpi_interval', 0.0))
+        self.kpi_style = getattr(config, 'kpi_style', 'default') or 'default'
+        self.save_kpis = getattr(config, 'save_kpis', None)
+        self.sat_alpha = max(0.0, float(getattr(config, 'sat_alpha', 0.6)))
+        self.sat_beta = max(0.0, float(getattr(config, 'sat_beta', 0.8)))
+        self.sat_gamma = max(0.0, float(getattr(config, 'sat_gamma', 0.5)))
+        self.sat_ema_lambda = min(0.99, max(0.0, float(getattr(config, 'sat_ema', 0.9))))
+        self._norm_window = max(5, min(60, self.kpi_buffer_size))
+        base_patron_count = max(1, len(self.patrons))
+        self._queue_reference = max(1, int(0.5 * base_patron_count))
+        ride_capacity = sum(getattr(ride, 'capacity', 0) or 0 for ride in self.rides)
+        self._capacity_reference = max(1, ride_capacity)
+        self._crowd_reference = max(self._capacity_reference, base_patron_count)
         
         # Simulation state
         self.time = 0
@@ -35,11 +58,11 @@ class SimulationEngine:
         self.speed_multiplier = 1
         
         # Statistics tracking
-        self.riders_now = []
-        self.queued_now = []
-        self.departed_total = []
-        self.abandoned_now = []
-        # NOTE: keep raw lists so the display can show latest values without extra conversions.
+        self._reset_stat_buffers()
+        self._queue_history = deque(maxlen=self.kpi_buffer_size)
+        self._active_history = deque(maxlen=self.kpi_buffer_size)
+        self._prev_abandoned_total = 0
+        self._last_satisfaction = 100.0
         
         # Export manager for --save-run
         self._export_config_payload = {
@@ -47,7 +70,18 @@ class SimulationEngine:
             'num_rides': len(self.rides),
             'num_patrons': len(self.patrons),
             'max_steps': self.steps,
-            'show_stats': self.show_stats
+            'show_stats': self.show_stats,
+            'mode': self.mode,
+            'headless': self.headless,
+            'kpi_buffer_size': self.kpi_buffer_size,
+            'kpi_warmup': self.kpi_warmup,
+            'kpi_interval': self.kpi_interval,
+            'kpi_style': self.kpi_style,
+            'save_kpis': bool(self.save_kpis),
+            'sat_alpha': self.sat_alpha,
+            'sat_beta': self.sat_beta,
+            'sat_gamma': self.sat_gamma,
+            'sat_ema': self.sat_ema_lambda
         }
         self.export_manager = None
         self._prepare_export_manager()
@@ -58,6 +92,15 @@ class SimulationEngine:
         # Display manager will be set when running
         self.display = None
         
+    def _reset_stat_buffers(self):
+        """Prepare rolling buffers for per-tick statistics."""
+        self.riders_now = deque(maxlen=self.kpi_buffer_size)
+        self.queued_now = deque(maxlen=self.kpi_buffer_size)
+        self.departed_total = deque(maxlen=self.kpi_buffer_size)
+        self.abandoned_now = deque(maxlen=self.kpi_buffer_size)
+        self.satisfaction_now = deque(maxlen=self.kpi_buffer_size)
+        self.satisfaction_ema = deque(maxlen=self.kpi_buffer_size)
+
     def step(self):
         """Execute one simulation step - core logic only"""
         if self.paused or not self.running:
@@ -119,14 +162,78 @@ class SimulationEngine:
         queued = sum(len(r.queue) for r in self.rides)
         departed = sum(1 for p in self.patrons if p.state == "left")
         abandoned_total = sum(p.abandoned_queues for p in self.patrons)
-        
+        active = riders + queued
+
+        # Track peaks for normalization reference
+        peak_current = self.metrics_calculator.park_metrics.get('peak_concurrent_visitors', 0)
+        if active > peak_current:
+            self.metrics_calculator.park_metrics['peak_concurrent_visitors'] = active
+
+        # Update rolling histories before calculating normalized values
+        self._queue_history.append(queued)
+        self._active_history.append(active)
+
+        wait_norm = self._normalized_value(self._queue_history, queued, self._queue_reference)
+        crowd_norm = self._normalized_value(self._active_history, active, self._crowd_reference)
+
+        abandon_rate = (abandoned_total / max(1, len(self.patrons))) * 100.0
+        abandon_delta = max(0, abandoned_total - self._prev_abandoned_total)
+        abandon_penalty = min(100.0, abandon_rate + abandon_delta * 12.5)
+        self._prev_abandoned_total = abandoned_total
+
+        satisfaction_raw = 100.0 - (
+            self.sat_alpha * wait_norm+
+            self.sat_beta * abandon_penalty+
+            self.sat_gamma * crowd_norm
+        )
+        satisfaction = max(0.0, min(100.0, satisfaction_raw))
+
+        if self.satisfaction_ema:
+            ema_prev = self.satisfaction_ema[-1]
+        else:
+            ema_prev = satisfaction
+        ema = (self.sat_ema_lambda * ema_prev) + ((1.0 - self.sat_ema_lambda) * satisfaction)
+        ema = max(0.0, min(100.0, ema))
+
+        # Append to ring buffers (rounded for exports/UI)
         self.riders_now.append(riders)
-        self.queued_now.append(queued)  
+        self.queued_now.append(queued)
         self.departed_total.append(departed)
         self.abandoned_now.append(abandoned_total)
+        self.satisfaction_now.append(round(satisfaction, 2))
+        self.satisfaction_ema.append(round(ema, 2))
+
+        self._last_satisfaction = satisfaction
+        self.metrics_calculator.update_live_satisfaction(satisfaction)
+
+    def _normalized_value(self, history, current_value, reference):
+        """Normalize a metric to 0-100 based on rolling history or fallback reference."""
+        values = list(history)
+        if len(values) >= self._norm_window:
+            sorted_vals = sorted(values)
+            low_idx = int(max(0, math.floor(0.1 * (len(sorted_vals) - 1))))
+            high_idx = int(min(len(sorted_vals) - 1, math.ceil(0.9 * (len(sorted_vals) - 1))))
+            low = sorted_vals[low_idx]
+            high = sorted_vals[high_idx]
+            if high > low:
+                scaled = (current_value - low) / (high - low)
+                return max(0.0, min(100.0, scaled * 100.0))
+        elif len(values) >= 3:
+            low = min(values)
+            high = max(values)
+            if high > low:
+                scaled = (current_value - low) / (high - low)
+                return max(0.0, min(100.0, scaled * 100.0))
+
+        if reference:
+            scaled = current_value / reference
+            return max(0.0, min(100.0, scaled * 100.0))
+        return 0.0
         
     def _log_state_changes(self, prev_patron_states, prev_ride_states):
         """Log state changes for export."""
+        if not self.export_manager:
+            return
         # Log patron state changes
         for patron in self.patrons:
             prev_state = prev_patron_states.get(patron.id, 'unknown')
@@ -176,6 +283,8 @@ class SimulationEngine:
                 'queued_now': self.queued_now[-1] if self.queued_now else 0,
                 'departed_total': self.departed_total[-1] if self.departed_total else 0,
                 'abandoned_now': self.abandoned_now[-1] if self.abandoned_now else 0,
+                'satisfaction_now': self.satisfaction_now[-1] if self.satisfaction_now else 100.0,
+                'satisfaction_ema': self.satisfaction_ema[-1] if self.satisfaction_ema else 100.0,
             }
         }
     
@@ -256,8 +365,11 @@ class SimulationEngine:
                 print(f"[ENGINE DEBUG] Error syncing abandonment counts to metrics: {exc}")
 
             comprehensive_metrics = self.metrics_calculator.print_metrics_summary()
+            timeline_data = self._collect_timeline_data()
+            if self.save_kpis:
+                self._save_kpi_timeline(timeline_data)
             if self.export_manager:
-                self._finalize_export(comprehensive_metrics)
+                self._finalize_export(comprehensive_metrics, timeline_data)
         elif not self.running and not completed:
             print(f"\nSimulation stopped at step {self.current_step}")
         elif self.running and not completed:
@@ -336,11 +448,17 @@ class SimulationEngine:
         self.speed_multiplier = 1
         self.running = True
         
-        # Reset statistics
-        self.riders_now = []
-        self.queued_now = []
-        self.departed_total = []
-        self.abandoned_now = []
+        # Reset statistics and rolling buffers
+        self._reset_stat_buffers()
+        self._queue_history = deque(maxlen=self.kpi_buffer_size)
+        self._active_history = deque(maxlen=self.kpi_buffer_size)
+        self._prev_abandoned_total = 0
+        self._last_satisfaction = 100.0
+        base_patron_count = max(1, len(self.patrons))
+        self._queue_reference = max(1, int(0.5 * base_patron_count))
+        ride_capacity = sum(getattr(ride, 'capacity', 0) or 0 for ride in self.rides)
+        self._capacity_reference = max(1, ride_capacity)
+        self._crowd_reference = max(self._capacity_reference, base_patron_count)
         
         # Reset terrain and entities
         if hasattr(self.terrain, 'reset'):
@@ -422,7 +540,72 @@ class SimulationEngine:
         print("Closing simulation...")
         self.running = False
         
-    def _finalize_export(self, comprehensive_metrics=None):
+    def _collect_timeline_data(self):
+        """Gather timeline data from renderer or internal buffers."""
+        renderer = None
+        if self.display and getattr(self.display, 'stats_renderer', None):
+            renderer = self.display.stats_renderer
+        if renderer and hasattr(renderer, 'get_export_data'):
+            data = renderer.get_export_data()
+            if data.get('steps'):
+                return data
+
+        if self.riders_now:
+            steps = list(range(len(self.riders_now)))
+            return {
+                'steps': steps,
+                'riders_timeline': list(self.riders_now),
+                'queued_timeline': list(self.queued_now),
+                'departed_timeline': list(self.departed_total),
+                'abandoned_timeline': list(self.abandoned_now),
+                'satisfaction_now': list(self.satisfaction_now),
+                'satisfaction_ema': list(self.satisfaction_ema)
+            }
+        return None
+
+    def _save_kpi_timeline(self, timeline_data):
+        """Persist KPI history to CSV when requested."""
+        if not self.save_kpis or not timeline_data or not timeline_data.get('steps'):
+            return
+
+        target = Path(self.save_kpis)
+        try:
+            target.mkdir(parents=True, exist_ok=True)
+        except Exception as exc:
+            print(f"Could not create KPI output folder ({self.save_kpis}): {exc}")
+            return
+
+        base_name = None
+        if self.export_manager:
+            base_name = self.export_manager.run_name
+        if not base_name:
+            base_name = f"adventureworld_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+        csv_path = target / f"{base_name}_kpi.csv"
+
+        try:
+            with open(csv_path, 'w', newline='', encoding='utf-8') as handle:
+                writer = csv.writer(handle)
+                writer.writerow([
+                    'step', 'riders', 'queued', 'departed', 'abandoned',
+                    'satisfaction_now', 'satisfaction_ema'
+                ])
+                satisfaction_now = timeline_data.get('satisfaction_now', [0] * len(timeline_data['steps']))
+                satisfaction_ema = timeline_data.get('satisfaction_ema', [0] * len(timeline_data['steps']))
+                for row in zip(
+                        timeline_data['steps'],
+                        timeline_data['riders_timeline'],
+                        timeline_data['queued_timeline'],
+                        timeline_data['departed_timeline'],
+                        timeline_data['abandoned_timeline'],
+                        satisfaction_now,
+                        satisfaction_ema):
+                    writer.writerow(row)
+            print(f"KPI samples saved to {csv_path}")
+        except Exception as exc:
+            print(f"Failed to write KPI CSV: {exc}")
+
+    def _finalize_export(self, comprehensive_metrics=None, timeline_data=None):
         """Finalize export process and save all files."""
         print("\n" + "="*60)
         print("EPIC 5: EXPORTING SIMULATION DATA")
@@ -442,7 +625,10 @@ class SimulationEngine:
                 'final_queued': self.queued_now[-1] if self.queued_now else 0,
                 'total_departed': self.departed_total[-1] if self.departed_total else 0,
                 'total_abandoned': self.abandoned_now[-1] if self.abandoned_now else 0,
-                'patron_breakdown': self._get_patron_breakdown()
+                'final_satisfaction': self.satisfaction_now[-1] if self.satisfaction_now else 100.0,
+                'final_satisfaction_ema': self.satisfaction_ema[-1] if self.satisfaction_ema else 100.0,
+                'patron_breakdown': self._get_patron_breakdown(),
+                'satisfaction_summary': self._build_satisfaction_summary()
             }
             
             # Add full Epic 6 metrics when available
@@ -450,12 +636,9 @@ class SimulationEngine:
                 final_stats['detailed_metrics'] = comprehensive_metrics
             
             # Add timeline data if stats were collected
-            timeline_data = None
-            if self.show_stats and self.display:
-                renderer = getattr(self.display, 'stats_renderer', None)
-                if renderer and hasattr(renderer, 'get_export_data'):
-                    timeline_data = renderer.get_export_data()
-                
+            if timeline_data is None:
+                timeline_data = self._collect_timeline_data()
+
             self.export_manager.set_final_stats(final_stats, timeline_data)
             
             # Export all formats including detailed metrics
@@ -492,6 +675,42 @@ class SimulationEngine:
                 
         return breakdown
 
+    def _build_satisfaction_summary(self):
+        """Summarise satisfaction timeline for exports and reports."""
+        samples = list(self.satisfaction_now)
+        if not samples:
+            return {
+                'total_samples': 0,
+                'mean': 100.0,
+                'median': 100.0,
+                'p95': 100.0,
+                'ticks_below_50': 0,
+                'percent_green': 100.0,
+                'last_value': 100.0,
+                'ema_last': 100.0
+            }
+
+        mean_val = round(statistics.mean(samples), 2)
+        median_val = round(statistics.median(samples), 2)
+        sorted_vals = sorted(samples)
+        idx = max(0, min(len(sorted_vals) - 1, math.ceil(0.95 * len(sorted_vals)) - 1))
+        p95_val = round(sorted_vals[idx], 2)
+        ticks_below_50 = sum(1 for value in samples if value < 50.0)
+        percent_green = round((sum(1 for value in samples if value >= 70.0) / len(samples)) * 100.0, 2)
+        last_val = round(samples[-1], 2)
+        ema_last = round(self.satisfaction_ema[-1], 2) if self.satisfaction_ema else last_val
+
+        return {
+            'total_samples': len(samples),
+            'mean': mean_val,
+            'median': median_val,
+            'p95': p95_val,
+            'ticks_below_50': ticks_below_50,
+            'percent_green': percent_green,
+            'last_value': last_val,
+            'ema_last': ema_last
+        }
+
     def _prepare_export_manager(self):
         """Initialize or refresh the export manager based on current settings."""
         if not self.save_run:
@@ -512,3 +731,5 @@ class SimulationEngine:
             self.metrics_calculator.initialize_visitor(
                 patron.id, patron.patron_type.value, 0
             )
+        self.metrics_calculator.update_live_satisfaction(100.0)
+        self._prev_abandoned_total = 0

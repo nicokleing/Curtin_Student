@@ -6,6 +6,7 @@ Matplotlib-based display control with specialized renderers.
 """
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib import gridspec
 
 matplotlib.rcParams['font.family'] = 'DejaVu Sans'
 # NOTE: forcing a standard font keeps matplotlib from whining about missing emoji glyphs.
@@ -23,6 +24,12 @@ class DisplayManager:
         """Initialize display manager with simulation engine."""
         self.engine = engine
         self.show_stats = engine.show_stats
+        self.kpi_options = {
+            'max_history': getattr(engine, 'kpi_buffer_size', 240),
+            'warmup': getattr(engine, 'kpi_warmup', 5),
+            'refresh_interval': getattr(engine, 'kpi_interval', 0.0),
+            'style': getattr(engine, 'kpi_style', 'default')
+        }
         
         # Matplotlib components
         self.fig = None
@@ -43,14 +50,17 @@ class DisplayManager:
         # Initialize specialized renderers
         self.map_renderer = MapRenderer(self.ax_map)
         if self.ax_stats:
-            self.stats_renderer = StatsRenderer(self.ax_stats)
+            self.stats_renderer = StatsRenderer(self.ax_stats, **self.kpi_options)
         
         # Setup controls manager
         self.controls = ControlsManager(self.engine, self.ax_controls, self.fig)
         self.controls.setup()
         
         # Configure window
-        self.fig.canvas.manager.set_window_title('AdventureWorld - Visual Controls')
+        if self.fig and self.fig.canvas:
+            manager = getattr(self.fig.canvas, "manager", None)
+            if manager:
+                manager.set_window_title('AdventureWorld - Visual Controls')
         
         print("Visual controls configured - Click the buttons to control simulation!")
         
@@ -58,12 +68,18 @@ class DisplayManager:
         """Create matplotlib layout based on stats preference."""
         if self.show_stats:
             self.fig = plt.figure(figsize=(14, 8))
-            # Main map (4/5 of height)
-            self.ax_map = plt.subplot2grid((5, 2), (0, 0), rowspan=4, colspan=1)
-            # Statistics (right side, 4/5 of height)
-            self.ax_stats = plt.subplot2grid((5, 2), (0, 1), rowspan=4, colspan=1)
-            # Controls (bottom, full width)
-            self.ax_controls = plt.subplot2grid((5, 2), (4, 0), rowspan=1, colspan=2)
+            gs = self.fig.add_gridspec(5, 2, height_ratios=[2.5, 2.5, 2.5, 2.5, 1.0],
+                                        width_ratios=[3.0, 2.0], wspace=0.4, hspace=0.6)
+
+            # Main map uses left column, top four rows
+            self.ax_map = self.fig.add_subplot(gs[:4, 0])
+
+            # Statistics column split into three mini-axes
+            stats_spec = gs[:4, 1].subgridspec(3, 1, hspace=0.4)
+            self.ax_stats = [self.fig.add_subplot(stats_spec[i, 0]) for i in range(3)]
+
+            # Controls span bottom row across both columns
+            self.ax_controls = self.fig.add_subplot(gs[4, :])
         else:
             self.fig = plt.figure(figsize=(10, 7))
             # Main map (4/5 of height)
@@ -87,7 +103,8 @@ class DisplayManager:
             self.controls.update_display(state)
             
         # Refresh display
-        self.fig.canvas.draw_idle()
+        if self.fig and self.fig.canvas:
+            self.fig.canvas.draw_idle()
         
     def is_window_open(self):
         """Check if matplotlib window is still open."""
@@ -103,7 +120,8 @@ class DisplayManager:
     def set_final_mode(self):
         """Configure display for final mode."""
         # Update title
-        self.fig.suptitle('Simulation Complete', fontsize=16, color='green')
+        if self.fig:
+            self.fig.suptitle('Simulation Complete', fontsize=16, color='green')
         
         # Update controls for final mode
         if self.controls:
@@ -119,4 +137,8 @@ class DisplayManager:
             
     def cleanup(self):
         """Clean up matplotlib resources."""
-        plt.close('all')
+        try:
+            plt.close('all')
+        except Exception:
+            # NOTE: TkAgg can raise TclError if window already destroyed by OS.
+            pass

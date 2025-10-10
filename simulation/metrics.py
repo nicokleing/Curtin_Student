@@ -8,6 +8,7 @@ Keeps detailed event logs for full auditing.
 import time
 from datetime import datetime
 from collections import defaultdict, deque
+from typing import Any, DefaultDict, Dict, List
 import statistics
 
 
@@ -15,8 +16,8 @@ class MetricsCalculator:
     """Compute park efficiency metrics and KPIs."""
     
     def __init__(self):
-        self.visitor_metrics = {}  # Per-visitor detailed tracking
-        self.ride_metrics = defaultdict(lambda: {
+        self.visitor_metrics: Dict[int, Dict[str, Any]] = {}
+        self.ride_metrics: DefaultDict[str, Dict[str, Any]] = defaultdict(lambda: {
             'boarding_events': [],
             'completion_events': [],
             'total_riders': 0,
@@ -34,6 +35,8 @@ class MetricsCalculator:
             'peak_concurrent_visitors': 0,
             'hourly_throughput': []
         }
+        self.current_satisfaction: float = 100.0
+        self.satisfaction_samples = deque(maxlen=10000)
         
     def initialize_visitor(self, visitor_id, visitor_type, spawn_time):
         """Initialize tracking for a new visitor."""
@@ -67,6 +70,7 @@ class MetricsCalculator:
             self.initialize_visitor(visitor_id, 'unknown', step)
             
         visitor = self.visitor_metrics[visitor_id]
+        details = details or {}
         
         event = {
             'step': step,
@@ -86,17 +90,19 @@ class MetricsCalculator:
             
         elif event_type == 'boarded_ride':
             ride_name = details.get('ride_name')
-            if visitor['current_queue_start'] is not None:
-                wait_time = step - visitor['current_queue_start']
-                visitor['queue_times'][ride_name].append(wait_time)
-                visitor['total_wait_time'] += wait_time
+            wait_time = 0
+            if ride_name:
+                if visitor['current_queue_start'] is not None:
+                    wait_time = step - visitor['current_queue_start']
+                    visitor['queue_times'][ride_name].append(wait_time)
+                    visitor['total_wait_time'] += wait_time
                 
-            self.ride_metrics[ride_name]['boarding_events'].append({
-                'step': step,
-                'visitor_id': visitor_id,
-                'wait_time': wait_time if visitor['current_queue_start'] else 0
-            })
-            self.ride_metrics[ride_name]['total_riders'] += 1
+                self.ride_metrics[ride_name]['boarding_events'].append({
+                    'step': step,
+                    'visitor_id': visitor_id,
+                    'wait_time': wait_time
+                })
+                self.ride_metrics[ride_name]['total_riders'] += 1
             self.park_metrics['total_boarding_events'] += 1
             
         elif event_type == 'completed_ride':
@@ -106,10 +112,11 @@ class MetricsCalculator:
                 'step': step,
                 'duration': details.get('duration', 0)
             })
-            self.ride_metrics[ride_name]['completion_events'].append({
-                'step': step,
-                'visitor_id': visitor_id
-            })
+            if ride_name:
+                self.ride_metrics[ride_name]['completion_events'].append({
+                    'step': step,
+                    'visitor_id': visitor_id
+                })
             
         elif event_type == 'abandoned_queue':
             ride_name = details.get('ride_name')
@@ -123,7 +130,7 @@ class MetricsCalculator:
             
         elif event_type == 'departed':
             visitor['departure_time'] = step
-            
+
         # Reset queue tracking after relevant events
         if event_type in ['boarded_ride', 'abandoned_queue']:
             visitor['current_queue_start'] = None
@@ -132,6 +139,7 @@ class MetricsCalculator:
     def log_ride_event(self, ride_name, event_type, step, details=None):
         """Log a ride event for throughput and efficiency metrics."""
         ride = self.ride_metrics[ride_name]
+        details = details or {}
         
         if event_type == 'cycle_completed':
             ride['total_cycles'] += 1
@@ -140,6 +148,12 @@ class MetricsCalculator:
         elif event_type == 'went_idle':
             ride['downtime'] += details.get('idle_duration', 1)
             
+    def update_live_satisfaction(self, value: float):
+        """Store the latest satisfaction reading (0-100) for live dashboards."""
+        clamped = max(0.0, min(100.0, float(value)))
+        self.current_satisfaction = clamped
+        self.satisfaction_samples.append(clamped)
+
     def calculate_all_metrics(self):
         """Calculate every park efficiency metric."""
         metrics = {
@@ -158,17 +172,17 @@ class MetricsCalculator:
             
         wait_times = []
         abandonment_rates = {}
-        type_performance = defaultdict(lambda: {
-            'count': 0,
-            'avg_wait_time': 0,
-            'avg_rides_completed': 0,
-            'abandonment_rate': 0
+        type_performance: DefaultDict[str, Dict[str, float]] = defaultdict(lambda: {
+            'count': 0.0,
+            'avg_wait_time': 0.0,
+            'avg_rides_completed': 0.0,
+            'abandonment_rate': 0.0
         })
         
         for visitor_id, data in self.visitor_metrics.items():
             visitor_type = data['type']
             type_stats = type_performance[visitor_type]
-            type_stats['count'] += 1
+            type_stats['count'] += 1.0
             
             # Wait time analysis
             total_wait = data['total_wait_time']
@@ -288,25 +302,31 @@ class MetricsCalculator:
         return total_boardings / max(total_steps, 1)
         
     def _estimate_satisfaction(self):
-        """Estimate visitor satisfaction based on wait times and ride completions."""
+        """Estimate visitor satisfaction based on collected samples and visitor data."""
+        if self.satisfaction_samples:
+            return statistics.mean(self.satisfaction_samples)
+
         if not self.visitor_metrics:
             return 0
-            
+
         satisfaction_scores = []
         for visitor_data in self.visitor_metrics.values():
             rides_completed = len(visitor_data['ride_completions'])
             wait_time = visitor_data['total_wait_time']
             abandonment_count = visitor_data['abandonment_count']
-            
-            # Simple satisfaction model
-            satisfaction = 50  # Base satisfaction
-            satisfaction += rides_completed * 20  # +20 per ride completed
-            satisfaction -= wait_time * 0.5  # -0.5 per minute waited
-            satisfaction -= abandonment_count * 15  # -15 per abandonment
-            
+
+            satisfaction = 50
+            satisfaction += rides_completed * 20
+            satisfaction -= wait_time * 0.5
+            satisfaction -= abandonment_count * 15
+
             satisfaction_scores.append(max(0, min(100, satisfaction)))
-            
+
         return statistics.mean(satisfaction_scores) if satisfaction_scores else 0
+
+    def get_current_satisfaction(self):
+        """Expose the current average satisfaction (0-100) for live dashboards."""
+        return round(self.current_satisfaction, 2)
         
     def _calculate_capacity_utilization(self):
         """Calculate how well park capacity is being utilized."""

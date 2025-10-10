@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
-"""
-Configuration loader.
-=====================
-Loads configuration from YAML/CSV files and command-line arguments.
-"""
+"""Configuration loader for arguments, YAML, CSV, and presets."""
 import random
 from types import SimpleNamespace
+from interface.presets import PRESETS
 from simulation import Terrain, read_rides_csv, read_patrons_csv, build_rides, load_config_yaml, print_final_config
+from simulation.autoplace import auto_place
 from models import PatronType, Patron
 
 
@@ -23,13 +21,19 @@ class ConfigLoader:
         if args.seed is not None:
             random.seed(args.seed)
             
-        # Interactive mode
-        if args.interactive:
+        mode = getattr(args, "mode", "simple") or "simple"
+
+        if mode == "simple":
+            terrain, rides, num_patrons = self._load_from_preset(getattr(args, "preset", "medium"))
+            self.config_source = f"preset:{getattr(args, 'preset', 'medium')}"
+
+        # Interactive wizard mode
+        elif getattr(args, "wizard", False):
             if cli_manager:
                 terrain, rides, num_patrons = cli_manager.interactive_setup()
-                self.config_source = "interactive"
+                self.config_source = "wizard"
             else:
-                raise ValueError("CLI manager required for interactive mode")
+                raise ValueError("CLI manager required for wizard mode")
         
         # YAML configuration mode
         elif args.config:
@@ -63,17 +67,78 @@ class ConfigLoader:
         config.show_stats = args.stats
         config.seed = args.seed
         config.save_run = getattr(args, 'save_run', False)
-        config.interactive = bool(args.interactive)
-        config.mode = 'interactive' if args.interactive else 'batch'
+
+        force_headless = bool(getattr(args, 'no_gui', False))
+        force_gui = bool(getattr(args, 'gui', False))
+
+        if mode == "advanced" and getattr(args, "wizard", False):
+            if force_headless:
+                print("Wizard mode needs the window, ignoring --no-gui.")
+            force_headless = False
+            force_gui = True
+
+        if force_gui:
+            force_headless = False
+
+        config.headless = force_headless
+
+        config.kpi_buffer_size = max(1, getattr(args, 'kpi_buffer_size', 240))
+        config.kpi_warmup = max(0, getattr(args, 'kpi_warmup', 5))
+        config.kpi_interval = max(0.0, getattr(args, 'kpi_interval', 0.0))
+        config.kpi_style = getattr(args, 'kpi_style', 'default') or 'default'
+        save_kpis = getattr(args, 'save_kpis', None)
+        config.save_kpis = save_kpis if save_kpis else None
+        config.sat_alpha = max(0.0, float(getattr(args, 'sat_alpha', 0.6)))
+        config.sat_beta = max(0.0, float(getattr(args, 'sat_beta', 0.8)))
+        config.sat_gamma = max(0.0, float(getattr(args, 'sat_gamma', 0.5)))
+        config.sat_ema = min(0.99, max(0.0, float(getattr(args, 'sat_ema', 0.9))))
+        default_interactive = not config.headless
+        if force_gui:
+            default_interactive = True
+        config.interactive = default_interactive
+
+        if config.interactive:
+            config.mode = 'interactive'
+        elif config.headless:
+            config.mode = 'headless'
+        else:
+            config.mode = 'batch'
         
         # Create patrons with Epic 2 diversity
         config.patrons = self._create_patrons(config.terrain, num_patrons)
         
         # Print final configuration
-        print_final_config(config.terrain, config.rides, len(config.patrons), 
-                           config.steps, config.seed, config.show_stats, self.config_source)
+        if not getattr(args, 'no_summary', False):
+            print_final_config(
+                config.terrain,
+                config.rides,
+                len(config.patrons),
+                config.steps,
+                config.seed,
+                config.show_stats,
+                self.config_source,
+            )
         
         return config
+
+    def _load_from_preset(self, preset_name):
+        key = (preset_name or "medium").strip().lower()
+        if key not in PRESETS:
+            raise ValueError(f"Unknown preset '{preset_name}'")
+
+        preset = PRESETS[key]
+        terrain = Terrain.from_size(preset["width"], preset["height"])
+        rides_params = [ride.copy() for ride in preset["rides"]]
+
+        placed, warnings = auto_place(rides_params, terrain.width, terrain.height, min_gap=3)
+        if warnings:
+            for msg in warnings:
+                print(f"Warning: {msg}")
+
+        if not placed:
+            raise ValueError("Unable to place rides for preset terrain size")
+
+        return terrain, placed, preset["visitors"]
     
     def _load_from_yaml(self, file_path):
         """Load configuration from YAML file"""

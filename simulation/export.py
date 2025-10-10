@@ -233,6 +233,18 @@ class ExportManager:
             ax1.set_title('Visitors in the Park')
             ax1.legend()
             ax1.grid(True, alpha=0.3)
+            satisfaction_ema = timeline.get('satisfaction_ema', [])
+            if satisfaction_ema:
+                sat_axis = ax1.twinx()
+                sat_axis.set_ylim(0, 100)
+                sat_axis.set_ylabel('Satisfaction (EMA)', color='#1F77B4')
+                sat_axis.plot(steps, satisfaction_ema, color='#1F77B4', linewidth=1.8, label='Satisfaction (EMA)')
+                sat_axis.fill_between(steps, satisfaction_ema, 100, color='#A6C8FF', alpha=0.1)
+                sat_axis.tick_params(axis='y', colors='#1F77B4')
+                sat_axis.spines['right'].set_color('#1F77B4')
+                sat_axis.axhspan(80, 100, color='#228B22', alpha=0.05)
+                sat_axis.axhspan(60, 80, color='#C99700', alpha=0.04)
+                sat_axis.axhspan(0, 60, color='#B22222', alpha=0.03)
             
             # Plot 2: Departing visitors
             ax2.plot(steps, timeline.get('departed_timeline', []), 'g-', linewidth=2, label='Departed')
