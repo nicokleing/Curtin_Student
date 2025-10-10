@@ -2,13 +2,23 @@
 """Base class for all rides."""
 from __future__ import annotations
 
+from collections import deque
+
 from adventure.rides.ride_states import RideState, RideTimer
 
 
 def dequeue(ride):
     """Remove and return first patron from ride queue."""
-    if ride.queue:
-        return ride.queue.pop(0)
+    q = ride.queue
+    # support either deque or list-like assigned by tests
+    try:
+        if len(q):
+            # prefer popleft for deque
+            if hasattr(q, "popleft"):
+                return q.popleft()
+            return q.pop(0)
+    except Exception:
+        return None
     return None
 
 
@@ -37,7 +47,11 @@ class Ride:
         self.unloading_time = unloading_time
 
         self.state = RideState.IDLE.value
-        self.queue = []
+        # internal queue storage (deque for efficient pops from left)
+        self._queue = deque()
+        # optional queue capacity (None == infinite)
+        self.queue_limit = None
+        # expose `queue` as a property (setter accepts lists too)
         self.riders = []
         self.current_time = 0
 
@@ -54,6 +68,19 @@ class Ride:
                 break
             patron.board_ride(self)
             self.riders.append(patron)
+
+    def enqueue(self, patron):
+        """Add a patron to the ride queue respecting capacity.
+
+        Returns True if the patron was added, False if queue is full.
+        """
+        q = self._queue
+        if self.queue_limit is not None and len(q) >= self.queue_limit:
+            # NOTE: capacity hit; caller may log or handle this
+            print(f"Warning: queue full for {self.name}")
+            return False
+        q.append(patron)
+        return True
 
     def finish_cycle(self):
         """Finish a cycle by letting all riders leave."""
@@ -114,7 +141,8 @@ class Ride:
     def reset(self):
         """Reset ride state between simulation runs."""
         self.state = RideState.IDLE.value
-        self.queue.clear()
+        # clear internal queue
+        self._queue.clear()
         self.riders.clear()
         self.current_time = 0
         self.step_counter = 0
@@ -137,6 +165,22 @@ class Ride:
 
     def _draw_queue(self, ax):
         raise NotImplementedError("Subclasses must implement _draw_queue")
+
+    @property
+    def queue(self):
+        """Expose the queue as a sequence. Setter accepts list or deque."""
+        return self._queue
+
+    @queue.setter
+    def queue(self, value):
+        # allow tests or code to assign a list; convert to deque
+        if value is None:
+            self._queue = deque()
+        elif hasattr(value, "popleft"):
+            self._queue = value
+        else:
+            # assume iterable/list-like
+            self._queue = deque(value)
 
     def _draw_capacity_info(self, ax):
         raise NotImplementedError("Subclasses must implement _draw_capacity_info")

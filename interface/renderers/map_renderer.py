@@ -224,7 +224,9 @@ class MapRenderer:
     def _draw_ride_queue(self, ride):
         """Draw the first part of a ride queue when present."""
         if hasattr(ride, 'queue') and ride.queue:
-            queue_positions = [patron.position for patron in ride.queue[:5]]
+            # ride.queue may be a deque; convert to list before slicing
+            qlist = list(ride.queue)
+            queue_positions = [patron.position for patron in qlist[:5]]
             if queue_positions:
                 queue_x, queue_y = zip(*queue_positions)
                 self.ax_map.scatter(queue_x, queue_y, c='orange', s=20, alpha=0.7)

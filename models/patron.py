@@ -138,10 +138,14 @@ class Patron:
                         self.position, nearby_rides, self.terrain, self.ride_preferences
                     )
                     if best_ride and QueueBehavior.should_join_queue(best_ride, self.patron_type):
-                        best_ride.queue.append(self)
-                        self.state = "queueing"
-                        self.queue_start_time = t
-                        self.target = None
+                        added = best_ride.enqueue(self)
+                        if added:
+                            self.state = "queueing"
+                            self.queue_start_time = t
+                            self.target = None
+                        else:
+                            # queue full
+                            pass
             
             if self.state == "roaming" and self.exits:
                 exit_prob = self._calculate_exit_probability()

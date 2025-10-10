@@ -143,7 +143,13 @@ class Patron:
                         self.position, nearby_rides, self.terrain, self.ride_preferences
                     )
                     if best_ride and QueueBehavior.should_join_queue(best_ride, self.patron_type):
-                        self._join_queue(best_ride, t)
+                        # use ride.enqueue to respect queue limits
+                        added = best_ride.enqueue(self)
+                        if added:
+                            self._join_queue(best_ride, t)
+                        else:
+                            # couldn't join (queue full) -> remain roaming
+                            pass
 
             if self.state == "roaming" and self.exits:
                 exit_prob = self._calculate_exit_probability()
@@ -213,8 +219,23 @@ class Patron:
 
     def _join_queue(self, ride, current_time):
         """Register the visitor in a queue and store references."""
-        ride.queue.append(self)
-        self.queue_ref = ride
-        self.state = "queueing"
-        self.queue_start_time = current_time
-        self.target = None
+        # Use ride.enqueue so queue limits are respected
+        added = False
+        try:
+            added = ride.enqueue(self)
+        except Exception:
+            # fallback: directly append if enqueue not available
+            try:
+                ride.queue.append(self)
+                added = True
+            except Exception:
+                added = False
+
+        if added:
+            self.queue_ref = ride
+            self.state = "queueing"
+            self.queue_start_time = current_time
+            self.target = None
+        else:
+            # couldn't join (queue full or error) - remain roaming
+            self.target = None

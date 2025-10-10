@@ -47,7 +47,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
 - [x] Spawn/despawn at entrances/exits
 
 ## 4) Queues
-- [ ] Per-ride deque structure (lists used instead of deque)
+- [x] Per-ride deque structure (implemented: rides now use an internal deque exposed via `queue`)
 - [ ] Configurable limit or infinite with warning (no queue capacity controls implemented)
 - [x] Sync with ride state (board on RUNNING start, disembark on finish)
 - [x] Patron state flips when joining/leaving/ride transitions
