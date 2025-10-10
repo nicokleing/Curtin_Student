@@ -4,6 +4,7 @@ Display Manager - Rendering Module
 ===================================
 Matplotlib-based display control with specialized renderers.
 """
+import time
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
@@ -41,6 +42,10 @@ class DisplayManager:
         self.map_renderer = None
         self.stats_renderer = None
         self.controls = None
+        refresh_hint = float(self.kpi_options.get('refresh_interval', 0.0) or 0.0)
+        base_delay = refresh_hint if refresh_hint > 0 else 0.05
+        self._min_frame_delay = max(0.01, base_delay)
+        self._last_draw = 0.0
         
     def setup(self):
         """Setup matplotlib layout and initialize renderers."""
@@ -93,18 +98,19 @@ class DisplayManager:
         # Render main map
         if self.map_renderer:
             self.map_renderer.render(state)
-        
+
         # Render statistics if enabled
         if self.stats_renderer and self.show_stats:
             self.stats_renderer.render(state, self.engine)
-            
+
         # Update controls display
         if self.controls:
             self.controls.update_display(state)
-            
+
         # Refresh display
         if self.fig and self.fig.canvas:
             self.fig.canvas.draw_idle()
+        self._last_draw = time.monotonic()
         
     def is_window_open(self):
         """Check if matplotlib window is still open."""
@@ -113,9 +119,9 @@ class DisplayManager:
     def pause_for_frame(self, paused):
         """Pause appropriately for frame rate control."""
         if paused:
-            plt.pause(0.1)  # Longer pause when paused to reduce CPU usage
+            plt.pause(max(0.1, self._min_frame_delay))  # Longer pause when paused to reduce CPU usage
         else:
-            plt.pause(0.01)  # Short pause for smooth animation
+            plt.pause(self._min_frame_delay)
             
     def set_final_mode(self):
         """Configure display for final mode."""

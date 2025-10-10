@@ -10,6 +10,7 @@ from datetime import datetime
 from collections import defaultdict, deque
 from typing import Any, DefaultDict, Dict, List
 import statistics
+import math
 
 
 class MetricsCalculator:
@@ -205,11 +206,17 @@ class MetricsCalculator:
                 stats['avg_rides_completed'] = stats['avg_rides_completed'] / count
                 stats['abandonment_rate'] = stats['abandonment_rate'] / count
                 
+        sorted_waits = sorted(wait_times)
+        median_wait = statistics.median(sorted_waits) if sorted_waits else 0
+        wait_p90 = self._percentile(sorted_waits, 0.9) if sorted_waits else 0
+
         return {
-            'overall_avg_wait_time': statistics.mean(wait_times) if wait_times else 0,
-            'median_wait_time': statistics.median(wait_times) if wait_times else 0,
-            'max_wait_time': max(wait_times) if wait_times else 0,
-            'min_wait_time': min(wait_times) if wait_times else 0,
+            'overall_avg_wait_time': statistics.mean(sorted_waits) if sorted_waits else 0,
+            'median_wait_time': median_wait,
+            'wait_time_p50': median_wait,
+            'wait_time_p90': wait_p90,
+            'max_wait_time': max(sorted_waits) if sorted_waits else 0,
+            'min_wait_time': min(sorted_waits) if sorted_waits else 0,
             'by_visitor_type': dict(type_performance)
         }
         
@@ -341,6 +348,25 @@ class MetricsCalculator:
             return 0
             
         return (actual_boardings / total_possible_boardings) * 100
+
+    @staticmethod
+    def _percentile(sorted_values, percentile):
+        """Return the percentile value using linear interpolation."""
+        if not sorted_values:
+            return 0
+        if len(sorted_values) == 1:
+            return float(sorted_values[0])
+
+        k = (len(sorted_values) - 1) * percentile
+        lower_index = math.floor(k)
+        upper_index = math.ceil(k)
+
+        if lower_index == upper_index:
+            return float(sorted_values[int(k)])
+
+        lower_value = sorted_values[lower_index]
+        upper_value = sorted_values[upper_index]
+        return float(lower_value + (upper_value - lower_value) * (k - lower_index))
         
     def get_detailed_visitor_report(self, visitor_id):
         """Get detailed report for a specific visitor."""
@@ -380,6 +406,8 @@ class MetricsCalculator:
         print(f"\nWait time analysis:")
         print(f"   Average wait time: {visitor_analytics['overall_avg_wait_time']:.1f} minutes")
         print(f"   Median wait time: {visitor_analytics['median_wait_time']:.1f} minutes")
+        print(f"   P50 wait time: {visitor_analytics['wait_time_p50']:.1f} minutes")
+        print(f"   P90 wait time: {visitor_analytics['wait_time_p90']:.1f} minutes")
         print(f"   Max wait time: {visitor_analytics['max_wait_time']:.1f} minutes")
 
         print(f"\nVisitor analytics by type:")

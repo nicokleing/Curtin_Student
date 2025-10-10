@@ -91,6 +91,7 @@ class SimulationEngine:
         
         # Display manager will be set when running
         self.display = None
+        self._export_completed = False
         
     def _reset_stat_buffers(self):
         """Prepare rolling buffers for per-tick statistics."""
@@ -439,15 +440,14 @@ class SimulationEngine:
         speed_name = speed_names.get(multiplier, f"{multiplier}x")
         print(f"Speed changed to {speed_name} ({multiplier}x)")
         
-    def reset_simulation(self):
-        """Reset simulation to initial state"""
-        print("Restarting simulation...")
+    def reset(self):
+        """Clear state, metrics, and queues while keeping the UI active."""
         self.time = 0
         self.current_step = 0
         self.paused = False
         self.speed_multiplier = 1
         self.running = True
-        
+
         # Reset statistics and rolling buffers
         self._reset_stat_buffers()
         self._queue_history = deque(maxlen=self.kpi_buffer_size)
@@ -459,8 +459,8 @@ class SimulationEngine:
         ride_capacity = sum(getattr(ride, 'capacity', 0) or 0 for ride in self.rides)
         self._capacity_reference = max(1, ride_capacity)
         self._crowd_reference = max(self._capacity_reference, base_patron_count)
-        
-        # Reset terrain and entities
+
+        # Reset terrain and entities to their baselines
         if hasattr(self.terrain, 'reset'):
             self.terrain.reset()
         for ride in self.rides:
@@ -470,17 +470,22 @@ class SimulationEngine:
             if hasattr(patron, 'reset'):
                 patron.reset()
 
-        # Clear movement caches after repositioning
+        # Clear cached paths so movement recomputes routes cleanly
         try:
             from behaviors.movement_behavior import MovementBehavior
             MovementBehavior.clear_cache(self.terrain)
         except Exception:
             pass
 
-        # Rebuild metrics and exports
+        # Rebuild metrics and exports for the next run
         self._reset_metrics()
         self._prepare_export_manager()
-        
+        self._export_completed = False
+
+    def reset_simulation(self):
+        """Reset simulation to initial state"""
+        print("Restarting simulation...")
+        self.reset()
         print("Simulation restarted and running at 1x speed")
         
     def _detect_and_log_patron_events(self, patron, prev_state, prev_positions):
@@ -610,47 +615,56 @@ class SimulationEngine:
         print("\n" + "="*60)
         print("EPIC 5: EXPORTING SIMULATION DATA")
         print("="*60)
-        
-        if not self.export_manager:
+
+        if not self.export_manager or self._export_completed:
             return
 
         try:
-            # Add missing import at the top of method
             import os
-            
-            # Prepare final statistics including comprehensive metrics
+
+            if comprehensive_metrics is None:
+                comprehensive_metrics = self.metrics_calculator.calculate_all_metrics()
+
+            park_metrics = comprehensive_metrics.get('park_performance', {})
+            visitor_metrics = comprehensive_metrics.get('visitor_analytics', {})
+
+            wait_summary = {
+                'average': round(visitor_metrics.get('overall_avg_wait_time', 0), 2),
+                'p50': round(visitor_metrics.get('wait_time_p50', 0), 2),
+                'p90': round(visitor_metrics.get('wait_time_p90', 0), 2),
+                'max': round(visitor_metrics.get('max_wait_time', 0), 2)
+            }
+
             final_stats = {
                 'total_steps': self.current_step,
                 'final_riders': self.riders_now[-1] if self.riders_now else 0,
                 'final_queued': self.queued_now[-1] if self.queued_now else 0,
                 'total_departed': self.departed_total[-1] if self.departed_total else 0,
-                'total_abandoned': self.abandoned_now[-1] if self.abandoned_now else 0,
+                'total_abandoned': park_metrics.get('total_queue_abandonments', 0),
                 'final_satisfaction': self.satisfaction_now[-1] if self.satisfaction_now else 100.0,
                 'final_satisfaction_ema': self.satisfaction_ema[-1] if self.satisfaction_ema else 100.0,
                 'patron_breakdown': self._get_patron_breakdown(),
-                'satisfaction_summary': self._build_satisfaction_summary()
+                'satisfaction_summary': self._build_satisfaction_summary(),
+                'wait_time_summary': wait_summary,
+                'park_performance': park_metrics
             }
-            
-            # Add full Epic 6 metrics when available
-            if comprehensive_metrics:
-                final_stats['detailed_metrics'] = comprehensive_metrics
-            
-            # Add timeline data if stats were collected
+
             if timeline_data is None:
                 timeline_data = self._collect_timeline_data()
 
             self.export_manager.set_final_stats(final_stats, timeline_data)
-            
-            # Export all formats including detailed metrics
+
             exported_files = self.export_manager.export_all(self.display, self.metrics_calculator)
-            
+
             print(f"Export completed: {len(exported_files)} files created")
             print(f"Output directory: {self.export_manager.output_dir}")
-            
+
             for file_path in exported_files:
                 file_size = os.path.getsize(file_path) / 1024  # KB
                 print(f"   File: {os.path.basename(file_path)} ({file_size:.1f} KB)")
-                
+
+            self._export_completed = True
+
         except Exception as e:
             print(f"Export error: {e}")
             

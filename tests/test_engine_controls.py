@@ -6,7 +6,7 @@ from core.engine import SimulationEngine
 
 
 class SimulationEngineControlsTest(unittest.TestCase):
-    def _make_engine(self, steps=20):
+    def _make_engine(self, steps=20, save_run=False):
         terrain = Terrain.from_size(20, 15)
         rides = build_rides([
             {"type": "pirate", "capacity": 2, "duration": 4, "bbox": (3, 3, 4, 3)}
@@ -18,7 +18,7 @@ class SimulationEngineControlsTest(unittest.TestCase):
             patrons=[],
             steps=steps,
             show_stats=False,
-            save_run=False,
+            save_run=save_run,
             interactive=False
         )
         return SimulationEngine(config)
@@ -45,7 +45,7 @@ class SimulationEngineControlsTest(unittest.TestCase):
         engine.departed_total.append(1)
         engine.abandoned_now.append(0)
 
-        engine.reset_simulation()
+        engine.reset()
 
         self.assertEqual(engine.current_step, 0)
         self.assertEqual(engine.time, 0)
@@ -62,6 +62,23 @@ class SimulationEngineControlsTest(unittest.TestCase):
             engine.metrics_calculator.park_metrics['total_visitors'],
             len(engine.patrons)
         )
+        self.assertFalse(engine._export_completed)
+
+    def test_reset_refreshes_export_manager(self):
+        engine = self._make_engine(save_run=True)
+        original_manager = engine.export_manager
+        if original_manager is None:
+            self.fail("Export manager should exist when save_run=True")
+        original_manager.log_event(0, 'test_event', 'entity', {'foo': 'bar'})
+
+        engine.reset()
+
+        self.assertIsNotNone(engine.export_manager)
+        self.assertIsNot(engine.export_manager, original_manager)
+        if engine.export_manager is None:
+            self.fail("Export manager should be recreated during reset")
+        self.assertEqual(engine.export_manager.events_log, [])
+        self.assertEqual(engine.metrics_calculator.park_metrics['total_visitors'], len(engine.patrons))
 
     def test_speed_multiplier_applies_multiple_steps(self):
         engine = self._make_engine()

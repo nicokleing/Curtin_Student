@@ -116,6 +116,7 @@ class Terrain:
                 self.grid[yy][xx] = 1
 
     def add_ride(self, ride, *, allow_tangent=True):
+        """Place a ride by validating AABB overlap rules and obstacles."""
         bbox = ride.bbox
 
         if not self._bbox_inside(bbox):
