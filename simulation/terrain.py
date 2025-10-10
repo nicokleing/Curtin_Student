@@ -1,10 +1,6 @@
 
 # -*- coding: utf-8 -*-
-"""
-Terrain module (grid-based, modular).
-- Binary grid map with default boundary walls.
-- Simple spawn and exit points.
-"""
+"""Terrain helpers for the simulation grid."""
 import csv
 import random
 import matplotlib.patches as patches
@@ -116,7 +112,7 @@ class Terrain:
                 self.grid[yy][xx] = 1
 
     def add_ride(self, ride, *, allow_tangent=True):
-        """Place a ride by validating AABB overlap rules and obstacles."""
+        """Check axis-aligned overlap before placing the ride."""
         bbox = ride.bbox
 
         if not self._bbox_inside(bbox):

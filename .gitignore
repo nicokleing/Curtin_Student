@@ -168,6 +168,8 @@ Desktop.ini
 # Local context and tooling
 contexto/
 .continue/
+.continue/agents/
+.continue/agents/*.yaml
 agents/
 experiments/
 backups/
