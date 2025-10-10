@@ -98,6 +98,28 @@ class PatronBehaviorTests(unittest.TestCase):
         self.assertEqual(event["queue_len"], 3)
         self.assertEqual(event["patience_at_leave"], 0)
 
+    def test_queue_and_ride_references_update(self):
+        patron = Patron("P5", [(1, 1)], [(18, 13)], self.terrain, patron_type=PatronType.ADVENTURER)
+        ride = FakeRide("RefRide", "pirate", (8, 6, 3, 3), rating=0.8)
+
+        patron._join_queue(ride, current_time=5)
+        self.assertIs(patron.queue_ref, ride)
+        self.assertEqual(patron.state, "queueing")
+
+        if patron in ride.queue:
+            ride.queue.remove(patron)
+        patron.board_ride(ride)
+        self.assertIsNone(patron.queue_ref)
+        self.assertIs(patron.ride_ref, ride)
+
+        patron.leave_ride()
+        self.assertIsNone(patron.ride_ref)
+        self.assertEqual(patron.state, "roaming")
+
+        patron._join_queue(ride, current_time=12)
+        QueueBehavior.abandon_queue(patron, ride, current_time=14, queue_length=len(ride.queue))
+        self.assertIsNone(patron.queue_ref)
+
     def test_pathfinding_detects_blocked_route(self):
         blocked = Terrain.from_definition(12, 8, obstacles=[(5, 0, 1, 8)], entrances=[(1, 1)], exits=[(10, 6)])
         patron = Patron("P3", [(1, 1)], [(10, 6)], blocked, patron_type=PatronType.ADVENTURER)

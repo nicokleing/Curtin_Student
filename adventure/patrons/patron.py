@@ -28,6 +28,8 @@ class Patron:
         self.target = None
         self.timer = random.randint(3, 8)  # Slightly random spawn delay
         self.current_ride = None
+        self.queue_ref = None
+        self.ride_ref = None
         self.last_abandon_event = None
 
         # Queue patience tracking
@@ -86,6 +88,8 @@ class Patron:
     def board_ride(self, ride):
         """Board a ride."""
         self.current_ride = ride
+        self.queue_ref = None
+        self.ride_ref = ride
         self.state = "riding"
         self.queue_start_time = 0
         print(f"{self.name} boarded {ride.name}")
@@ -99,6 +103,7 @@ class Patron:
         self.state = "roaming"
         self.rides_completed += 1
         self.target = None
+        self.ride_ref = None
 
         # Regain some patience after finishing a ride
         self.patience = min(self.max_patience, self.patience + 8)
@@ -138,10 +143,7 @@ class Patron:
                         self.position, nearby_rides, self.terrain, self.ride_preferences
                     )
                     if best_ride and QueueBehavior.should_join_queue(best_ride, self.patron_type):
-                        best_ride.queue.append(self)
-                        self.state = "queueing"
-                        self.queue_start_time = t
-                        self.target = None
+                        self._join_queue(best_ride, t)
 
             if self.state == "roaming" and self.exits:
                 exit_prob = self._calculate_exit_probability()
@@ -172,6 +174,8 @@ class Patron:
         self.target = None
         self.timer = random.randint(3, 8)
         self.current_ride = None
+        self.queue_ref = None
+        self.ride_ref = None
         self.last_abandon_event = None
         self.queue_start_time = 0
         self.total_queue_time = 0
@@ -203,4 +207,14 @@ class Patron:
             "patience": self.patience,
             "rides_completed": self.rides_completed,
             "abandoned_queues": self.abandoned_queues,
+            "queue_ref": getattr(self.queue_ref, "name", None),
+            "ride_ref": getattr(self.ride_ref, "name", None),
         }
+
+    def _join_queue(self, ride, current_time):
+        """Register the visitor in a queue and store references."""
+        ride.queue.append(self)
+        self.queue_ref = ride
+        self.state = "queueing"
+        self.queue_start_time = current_time
+        self.target = None

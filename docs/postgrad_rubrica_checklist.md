@@ -40,7 +40,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
 - [x] BBoxes do not overlap (validated on map load)
 
 ## 3) Patrons
-- [ ] Patron fields: id, pos, state, target, queue_ref, ride_ref (no dedicated queue_ref/current ride id attributes)
+- [x] Patron fields: id, pos, state, target, queue_ref, ride_ref (see `Patron` queue_ref/ride_ref tracking)
 - [x] States: ROAMING, QUEUING, RIDING, LEAVING (implemented via spawning/roaming/queueing/riding/leaving/left)
 - [x] Strategy: not purely random (e.g., shortest estimated wait)
 - [x] Movement avoids ride bboxes and obstacles

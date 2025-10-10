@@ -35,10 +35,13 @@ class QueueBehavior:
                 break
 
         if current_ride is None:
+            patron.queue_ref = None
             return "roaming"
 
         queue_position = current_ride.queue.index(patron) + 1
         queue_length = len(current_ride.queue)
+
+        patron.queue_ref = current_ride
 
         patience_factor = patron.patience / max(1, patron.max_patience)
         queue_factor = min(queue_position / 10.0, 0.5)
@@ -60,6 +63,7 @@ class QueueBehavior:
         patron.abandoned_queues += 1
         patron.state = "roaming"
         patron.target = None
+        patron.queue_ref = None
         patron.last_abandon_event = {
             "time": current_time,
             "ride_id": ride.name,
