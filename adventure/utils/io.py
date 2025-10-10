@@ -274,6 +274,12 @@ def build_rides(rides_params: Iterable[Dict[str, Any]], terrain) -> List[Any]:
             ride = PirateShip(name, capacity, duration, bbox)
         ride.rating = RIDE_RATINGS.get(ride.ride_type, 0.6)
         setattr(ride, "category", RIDE_CATEGORY_MAP.get(ride.ride_type))
+        # allow optional per-ride queue capacity from params (None = infinite)
+        try:
+            ride.queue_limit = params.get("queue_limit", None)
+        except Exception:
+            # params may be a mapping-like object; ignore if not present
+            ride.queue_limit = None
         try:
             terrain.add_ride(ride)
         except ValueError as exc:

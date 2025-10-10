@@ -49,6 +49,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
 ## 4) Queues
 - [x] Per-ride deque structure (implemented: rides now use an internal deque exposed via `queue`)
 - [ ] Configurable limit or infinite with warning (no queue capacity controls implemented)
+- [x] Configurable limit or infinite with warning (queue_limit supported via presets/ride params; renderer shows FULL)
 - [x] Sync with ride state (board on RUNNING start, disembark on finish)
 - [x] Patron state flips when joining/leaving/ride transitions
 

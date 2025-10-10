@@ -226,7 +226,18 @@ class MapRenderer:
         if hasattr(ride, 'queue') and ride.queue:
             # ride.queue may be a deque; convert to list before slicing
             qlist = list(ride.queue)
+            # show up to 5 patrons in the queue
             queue_positions = [patron.position for patron in qlist[:5]]
             if queue_positions:
                 queue_x, queue_y = zip(*queue_positions)
-                self.ax_map.scatter(queue_x, queue_y, c='orange', s=20, alpha=0.7)
+                # if ride defines a queue_limit and it's full, highlight in red
+                limit = getattr(ride, 'queue_limit', None)
+                is_full = limit is not None and len(qlist) >= limit
+                color = 'red' if is_full else 'orange'
+                self.ax_map.scatter(queue_x, queue_y, c=color, s=20, alpha=0.8)
+                # draw a small 'FULL' label above the ride when queue is full
+                if is_full:
+                    cx, cy = ride.center()
+                    self.ax_map.text(cx, cy + 6.5, 'FULL', ha='center', va='bottom',
+                                     fontsize=8, color='red', weight='bold',
+                                     bbox=dict(boxstyle="round,pad=0.2", facecolor='white', alpha=0.7))
