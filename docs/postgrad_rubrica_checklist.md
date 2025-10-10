@@ -87,11 +87,11 @@ Use this file to track delivery items. Plain English, ASCII-only.
 - [ ] Clear messages and safe defaults when files are missing (currently missing-file handling prints errors or raises)
 
 ## 10) Tests (for traceability)
-- [ ] tests/test_bbox.py (no overlapping rides) (missing)
-- [ ] tests/test_queues.py (capacity, dequeue, state flips) (missing)
-- [ ] tests/test_strategy.py (shortest-queue targeting) (missing)
-- [ ] tests/test_stats_io.py (CSV columns, files written) (missing)
-- [ ] Determinism with --seed (tolerance) (missing)
+- [x] tests/test_bbox.py (no overlapping rides) (present - `tests/test_bbox.py` added; verifies instantiated ride bboxes from presets do not overlap)
+- [x] tests/test_queues.py (capacity, dequeue, state flips) (present - `tests/test_queues.py` covers queue limit; `tests/test_patron_behavior.py` covers state flips and queue interactions)
+- [x] tests/test_strategy.py (shortest-queue targeting) (present - `tests/test_strategy.py` added; verifies DecisionBehavior prefers shorter queues)
+- [x] tests/test_stats_io.py (CSV columns, files written) (present - `tests/test_stats_io.py` and `tests/test_kpi_export.py` verify KPI CSVs and exports)
+- [x] Determinism with --seed (tolerance) (present - `tests/test_determinism.py::test_kpi_export_reproducible_with_same_seed` verifies KPI CSV reproducibility for identical seeds)
 
 ## 11) Demo Presets and Commands (paste into README)
 - [x] Visual preset (seeded) (not yet documented in README)
