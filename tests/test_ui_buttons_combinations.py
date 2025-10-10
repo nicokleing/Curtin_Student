@@ -158,4 +158,4 @@ def test_stats_toggle_then_click_previous_stats_area_no_crash():
     before = (rig.engine.paused, rig.engine.speed_multiplier, rig.engine.request_exit)
     rig.click_raw_pixels(cx, cy)
     after = (rig.engine.paused, rig.engine.speed_multiplier, rig.engine.request_exit)
-    assert isinstance(after, tuple)
+    assert after == before

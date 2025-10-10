@@ -1,14 +1,7 @@
-#!/usr/bin/env python3
-"""
-Simulation Engine - Core Logic
-=====================================
-Pure simulation logic without UI dependencies.
-Tracks simulation state, step logic, and statistics.
-"""
-from models import Patron, PatronType
-from simulation.export import ExportManager
-from simulation.metrics import MetricsCalculator
-import matplotlib.pyplot as plt
+"""Simulation engine core logic with statistics and exports."""
+from adventure.patrons import Patron, PatronType
+from adventure.stats.export import ExportManager
+from adventure.stats.metrics import MetricsCalculator
 from pathlib import Path
 import csv
 from datetime import datetime
@@ -31,9 +24,12 @@ class SimulationEngine:
         self.steps = config.steps
         self.show_stats = config.show_stats
         self.save_run = getattr(config, 'save_run', False)
+        self.log_path = getattr(config, 'log_path', None)
         self.interactive = bool(getattr(config, 'interactive', False))
         self.headless = bool(getattr(config, 'headless', False))
         self.mode = getattr(config, 'mode', 'interactive' if self.interactive else 'batch')
+        self.seed = getattr(config, 'seed', None)
+        self.config_source = getattr(config, 'config_source', 'unknown')
         self.kpi_buffer_size = max(1, getattr(config, 'kpi_buffer_size', 240))
         self.kpi_warmup = max(0, getattr(config, 'kpi_warmup', 5))
         self.kpi_interval = max(0.0, getattr(config, 'kpi_interval', 0.0))
@@ -73,6 +69,8 @@ class SimulationEngine:
             'show_stats': self.show_stats,
             'mode': self.mode,
             'headless': self.headless,
+            'config_source': self.config_source,
+            'seed': self.seed,
             'kpi_buffer_size': self.kpi_buffer_size,
             'kpi_warmup': self.kpi_warmup,
             'kpi_interval': self.kpi_interval,
@@ -298,7 +296,7 @@ class SimulationEngine:
 
     def _run_interactive(self):
         """Interactive loop that renders the UI and handles input."""
-        from interface.display import DisplayManager
+        from adventure.ui.display import DisplayManager
 
         self.display = DisplayManager(self)
         self.display.setup()
@@ -348,10 +346,11 @@ class SimulationEngine:
         """Handle reporting, exports, and cleanup after a run finishes."""
         completed = self.current_step >= self.steps
         comprehensive_metrics = None
+        report_data = None
 
         if self.running and completed:
             print(f"\nSimulation completed in {self.current_step} steps")
-            self.print_final_report()
+            report_data = self.print_final_report()
             try:
                 total_abandoned = sum(p.abandoned_queues for p in self.patrons)
                 self.metrics_calculator.park_metrics['total_abandonment_events'] = total_abandoned
@@ -376,6 +375,9 @@ class SimulationEngine:
         elif self.running and not completed:
             print(f"\nSimulation ended early at step {self.current_step}")
 
+        if report_data is None:
+            report_data = self._final_report_data()
+
         if interactive and self.display:
             if self.running and completed:
                 self.display.set_final_mode()
@@ -385,46 +387,111 @@ class SimulationEngine:
         elif self.display:
             self.display.cleanup()
             self.display = None
-        
+
+        self._write_run_log(self.running and completed, report_data)
+
     def print_final_report(self):
         """Print Epic 2 final report"""
-        print("\n" + "="*60)
-        print("EPIC 2: Final visitor report")
-        print("="*60)
-        
-        # Statistics by patron type
-        type_stats = {ptype: {"count": 0, "completed": 0, "abandoned": 0, "departed": 0} 
-                     for ptype in PatronType}
-        
-        for patron in self.patrons:
-            ptype = patron.patron_type
-            type_stats[ptype]["count"] += 1
-            type_stats[ptype]["completed"] += patron.rides_completed
-            type_stats[ptype]["abandoned"] += patron.abandoned_queues
-            if patron.state == "left":
-                type_stats[ptype]["departed"] += 1
-        
-        # Print detailed statistics
-        for ptype, stats in type_stats.items():
-            if stats["count"] > 0:
-                avg_rides = stats["completed"] / stats["count"]
-                avg_abandoned = stats["abandoned"] / stats["count"]
-                
-                print(f"   {ptype.value} {ptype.name.title()}: {stats['count']} visitors")
-                print(f"      Avg rides: {avg_rides:.1f}")
-                print(f"      Avg abandonments: {avg_abandoned:.1f}")
-                print(f"      Departed: {stats['departed']}")
-        
-        # General summary
+        report = self._final_report_data()
+        for line in self._format_final_report(report):
+            print(line)
+        return report
+
+    def _final_report_data(self):
+        """Collect final statistics for summary and logging."""
+        type_stats = []
+        for ptype in PatronType:
+            patrons_of_type = [p for p in self.patrons if p.patron_type == ptype]
+            count = len(patrons_of_type)
+            completed = sum(p.rides_completed for p in patrons_of_type)
+            abandoned = sum(p.abandoned_queues for p in patrons_of_type)
+            departed = sum(1 for p in patrons_of_type if p.state == "left")
+            avg_rides = (completed / count) if count else 0.0
+            avg_abandoned = (abandoned / count) if count else 0.0
+            type_stats.append(
+                {
+                    "label": f"{ptype.value} {ptype.name.title()}",
+                    "count": count,
+                    "avg_rides": avg_rides,
+                    "avg_abandoned": avg_abandoned,
+                    "departed": departed,
+                }
+            )
+
         total_completed = sum(p.rides_completed for p in self.patrons)
         total_abandoned = sum(p.abandoned_queues for p in self.patrons)
         total_departed = sum(1 for p in self.patrons if p.state == "left")
-        
-        print(f"\nGeneral Summary:")
-        print(f"   Total rides completed: {total_completed}")
-        print(f"   Total queue abandonments: {total_abandoned}")
-        print(f"   Visitors departed: {total_departed}/{len(self.patrons)}")
-        print("="*60)
+
+        return {
+            "type_stats": type_stats,
+            "totals": {
+                "completed": total_completed,
+                "abandoned": total_abandoned,
+                "departed": total_departed,
+                "population": len(self.patrons),
+            },
+        }
+
+    def _format_final_report(self, report_data):
+        lines = ["\n" + "=" * 60, "EPIC 2: Final visitor report", "=" * 60]
+        for entry in report_data["type_stats"]:
+            if entry["count"] <= 0:
+                continue
+            lines.append(f"   {entry['label']}: {entry['count']} visitors")
+            lines.append(f"      Avg rides: {entry['avg_rides']:.1f}")
+            lines.append(f"      Avg abandonments: {entry['avg_abandoned']:.1f}")
+            lines.append(f"      Departed: {entry['departed']}")
+
+        totals = report_data["totals"]
+        lines.append("\nGeneral Summary:")
+        lines.append(f"   Total rides completed: {totals['completed']}")
+        lines.append(f"   Total queue abandonments: {totals['abandoned']}")
+        lines.append(
+            f"   Visitors departed: {totals['departed']}/{totals['population']}"
+        )
+        lines.append("=" * 60)
+        return lines
+
+    def _write_run_log(self, completed: bool, report_data):
+        if not self.log_path:
+            return
+        try:
+            log_location = Path(self.log_path)
+            log_location.parent.mkdir(parents=True, exist_ok=True)
+            timestamp = datetime.now().isoformat(timespec="seconds")
+            status = "completed" if completed else "ended"
+            with log_location.open("a", encoding="utf-8") as handle:
+                handle.write(f"[{timestamp}] Simulation {status}\n")
+                handle.write(f"Steps requested: {self.steps}\n")
+                handle.write(f"Steps completed: {self.current_step}\n")
+                seed_value = self.seed if self.seed is not None else "random"
+                handle.write(f"Seed: {seed_value}\n")
+                handle.write(f"Mode: {self.mode} (headless={self.headless})\n")
+                handle.write(f"Config source: {self.config_source}\n")
+                handle.write("Totals:\n")
+                totals = report_data["totals"]
+                handle.write(f"  rides_completed: {totals['completed']}\n")
+                handle.write(f"  queue_abandonments: {totals['abandoned']}\n")
+                handle.write(
+                    f"  departed_visitors: {totals['departed']}/{totals['population']}\n"
+                )
+                handle.write("Per-type averages:\n")
+                for entry in report_data["type_stats"]:
+                    if entry["count"] <= 0:
+                        continue
+                    handle.write(
+                        "  {label}: count={count} avg_rides={avg_rides:.1f} "
+                        "avg_abandonments={avg_abandoned:.1f} departed={departed}\n".format(
+                            label=entry["label"],
+                            count=entry["count"],
+                            avg_rides=entry["avg_rides"],
+                            avg_abandoned=entry["avg_abandoned"],
+                            departed=entry["departed"],
+                        )
+                    )
+                handle.write("\n")
+        except Exception as exc:
+            print(f"Warning: Could not write log file '{self.log_path}': {exc}")
         
     # Control methods (called by display/controls)
     def toggle_pause(self):
@@ -472,7 +539,8 @@ class SimulationEngine:
 
         # Clear cached paths so movement recomputes routes cleanly
         try:
-            from behaviors.movement_behavior import MovementBehavior
+            from adventure.patrons.behaviors.movement_behavior import MovementBehavior
+
             MovementBehavior.clear_cache(self.terrain)
         except Exception:
             pass

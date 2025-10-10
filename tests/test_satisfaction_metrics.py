@@ -2,7 +2,8 @@ import unittest
 from collections import deque
 from types import SimpleNamespace
 
-from simulation import Terrain, build_rides
+from adventure.terrain import Terrain
+from adventure.utils.io import build_rides
 from core.engine import SimulationEngine
 
 

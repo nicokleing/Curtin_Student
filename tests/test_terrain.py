@@ -1,7 +1,7 @@
 import unittest
 
-from simulation.terrain import Terrain
-from simulation.utils import build_rides
+from adventure.terrain import Terrain
+from adventure.utils.io import build_rides
 
 
 class DummyRide:

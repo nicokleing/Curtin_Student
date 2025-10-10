@@ -13,8 +13,8 @@ Implemented Features:
 """
 
 # Imports from the refactored modules
-from interface.cli import CLIManager
-from config.loader import ConfigLoader
+from adventure.ui.cli import CLIManager
+from adventure.config.loader import ConfigLoader
 from core.engine import SimulationEngine
 
 

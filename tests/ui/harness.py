@@ -11,7 +11,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.backend_bases import MouseEvent
 
-from interface.renderers.button_renderer import ButtonRenderer
+from adventure.ui.renderers.button_renderer import ButtonRenderer
 
 
 class DummyEngine:

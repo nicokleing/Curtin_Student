@@ -1,12 +1,15 @@
 import sys
+import tempfile
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from scripts import adventureworld as adventureworld_script
 
-from interface.cli import CLIManager
-from config.loader import ConfigLoader
+from adventure.config.loader import ConfigLoader
+from adventure.ui.cli import CLIManager
+from core.engine import SimulationEngine
 
 
 class CLIModeParsingTest(unittest.TestCase):
@@ -40,19 +43,40 @@ class CLIModeParsingTest(unittest.TestCase):
         test_args = [
             "adventureworld",
             "--mode", "advanced",
-            "-f", "data/map1.csv",
-            "-r", "data/rides.csv",
-            "-p", "data/patrons.csv",
+            "-f", "configs/map1.csv",
+            "-r", "configs/rides.csv",
+            "-p", "configs/patrons.csv",
             "--seed", "13",
             "--steps", "25"
         ]
         with patch.object(sys, 'argv', test_args):
             args = cli.parse_arguments()
-        self.assertEqual(args.map_csv, "data/map1.csv")
-        self.assertEqual(args.rides_csv, "data/rides.csv")
-        self.assertEqual(args.patrons_csv, "data/patrons.csv")
+        self.assertEqual(args.map_csv, "configs/map1.csv")
+        self.assertEqual(args.rides_csv, "configs/rides.csv")
+        self.assertEqual(args.patrons_csv, "configs/patrons.csv")
         self.assertEqual(args.seed, 13)
         self.assertEqual(args.steps, 25)
+
+    def test_rides_mix_and_patrons_override(self):
+        cli = CLIManager()
+        test_args = [
+            "adventureworld",
+            "--mode", "advanced",
+            "--map", "configs/map1.csv",
+            "--rides", "pirate:1,ferris:2",
+            "--patrons", "45",
+            "--steps", "18",
+            "--no-gui",
+            "--no-summary",
+        ]
+        with patch.object(sys, 'argv', test_args):
+            args = cli.parse_arguments()
+
+        loader = ConfigLoader()
+        config = loader.load_from_args(args, cli)
+        self.assertEqual(len(config.rides), 3)
+        self.assertEqual(config.num_patrons, 45)
+        self.assertEqual(config.steps, 18)
 
 
 class BatchSeedReproducibilityTest(unittest.TestCase):
@@ -100,6 +124,30 @@ class BatchSeedReproducibilityTest(unittest.TestCase):
         timers_b = [patron.timer for patron in config_b.patrons[:10]]
         self.assertNotEqual(timers_a, timers_b)
 
+    def test_params_csv_overrides_seed_and_steps(self):
+        with tempfile.NamedTemporaryFile("w", delete=False, suffix=".csv") as handle:
+            handle.write("key,value\nsteps,12\nseed,5\n")
+            params_path = handle.name
+
+        cli = CLIManager()
+        test_args = [
+            "adventureworld",
+            "--mode", "simple",
+            "--preset", "small",
+            "--params", params_path,
+            "--no-summary",
+        ]
+        try:
+            with patch.object(sys, 'argv', test_args):
+                args = cli.parse_arguments()
+            loader = ConfigLoader()
+            config = loader.load_from_args(args, cli)
+        finally:
+            Path(params_path).unlink(missing_ok=True)
+
+        self.assertEqual(config.steps, 12)
+        self.assertEqual(config.seed, 5)
+
 
 class CLIGuiToggleIntegrationTest(unittest.TestCase):
     def test_default_arguments_run_interactive(self):
@@ -138,6 +186,44 @@ class CLIGuiToggleIntegrationTest(unittest.TestCase):
         config_passed = mock_engine.call_args[0][0]
         self.assertFalse(config_passed.interactive)
         self.assertTrue(config_passed.headless)
+
+    def test_log_file_written_for_batch_run(self):
+        cli = CLIManager()
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            log_path = Path(tmp_dir) / "run.log"
+            test_args = [
+                "adventureworld",
+                "--preset", "small",
+                "--steps", "5",
+                "--no-gui",
+                "--log", str(log_path),
+                "--no-summary",
+            ]
+            with patch.object(sys, 'argv', test_args):
+                args = cli.parse_arguments()
+
+            loader = ConfigLoader()
+            config = loader.load_from_args(args, cli)
+
+            engine = SimulationEngine(config)
+            engine.run(interactive=config.interactive)
+
+            self.assertTrue(log_path.exists())
+            contents = log_path.read_text(encoding="utf-8")
+            self.assertIn("Steps requested: 5", contents)
+            self.assertIn("Simulation completed", contents)
+
+
+class CLIValidationTest(unittest.TestCase):
+    def test_negative_patrons_trigger_exit(self):
+        cli = CLIManager()
+        test_args = [
+            "adventureworld",
+            "--patrons", "-3",
+        ]
+        with patch.object(sys, 'argv', test_args):
+            with self.assertRaises(SystemExit):
+                cli.parse_arguments()
 
 
 if __name__ == "__main__":

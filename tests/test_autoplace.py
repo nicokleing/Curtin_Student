@@ -1,6 +1,6 @@
 import unittest
 
-from simulation.autoplace import auto_place
+from adventure.sim.autoplace import auto_place
 
 
 class AutoPlaceTest(unittest.TestCase):

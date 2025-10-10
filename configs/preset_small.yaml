@@ -1,0 +1,23 @@
+terrain:
+  width: 30
+  height: 20
+  obstacles:
+    - [10, 5, 3, 3]
+    - [18, 10, 2, 4]
+  entrances:
+    - [1, 10]
+  exits:
+    - [28, 18]
+
+rides:
+  - type: pirate
+    capacity: 12
+    duration: 45
+    bbox: [4, 6, 6, 4]
+  - type: ferris
+    capacity: 16
+    duration: 60
+    bbox: [15, 4, 6, 6]
+
+num_patrons: 60
+seed: 7

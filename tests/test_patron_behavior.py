@@ -1,12 +1,11 @@
 import random
 import unittest
 
-from behaviors.decision_behavior import DecisionBehavior
-from behaviors.movement_behavior import MovementBehavior
-from behaviors.queue_behavior import QueueBehavior
-from models.patron import Patron
-from models.patron_types import PatronType, DEFAULT_CATEGORY_WEIGHTS
-from simulation.terrain import Terrain
+from adventure.patrons import Patron, PatronType, DEFAULT_CATEGORY_WEIGHTS
+from adventure.patrons.behaviors.decision_behavior import DecisionBehavior
+from adventure.patrons.behaviors.movement_behavior import MovementBehavior
+from adventure.patrons.behaviors.queue_behavior import QueueBehavior
+from adventure.terrain import Terrain
 
 
 class FakeRide:

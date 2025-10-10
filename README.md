@@ -1,46 +1,108 @@
-# AdventureWorld - COMP1005/5005
+# AdventureWorld Simulator
 
-Small Python simulation for the final assignment.  
-It models a simple theme park with a few rides and patrons that move, queue, and take rides.
+AdventureWorld models a compact theme park with autonomous visitors and interactive dashboards. Patrons roam the terrain, evaluate rides, enter queues, board attractions, and leave the park while the engine tracks rich metrics for analysis or live display.
 
-## Install
-```bash
-pip install -r requirements.txt
+## Project Layout
+
+```
+adventure/       Core gameplay package (patrons, rides, terrain, stats, UI facades)
+config/          CLI configuration loader and preset dictionary
+configs/         Rubric inputs (CSV + YAML defaults used by the loader)
+scripts/         Command line entry point (`scripts/adventureworld.py`)
+tests/           Unittest suite targeting engine, UI, and behaviours
+out/             Export folder populated when --save-run / --save-kpis are used
+docs/            Rubric checklist and course documentation
 ```
 
-## How to Run
+## Install & Setup
 
-Interactive UI:
+1. **Activate the bundled virtual environment** (dependencies already installed):
+
+   ```bash
+   source .venv/bin/activate
+   ```
+
+2. **(Optional) refresh dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+## Running the Simulator
+
+> The project expects the repository root on `PYTHONPATH`. When using the bundled environment run commands exactly as shown below.
+
+### Interactive session (with live dashboards)
 
 ```bash
-python run_simulation.py -i --seed 42 --steps 120 --stats
+PYTHONPATH=. python -m scripts.adventureworld --mode simple --preset medium --steps 240 --stats
 ```
 
-Batch/headless:
+### Batch run (seeded, preset small)
 
 ```bash
-python run_simulation.py -f data/map_s1.csv -r data/rides.csv -p data/params_s1.csv --seed 11 --steps 80 --stats --save-run
+PYTHONPATH=. python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42 --no-summary
 ```
 
+### Batch / headless session with CSV inputs
 
-## Scenarios (reproducible)
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --mode advanced \
+  --map-csv configs/map1.csv --rides-csv configs/rides.csv --patrons-csv configs/patrons.csv \
+  --steps 180 --seed 11 --stats --save-run --no-gui
+```
 
-Scenario 1: small map, 3 patrons, 80 steps
+### Wizard-guided configuration
 
-Scenario 2: medium map, 10 patrons, 150 steps
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --mode advanced --wizard
+```
 
-Scenario 3: busy map, 25 patrons, 250 steps
+### Custom ride mix and params overrides
 
-## Notes
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --mode advanced --map configs/map1.csv \
+   --rides ferris:2,pirate:1 --patrons 60 --params configs/params.csv \
+   --steps 300 --seed 7 --stats --log out/run_seed7/log.txt --no-gui
+```
 
-Minimal stats: queue abandonments, patrons served, average wait (steps).
+Simulation exports are written under `out/<timestamp>` (PNG, CSV, JSON, and a short README) whenever `--save-run` or `--save-kpis <dir>` is provided.
 
-Tested on Python 3.11.
+## Preset Overview (Simple Mode)
 
-## Satisfaction metric
+| Preset | Terrain (W×H) | Visitors | Ride Mix |
+| ------ | ------------- | -------- | -------- |
+| small  | 100 × 70      | 60       | 1× pirate, 1× ferris |
+| medium | 140 × 90      | 120      | 2× pirate, 1× ferris |
+| large  | 180 × 120     | 200      | 2× pirate, 2× ferris |
 
-- `satisfaction_now` scores each tick (0-100) using `100 - α·wait_norm - β·abandon_penalty - γ·crowd_norm`.
-- Wait and crowd pressures use a rolling min/max window with a fallback based on ride capacity and visitor count.
-- `satisfaction_ema` applies exponential smoothing (λ defaults to 0.9) for the live chart and exports.
-- CLI knobs: `--sat-alpha`, `--sat-beta`, `--sat-gamma`, `--sat-ema`, plus `--kpi-style colorblind` for a safe palette.
+## Key Features
+
+- **Visitor archetypes** with bespoke movement, queue, and satisfaction models.
+- **Ride system** covering boarding cycles, downtime, and capacity tracking.
+- **Terrain services** with CSV / YAML loading, deterministic auto-placement, and reset snapshots.
+- **KPI dashboards** showing live queues, satisfaction EMA, and abandonment trends.
+- **Data exports** producing CSV, JSON, and plots suitable for post-run analysis.
+
+## Useful Flags
+
+- Core: `--preset`, `--steps`, `--seed`, `--stats`, `--save-run`, `--no-gui`
+- CSV aliases: `--map-csv`, `--rides-csv`, `--patrons-csv`
+- Quick overrides: `--map`, `--rides`, `--patrons`, `--params`
+- Logging: `--log <path>` appends a timestamped summary after each run
+- Live charts: `--kpi-buffer-size`, `--kpi-warmup`, `--kpi-interval`, `--kpi-style`
+- Satisfaction tuning: `--sat-alpha`, `--sat-beta`, `--sat-gamma`, `--sat-ema`
+- Data taps: `--save-kpis <dir>` exports KPI history for spreadsheets
+
+## Running Tests
+
+Execute the unittest suite (ensure the `.venv` is active):
+
+```bash
+python -m unittest discover tests
+```
+
+## License
+
+This coursework artefact is provided for Curtin COMP5005 assessment. Redistribution outside the unit cohort is not permitted.
 

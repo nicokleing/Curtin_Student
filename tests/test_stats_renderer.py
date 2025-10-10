@@ -2,7 +2,7 @@ import unittest
 
 import matplotlib.pyplot as plt
 
-from interface.renderers.stats_renderer import StatsRenderer
+from adventure.ui.renderers.stats_renderer import StatsRenderer
 
 
 class StatsRendererTests(unittest.TestCase):

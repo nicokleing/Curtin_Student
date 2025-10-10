@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
 AdventureWorld Launcher
-======================
+
 Script principal para ejecutar la simulación desde la raíz del proyecto
 """
 
