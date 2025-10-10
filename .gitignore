@@ -183,3 +183,6 @@ exports/
 
 # UI test artifacts
 tests/ui/*.png
+
+# Ignore run output artifacts
+out/
