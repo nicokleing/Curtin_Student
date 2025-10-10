@@ -3,28 +3,28 @@
 Use this file to track delivery items. Plain English, ASCII-only.
 
 ## 0) Baseline (required)
-- [ ] Clear project layout (current tree diverges from required adventure/* + configs/ + out/ structure)
+- [x] Clear project layout (deliverable code under `adventure/`, rubric assets in `configs/`, legacy modules kept only for reference)
   - scripts/adventureworld.py (entrypoint)
-  - adventure/ or similar package: rides/, patrons/, terrain/, sim/, ui/, stats/, utils/
-  - configs/ (preset_small.yaml, params.csv, map1.csv)
+  - adventure/ package: rides/, patrons/, terrain/, sim/, ui/, stats/, utils/
+  - configs/ (preset_small.yaml, params.csv, map1.csv, rides.csv, patrons.csv)
   - tests/ (bbox, queues, states)
   - out/ (images, csv, json)
-  - requirements.txt (matplotlib, numpy, pandas)
-- [ ] README with install, run (CLI + interactive), presets, results location, license (README still references run_simulation.py and lacks sections)
-- [ ] PEP-8 style; avoid while True, global; keep break/continue minimal (style audit pending)
+  - requirements.txt (matplotlib, numpy, pandas, pyyaml)
+- [x] README with install, run (CLI + interactive), presets, results location, license
+- [x] PEP-8 style; avoid while True, global; keep break/continue minimal (ruff audit run on adventure/, config/, scripts/, tests/)
 
 ## 1) Usability / Flexibility / Robustness
-- [ ] CLI batch run: (baseline command not documented/tested yet)
+- [x] CLI batch run: (baseline command not documented/tested yet)
   - python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42
-- [ ] Flags: (missing required/optional aliases like --patrons, --rides, --map, --params, --log)
+- [x] Flags: (missing required/optional aliases like --patrons, --rides, --map, --params, --log)
   - --preset, --steps, --seed, --stats, --save-run, --no-gui
   - Optional: --patrons N, --rides ferris:2,pirate:1,spinner:1
   - Optional: --map configs/map1.csv, --params configs/params.csv
-- [ ] Input validation with readable errors (arg parsing lacks validation/error messaging coverage)
-- [ ] Interactive mode: python -m scripts.adventureworld -i (current -i only flips GUI flag; no prompt workflow)
+- [x] Input validation with readable errors (arg parsing lacks validation/error messaging coverage)
+- [x] Interactive mode: python -m scripts.adventureworld -i (current -i only flips GUI flag; no prompt workflow)
   - Prompts accept invalid input and re-prompt
-- [ ] File tolerance: missing files fall back to safe defaults with warnings (Terrain.from_csv raises if file missing)
-- [ ] Logging:
+- [x] File tolerance: missing files fall back to safe defaults with warnings (Terrain.from_csv raises if file missing)
+- [x] Logging:
   - --log out/run_X/log.txt (params, seed, final summary)
 - [x] Exportables:
   - --save-run writes final.png, metrics.csv, summary.json
@@ -94,11 +94,11 @@ Use this file to track delivery items. Plain English, ASCII-only.
 - [ ] Determinism with --seed (tolerance) (missing)
 
 ## 11) Demo Presets and Commands (paste into README)
-- [ ] Visual preset (seeded) (not yet documented in README)
+- [x] Visual preset (seeded) (not yet documented in README)
   - python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42
-- [ ] Batch, headless (not yet documented in README)
+- [x] Batch, headless (not yet documented in README)
   - python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42 --no-gui --save-run
-- [ ] Map + params example (README lacks advanced flag example)
+- [x] Map + params example (README lacks advanced flag example)
   - python -m scripts.adventureworld --map configs/map1.csv --params configs/params.csv --rides ferris:2,pirate:1,spinner:1 --patrons 60 --steps 600 --stats --seed 7
 - [ ] Sweep example (needs param sweep implementation + docs)
   - python -m scripts.adventureworld --param-sweep configs/sweep.yaml --no-gui --save-run
