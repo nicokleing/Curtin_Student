@@ -233,6 +233,19 @@ class SimulationEngine:
         """Log state changes for export."""
         if not self.export_manager:
             return
+        # First, handle any enqueue failures (queue full) recorded on patrons
+        for patron in self.patrons:
+            if getattr(patron, '_enqueue_failed', False):
+                ride_name = getattr(patron, '_failed_ride_name', None) or ''
+                self.export_manager.log_event(
+                    self.current_step,
+                    'queue_full',
+                    patron.id,
+                    {'ride_name': ride_name}
+                )
+                # clear flags after logging
+                patron._enqueue_failed = False
+                patron._failed_ride_name = None
         # Log patron state changes
         for patron in self.patrons:
             prev_state = prev_patron_states.get(patron.id, 'unknown')

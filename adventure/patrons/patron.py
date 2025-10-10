@@ -148,8 +148,9 @@ class Patron:
                         if added:
                             self._join_queue(best_ride, t)
                         else:
-                            # couldn't join (queue full) -> remain roaming
-                            pass
+                            # couldn't join (queue full) -> remain roaming and mark failure
+                            self._enqueue_failed = True
+                            self._failed_ride_name = best_ride.name
 
             if self.state == "roaming" and self.exits:
                 exit_prob = self._calculate_exit_probability()
@@ -238,4 +239,7 @@ class Patron:
             self.target = None
         else:
             # couldn't join (queue full or error) - remain roaming
+            # mark enqueue failure for export/logging
+            self._enqueue_failed = True
+            self._failed_ride_name = getattr(ride, 'name', None)
             self.target = None
