@@ -8,6 +8,7 @@ _DEFAULT_FOOTPRINT = {
     "pirate": (20, 12),
     "ferris": (18, 18),
     "roller": (24, 16),
+    "spinner": (20, 20),
 }
 
 

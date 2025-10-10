@@ -5,7 +5,7 @@ from __future__ import annotations
 import csv
 from typing import Any, Dict, Iterable, List, Optional
 
-from adventure.rides import FerrisWheel, PirateShip
+from adventure.rides import FerrisWheel, PirateShip, SpinnerRide
 from adventure.rides.roller_coaster import RollerCoaster
 from adventure.patrons.patron_types import RIDE_CATEGORY_MAP
 
@@ -22,18 +22,20 @@ RIDE_RATINGS = {
     "pirate": 0.8,
     "ferris": 0.6,
     "coaster": 0.9,
+    "spinner": 0.7,
 }
 
 DEFAULT_RIDE_TEMPLATES = {
     "pirate": {"capacity": 12, "duration": 30},
     "ferris": {"capacity": 10, "duration": 35},
     "roller": {"capacity": 16, "duration": 32},
+    "spinner": {"capacity": 14, "duration": 28},
 }
 
 RIDE_TYPE_ALIASES = {
     "coaster": "roller",
-    "spinner": "roller",
-    "hurricane": "roller",
+    "spinner": "spinner",
+    "hurricane": "spinner",
 }
 
 
@@ -264,6 +266,8 @@ def build_rides(rides_params: Iterable[Dict[str, Any]], terrain) -> List[Any]:
             ride = PirateShip(name, capacity, duration, bbox)
         elif ride_type.startswith("fer"):
             ride = FerrisWheel(name, capacity, duration, bbox, cabins=8)
+        elif ride_type.startswith("spin"):
+            ride = SpinnerRide(name, capacity, duration, bbox)
         elif ride_type.startswith("coast") or ride_type.startswith("roller"):
             ride = RollerCoaster(name, capacity, duration, bbox)
         else:

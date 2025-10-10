@@ -10,6 +10,7 @@ from scripts import adventureworld as adventureworld_script
 from adventure.config.loader import ConfigLoader
 from adventure.ui.cli import CLIManager
 from core.engine import SimulationEngine
+from adventure.rides import SpinnerRide
 
 
 class CLIModeParsingTest(unittest.TestCase):
@@ -63,7 +64,7 @@ class CLIModeParsingTest(unittest.TestCase):
             "adventureworld",
             "--mode", "advanced",
             "--map", "configs/map1.csv",
-            "--rides", "pirate:1,ferris:2",
+            "--rides", "pirate:1,ferris:1,spinner:1",
             "--patrons", "45",
             "--steps", "18",
             "--no-gui",
@@ -75,6 +76,7 @@ class CLIModeParsingTest(unittest.TestCase):
         loader = ConfigLoader()
         config = loader.load_from_args(args, cli)
         self.assertEqual(len(config.rides), 3)
+        self.assertTrue(any(isinstance(ride, SpinnerRide) for ride in config.rides))
         self.assertEqual(config.num_patrons, 45)
         self.assertEqual(config.steps, 18)
 

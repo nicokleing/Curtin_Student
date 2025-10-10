@@ -31,7 +31,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
 
 ## 2) Rides (>=3 types)
 - [x] Objects with: id, bbox, capacity, cycle_time, state, step_change(), plot(ax) (Ride base covers these via name/bbox/duration/state/step_change/plot)
-- [ ] Types differ in motion: (pirate/ferris implemented; spinner/hurricane variant still missing)
+- [x] Types differ in motion: pirate swing, ferris rotation, spinner arms (see `SpinnerRide`)
   - Pirate swing
   - Ferris wheel rotation
   - Spinner/Hurricane variant

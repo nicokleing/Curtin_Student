@@ -115,3 +115,61 @@ class FerrisWheel(Ride):
 
     def _draw_capacity_info(self, ax):
         RideVisuals.draw_capacity_info(self, ax)
+
+
+class SpinnerRide(Ride):
+    """Spinner ride with rotating arms and pods."""
+
+    def __init__(self, name, capacity, duration, bbox, arms=4):
+        super().__init__(name, capacity, duration, bbox, ride_type="spinner")
+        self.arms = max(3, arms)
+
+    def plot(self, ax, step_index):
+        self._draw_bbox(ax)
+        self._draw_queue(ax)
+        self._draw_capacity_info(ax)
+        self._draw_spinner_animation(ax, step_index)
+        ax.text(
+            self.bbox[0],
+            self.bbox[1] - 8,
+            f"SPINNER {self.name}",
+            fontsize=9,
+            ha="left",
+            weight="bold",
+        )
+
+    def _draw_spinner_animation(self, ax, step_index):
+        cx, cy = self.center()
+        radius = min(self.bbox[2], self.bbox[3]) * 0.4
+        inner_radius = radius * 0.35
+        if self.state == "running":
+            omega = 0.12
+            arm_color = "#ff9f1c"
+            pod_color = "#ff9f1c"
+        elif self.state in {"loading", "unloading"}:
+            omega = 0.05
+            arm_color = "#2ca02c" if self.state == "loading" else "#d62728"
+            pod_color = arm_color
+        else:
+            omega = 0.01
+            arm_color = "#4c78a8"
+            pod_color = "#999999"
+
+        ax.add_patch(patches.Circle((cx, cy), inner_radius, fill=False, ec=arm_color, lw=2))
+
+        for index in range(self.arms):
+            angle = 2 * math.pi * index / self.arms + omega * step_index
+            x2 = cx + radius * math.cos(angle)
+            y2 = cy + radius * math.sin(angle)
+            ax.plot([cx, x2], [cy, y2], lw=2, color=arm_color, alpha=0.8)
+            pod_size = 6 if len(self.riders) > index else 5
+            ax.plot([x2], [y2], marker="o", ms=pod_size, color=pod_color, alpha=0.9)
+
+    def _draw_bbox(self, ax):
+        RideVisuals.draw_bbox(self, ax)
+
+    def _draw_queue(self, ax):
+        RideVisuals.draw_queue(self, ax)
+
+    def _draw_capacity_info(self, ax):
+        RideVisuals.draw_capacity_info(self, ax)
