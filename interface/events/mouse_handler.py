@@ -11,7 +11,6 @@ class MouseHandler:
         
     def handle_click(self, event):
         """Handle mouse click events."""
-        # Allow clicks when the artist extends slightly outside the axes.
         if event.inaxes is not None and event.inaxes is not self.ax_controls:
             return
         

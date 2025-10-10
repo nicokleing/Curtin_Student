@@ -180,3 +180,6 @@ exports/
 
 
 .github/instructions/
+
+# UI test artifacts
+tests/ui/*.png
