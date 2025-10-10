@@ -106,3 +106,32 @@ python -m unittest discover tests
 
 This coursework artefact is provided for Curtin COMP5005 assessment. Redistribution outside the unit cohort is not permitted.
 
+
+## Demo presets and example commands
+
+Copy these commands to reproduce example runs used in demonstrations and testing. Keep the project root on `PYTHONPATH` (see above).
+
+- Visual preset (seeded):
+
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42
+```
+
+- Batch, headless (save run artifacts):
+
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42 --no-gui --save-run
+```
+
+- Map + params example (advanced mode):
+
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --map configs/map1.csv --params configs/params.csv --rides ferris:2,pirate:1,spinner:1 --patrons 60 --steps 600 --stats --seed 7
+```
+
+- Sweep example (not implemented, placeholder):
+
+```bash
+PYTHONPATH=. python -m scripts.adventureworld --param-sweep configs/sweep.yaml --no-gui --save-run
+```
+
