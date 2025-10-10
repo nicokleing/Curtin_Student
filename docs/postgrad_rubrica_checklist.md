@@ -104,20 +104,18 @@ Use this file to track delivery items. Plain English, ASCII-only.
   - python -m scripts.adventureworld --param-sweep configs/sweep.yaml --no-gui --save-run
 
 ## 12) Traceability Matrix (fill during tests)
-(still placeholder; code/tests paths above do not exist in current layout)
-No  Feature                        Code                          Test                             Status  Date
-1.0 Ride base (state+plot)        adventure/rides/base.py       tests/test_bbox.py::test_states_plot
-1.1 Pirate swing                  adventure/rides/pirate.py     tests/test_queues.py::test_boarding_cycle
-1.2 Ferris rotation               adventure/rides/ferris.py     tests/test_strategy.py::test_targeting_works
-1.3 Spinner phases                 adventure/rides/spinner.py    tests/test_queues.py::test_queue_variation
-2.0 Patron states                 adventure/patrons/patron.py   tests/test_queues.py::test_state_switches
-2.1 Obstacle avoidance            adventure/patrons/move.py     tests/test_bbox.py::test_obstacle_avoidance
-3.0 Queue per ride                adventure/sim/queues.py       tests/test_queues.py::test_capacity_and_dequeue
-4.0 Terrain CSV                   adventure/terrain/loader.py   tests/test_bbox.py::test_map_loads
-5.0 CLI                           scripts/adventureworld.py     tests/test_cli.py::test_defaults_and_flags
-6.0 Simulation loop               adventure/sim/loop.py         tests/test_determinism.py::test_seed_repro
-7.0 Live stats                    adventure/stats/live.py       tests/test_stats_io.py::test_csv_headers
-
+No  Feature                        Code                          Test                                  Status                   Date
+1.0 Ride base (state+plot)         adventure/rides/base_ride.py   tests/test_bbox.py::test_rides_do_not_overlap_in_preset Missing test (bad nodeid) -
+1.1 Pirate swing                   adventure/rides/ride_types.py  tests/test_queues.py::test_enqueue_respects_queue_limit Missing test (bad nodeid) -
+1.2 Ferris rotation                adventure/rides/ride_types.py  tests/test_strategy.py::test_shorter_queue_preferred Missing test (bad nodeid) -
+1.3 Spinner phases                 adventure/rides/ride_types.py  tests/test_queues.py::test_enqueue_respects_queue_limit Missing test (bad nodeid) -
+2.0 Patron states                  adventure/patrons/patron.py    tests/test_queues.py::test_enqueue_respects_queue_limit Missing test (bad nodeid) -
+2.1 Obstacle avoidance             adventure/patrons/behaviors/movement_behavior.py tests/test_bbox.py::test_rides_do_not_overlap_in_preset Missing test (bad nodeid) -
+3.0 Queue per ride                 adventure/rides/base_ride.py   tests/test_queues.py::test_enqueue_respects_queue_limit Missing test (bad nodeid) -
+4.0 Terrain CSV                    adventure/terrain/__init__.py  tests/test_terrain.py::test_map_loads    Missing test (bad nodeid) -
+5.0 CLI                            scripts/adventureworld.py      tests/test_cli_and_batch.py::test_cli_batch_and_flags Missing test (bad nodeid) -
+6.0 Simulation loop                core/engine.py, adventure/sim/loop.py, adventure/sim/engine.py tests/test_determinism.py::test_kpi_export_reproducible_with_same_seed Missing code           -
+7.0 Live stats                     adventure/stats/export.py      tests/test_stats_io.py::test_kpi_csv_written_and_headers Done                   2025-10-11
 ## 13) Report (deliverables)
 - [ ] Overview (purpose + features) (report not started)
 - [ ] User Guide (commands + presets + where results live) (pending)
