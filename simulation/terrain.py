@@ -79,7 +79,7 @@ class Terrain:
         return terrain
 
     def is_free_point(self, p):
-        x = int(round(p[0])); y = int(round(p[1]))
+        x = int(p[0]); y = int(p[1])
         if x < 0 or y < 0 or x >= self.width or y >= self.height:
             return False
         return self.grid[y][x] == 0

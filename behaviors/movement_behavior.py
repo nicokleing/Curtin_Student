@@ -70,8 +70,7 @@ class MovementBehavior:
         px, py = position
         
         for ride in rides:
-            rx, ry = ride.center()
-            distance = math.hypot(px - rx, py - ry)
+            distance = MovementBehavior._distance_to_bbox(px, py, ride.bbox)
             if distance <= max_distance:
                 nearby.append((ride, distance))
                 
@@ -123,7 +122,30 @@ class MovementBehavior:
 
     @staticmethod
     def _to_cell(point):
-        return (int(round(point[0])), int(round(point[1])))
+        return (int(point[0]), int(point[1]))
+
+    @staticmethod
+    def _distance_to_bbox(px, py, bbox):
+        """Return the shortest distance from a point to a ride's bounding box."""
+        x, y, w, h = bbox
+        left, right = x, x + w
+        bottom, top = y, y + h
+
+        if left <= px <= right:
+            dx = 0.0
+        elif px < left:
+            dx = left - px
+        else:
+            dx = px - right
+
+        if bottom <= py <= top:
+            dy = 0.0
+        elif py < bottom:
+            dy = bottom - py
+        else:
+            dy = py - top
+
+        return math.hypot(dx, dy)
 
     @staticmethod
     def _neighbours(cell):

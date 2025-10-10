@@ -25,6 +25,7 @@ class MapRenderer:
         self.ax_map.clear()
         self.ax_map.set_xlim(0, terrain.width)
         self.ax_map.set_ylim(0, terrain.height)
+        self.ax_map.set_aspect('equal', adjustable='box')
         
         # Draw terrain background
         self._draw_terrain(terrain)
@@ -68,40 +69,28 @@ class MapRenderer:
             
     def _draw_ride(self, ride):
         """Draw a single ride with animation."""
-        x, y, bbox_w, bbox_h = self._get_bbox_geometry(ride)
+        x, y = ride.center()
         # Determine ride type
         ride_type = self._get_ride_type(ride)
 
         # Draw depending on type
         if ride_type == 'pirate':
-            self._draw_pirate_ship(ride, x, y, bbox_w, bbox_h)
+            self._draw_pirate_ship(ride, x, y)
         elif ride_type == 'ferris':
-            self._draw_ferris_wheel(ride, x, y, bbox_w, bbox_h)
+            self._draw_ferris_wheel(ride, x, y)
         else:
-            self._draw_generic_ride(ride, x, y, bbox_w, bbox_h)
+            self._draw_generic_ride(ride, x, y)
 
         # Information about the ride
         info = f"{ride.name}\n{ride.state}\n{len(ride.riders)}/{ride.capacity}"
-        label_offset = max(bbox_h * 0.15, 2.0)
-        label_font = max(8, min(bbox_w, bbox_h) * 0.35)
-        self.ax_map.text(x, y - (bbox_h / 2) - label_offset, info,
-                        ha='center', va='top', fontsize=label_font,
+        # NOTE: use a fixed offset below the ride's center
+        self.ax_map.text(x, y - 7.0, info,
+                        ha='center', va='top', fontsize=8,
                         weight='bold', color='white',
                         bbox=dict(boxstyle="round,pad=0.3", facecolor='black', alpha=0.7))
 
         # Draw queue if present
         self._draw_ride_queue(ride)
-
-    def _get_bbox_geometry(self, ride):
-        """Return center and size for a ride, falling back to defaults."""
-        if hasattr(ride, 'bbox') and ride.bbox:
-            x, y, w, h = ride.bbox
-            cx = x + w / 2.0
-            cy = y + h / 2.0
-            return cx, cy, max(w, 1.0), max(h, 1.0)
-        # Fallback to a sensible default footprint
-        cx, cy = ride.center()
-        return cx, cy, 6.0, 6.0
     
     def _get_ride_type(self, ride):
         """Determine a ride type using attributes and name."""
@@ -122,7 +111,7 @@ class MapRenderer:
         else:
             return 'generic'
     
-    def _draw_pirate_ship(self, ride, x, y, width, height):
+    def _draw_pirate_ship(self, ride, x, y):
         """Draw the pirate ship with a swinging animation."""
         # Compute swing angle based on state
         if ride.state == 'running':
@@ -141,34 +130,26 @@ class MapRenderer:
         else:
             color = '#A0522D'  # Medium brown when idle
             alpha = 0.7
-        
-        ship_length = max(width * 0.8, 3.0)
-        ship_height = max(height * 0.35, 1.5)
 
-        # Draw the ship as a tilted ellipse scaled to the bbox
-        ellipse = patches.Ellipse((x, y), ship_length, ship_height, angle=angle,
+        # Draw the ship with larger, fixed dimensions
+        ellipse = patches.Ellipse((x, y), 12.0, 6.0, angle=angle,
                                  facecolor=color, alpha=alpha, 
                                  edgecolor='black', linewidth=2)
         self.ax_map.add_patch(ellipse)
         
-        # Draw mast scaled to ride footprint
-        mast_offset = ship_length * 0.15
-        mast_height = max(height * 0.6, ship_height * 1.2)
-        if ride.state == 'running':
-            mast_x = x + mast_offset * math.cos(math.radians(angle))
-        else:
-            mast_x = x + mast_offset
-        mast_bottom = y - ship_height / 2
+        # Draw mast with fixed dimensions
+        mast_height = 8.0
+        mast_x = x + 1.0 * math.cos(math.radians(angle))
+        mast_bottom = y - 2.0
         mast_top = mast_bottom + mast_height
         self.ax_map.plot([mast_x, mast_x], [mast_bottom, mast_top], 'k-', linewidth=3)
         
         # Pirate flag if running
         if ride.state == 'running':
-            flag_size = max(12, min(width, height) * 0.8)
-            self.ax_map.text(mast_x + mast_offset * 0.2, mast_top - mast_height * 0.1,
-                             'P', fontsize=flag_size, weight='bold')
+            self.ax_map.text(mast_x + 0.4, mast_top - 1.0,
+                             'P', fontsize=12, weight='bold')
     
-    def _draw_ferris_wheel(self, ride, x, y, width, height):
+    def _draw_ferris_wheel(self, ride, x, y):
         """Draw the ferris wheel with rotating cabins."""
         # Rotation depends on state
         if ride.state == 'running':
@@ -187,14 +168,14 @@ class MapRenderer:
             color = '#FF8C00'  # Dark orange when idle
             alpha = 0.7
         
-        # Draw outer wheel scaled to bbox
-        radius = max(min(width, height) * 0.45, 1.8)
-        spoke_length = radius * 0.9
+        # Draw outer wheel with a larger, fixed radius
+        radius = 7.0
         wheel = patches.Circle((x, y), radius, facecolor=color, alpha=alpha,
                               edgecolor='darkred', linewidth=3)
         self.ax_map.add_patch(wheel)
         
         # Draw wheel spokes
+        spoke_length = radius * 0.9
         for i in range(8):  # 8 spokes
             angle = math.radians(i * 45 + rotation)
             x_end = x + spoke_length * math.cos(angle)
@@ -203,24 +184,20 @@ class MapRenderer:
         
         # Draw cabins
         cabin_distance = radius * 0.8
-        cabin_width = max(radius * 0.18, 0.3)
-        cabin_height = cabin_width * 0.7
         for i in range(6):  # 6 cabins
             angle = math.radians(i * 60 + rotation)
             cab_x = x + cabin_distance * math.cos(angle)
             cab_y = y + cabin_distance * math.sin(angle)
-            cabin = patches.Rectangle((cab_x - cabin_width / 2, cab_y - cabin_height / 2),
-                                    cabin_width, cabin_height,
+            cabin = patches.Rectangle((cab_x - 0.6, cab_y - 0.4), 1.2, 0.8,
                                     facecolor='yellow', edgecolor='black', linewidth=1)
             self.ax_map.add_patch(cabin)
         
         # Ferris wheel symbol if running
         if ride.state == 'running':
-            symbol_size = max(16, radius * 6)
-            self.ax_map.text(x, y + radius + cabin_height * 1.5, 'F',
-                             fontsize=symbol_size, ha='center', weight='bold')
+            self.ax_map.text(x, y + radius + 1.0, 'F',
+                             fontsize=16, ha='center', weight='bold')
     
-    def _draw_generic_ride(self, ride, x, y, width, height):
+    def _draw_generic_ride(self, ride, x, y):
         """Draw a generic ride."""
         # Adjust appearance by state
         if ride.state == 'running':
@@ -236,14 +213,13 @@ class MapRenderer:
             edge_color = 'black' 
             edge_width = 1
         
-        # Draw ride as a large circle scaled to bbox
-        radius = max(min(width, height) * 0.4, 1.5)
+        # Draw ride as a circle with a larger, fixed radius
+        radius = 6.0
         circle = patches.Circle((x, y), radius, facecolor='magenta', alpha=alpha, 
                                edgecolor=edge_color, linewidth=edge_width)
         self.ax_map.add_patch(circle)
         
-        label_size = max(16, radius * 4)
-        self.ax_map.text(x, y, 'R', fontsize=label_size, ha='center', va='center', weight='bold')
+        self.ax_map.text(x, y, 'R', fontsize=24, ha='center', va='center', weight='bold')
         
     def _draw_ride_queue(self, ride):
         """Draw the first part of a ride queue when present."""

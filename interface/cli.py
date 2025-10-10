@@ -34,7 +34,12 @@ Examples:
                 help="Show preset details and exit")
         add_arg("--wizard", action="store_true",
                 help="Launch guided advanced setup")
-        add_arg("-i", "--interactive", action="store_true", help=argparse.SUPPRESS)
+        add_arg(
+            "-i",
+            "--interactive",
+            action="store_true",
+            help="Forzar interfaz gráfica (igual que --gui) sin activar el asistente interactivo",
+        )
         add_arg("--config", default=None,
                 help="Full configuration YAML file")
         add_arg("-f", "--map-csv", dest="map_csv", default=None,
@@ -79,7 +84,10 @@ Examples:
         args = self.parser.parse_args()
 
         if getattr(args, "interactive", False):
-            args.wizard = True
+            if getattr(args, "no_gui", False):
+                print("Nota: --interactive requiere ventana, ignorando --no-gui.")
+                args.no_gui = False
+            args.gui = True
 
         if getattr(args, "gui", False):
             args.no_gui = False

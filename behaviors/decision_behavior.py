@@ -89,22 +89,25 @@ class DecisionBehavior:
     def calculate_exit_probability(rides_completed, patron_type):
         """Estimate the chance that a visitor leaves the park."""
         if patron_type == PatronType.IMPATIENT:
-            if rides_completed >= 3:
-                return 0.6  # 60% chance to leave
+            if rides_completed >= 7:
+                return 0.7   # 70% chance to leave
             elif rides_completed >= 5:
-                return 0.9  # 90% chance to leave
+                return 0.35  # 35% chance to leave
+            base = 0.05
         elif patron_type == PatronType.EXPLORER:
-            if rides_completed >= 4:
-                return 0.3  # 30% chance to leave
-            elif rides_completed >= 6:
-                return 0.7  # 70% chance to leave
+            if rides_completed >= 6:
+                return 0.55  # 55% chance to leave
+            elif rides_completed >= 4:
+                return 0.25  # 25% chance to leave
+            base = 0.02
         else:  # ADVENTURER, FAMILY
-            if rides_completed >= 4:
-                return 0.4  # 40% chance to leave
-            elif rides_completed >= 6:
-                return 0.8  # 80% chance to leave
-                
-        return 0.1  # Base probability
+            if rides_completed >= 7:
+                return 0.65  # 65% chance to leave
+            elif rides_completed >= 5:
+                return 0.3  # 30% chance to leave
+            base = 0.03
+
+        return base
 
     @staticmethod
     def _queue_entry_point(ride):
