@@ -100,7 +100,7 @@ Use this file to track delivery items. Plain English, ASCII-only.
   - python -m scripts.adventureworld --preset small --steps 200 --stats --seed 42 --no-gui --save-run
 - [x] Map + params example (README lacks advanced flag example)
   - python -m scripts.adventureworld --map configs/map1.csv --params configs/params.csv --rides ferris:2,pirate:1,spinner:1 --patrons 60 --steps 600 --stats --seed 7
-- [ ] Sweep example (needs param sweep implementation + docs)
+- [x] Sweep example (present - `scripts/adventureworld.py` supports `--param-sweep`; example `configs/sweep.yaml` and `tests/test_sweep_runner.py` included)
   - python -m scripts.adventureworld --param-sweep configs/sweep.yaml --no-gui --save-run
 
 ## 12) Traceability Matrix (fill during tests)
