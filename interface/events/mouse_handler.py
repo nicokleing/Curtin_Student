@@ -11,24 +11,31 @@ class MouseHandler:
         
     def handle_click(self, event):
         """Handle mouse click events."""
-        if event.inaxes != self.ax_controls:
+        # Allow clicks when the artist extends slightly outside the axes.
+        if event.inaxes is not None and event.inaxes is not self.ax_controls:
             return
-            
-        x, y = event.xdata, event.ydata
-        if x is None or y is None:
-            return
-            
-        print(f"Click detected at ({x:.2f}, {y:.2f})")
         
-        # Check which button was clicked
-        for btn_name in self.button_renderer.buttons:
-            area = self.button_renderer.get_button_area(btn_name)
-            if area:
-                x1, x2, y1, y2 = area
-                if x1 <= x <= x2 and y1 <= y <= y2:
-                    print(f"Button clicked: {btn_name}")
-                    self._handle_button_action(btn_name)
-                    break
+        print(f"Click detected at ({event.xdata}, {event.ydata})")
+        
+        # Use the actual rectangle artists for hit testing
+        clicked = None
+        for btn_name, info in self.button_renderer.buttons.items():
+            rect = info.get("rect")
+            if rect is None:
+                continue
+            contains, _ = rect.contains(event)
+            if contains:
+                clicked = btn_name
+                break
+        
+        if not clicked:
+            return
+        
+        print(f"Button clicked: {clicked}")
+        self._handle_button_action(clicked)
+        # Refresh labels after state change
+        self.button_renderer.update_button_texts(self.engine)
+        self.ax_controls.figure.canvas.draw_idle()
                     
     def _handle_button_action(self, button_name):
         """Execute the action associated with a button click."""
