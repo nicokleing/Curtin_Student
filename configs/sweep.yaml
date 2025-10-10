@@ -1,0 +1,10 @@
+- name: small_seed_1
+  preset: small
+  steps: 20
+  seed: 1
+  save_run: true
+- name: small_seed_2
+  preset: small
+  steps: 20
+  seed: 2
+  save_run: true

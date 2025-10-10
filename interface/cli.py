@@ -167,6 +167,12 @@ Examples:
             help="Directory to export KPI timeline data",
         )
         add_arg(
+            "--param-sweep",
+            dest="param_sweep",
+            default=None,
+            help="YAML file describing parameter sweep (list of runs)",
+        )
+        add_arg(
             "--sat-alpha",
             type=float,
             default=0.6,
