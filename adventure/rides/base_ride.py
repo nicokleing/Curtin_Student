@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+import logging
 
 from adventure.rides.ride_states import RideState, RideTimer
 
@@ -77,7 +78,7 @@ class Ride:
         q = self._queue
         if self.queue_limit is not None and len(q) >= self.queue_limit:
             # NOTE: capacity hit; caller may log or handle this
-            print(f"Warning: queue full for {self.name}")
+            logging.getLogger(__name__).warning("queue full for %s", self.name)
             return False
         q.append(patron)
         return True
