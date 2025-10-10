@@ -68,7 +68,7 @@ class StatsRenderer:
         self._clear_axes()
         self._render_queue_plot(self.axes[0])
         if len(self.axes) > 1:
-            self._render_riders_plot(self.axes[1])
+            self._render_riders_plot(self.axes[1], engine)
         if len(self.axes) > 2:
             self._render_abandon_plot(self.axes[2])
 
@@ -154,7 +154,7 @@ class StatsRenderer:
                 transform=ax.transAxes, fontsize=9,
                 bbox=dict(boxstyle="round,pad=0.25", facecolor='white', alpha=0.75))
 
-    def _render_riders_plot(self, ax):
+    def _render_riders_plot(self, ax, engine=None):
         steps = list(self.history['steps'])
         riders = list(self.history['riders'])
         queued = list(self.history['queued'])
@@ -188,6 +188,25 @@ class StatsRenderer:
         sat_axis.axhspan(80, 100, color=self._palette['sat_good'], alpha=0.05)
         sat_axis.axhspan(60, 80, color=self._palette['sat_warm'], alpha=0.04)
         sat_axis.axhspan(0, 60, color=self._palette['sat_cold'], alpha=0.02)
+
+        # Small per-ride throughput summary (text box) when metrics available
+        try:
+            if engine and hasattr(engine, 'metrics_calculator'):
+                ride_metrics = getattr(engine.metrics_calculator, 'ride_metrics', {}) or {}
+                if ride_metrics:
+                    lines = ["Per-ride:"]
+                    for rname, data in ride_metrics.items():
+                        total = data.get('total_riders', 0)
+                        cycles = data.get('total_cycles', 0)
+                        avg = data.get('avg_riders_per_cycle', 0) if cycles else 0
+                        lines.append(f"{rname}: {total} riders")
+                    txt = "\n".join(lines)
+                    ax.text(0.98, 0.95, txt, transform=ax.transAxes,
+                            fontsize=7, ha='right', va='top',
+                            bbox=dict(boxstyle='round', facecolor='white', alpha=0.65))
+        except Exception:
+            # NOTE: non-fatal; avoid breaking live charts if metrics unavailable
+            pass
 
     def _render_abandon_plot(self, ax):
         steps = list(self.history['steps'])
