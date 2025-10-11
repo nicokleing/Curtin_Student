@@ -118,10 +118,14 @@ class DisplayManager:
         
     def pause_for_frame(self, paused):
         """Pause appropriately for frame rate control."""
+        multiplier = max(1, getattr(self.engine, "speed_multiplier", 1))
+        base_delay = self._min_frame_delay
         if paused:
-            plt.pause(max(0.1, self._min_frame_delay))  # Longer pause when paused to reduce CPU usage
-        else:
-            plt.pause(self._min_frame_delay)
+            plt.pause(max(0.1, base_delay))  # keep slow cadence when paused
+            return
+
+        dynamic_delay = base_delay / multiplier
+        plt.pause(max(0.005, dynamic_delay))
             
     def set_final_mode(self):
         """Configure display for final mode."""

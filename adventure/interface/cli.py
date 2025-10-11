@@ -51,5 +51,50 @@ class CLIManager:
             action="store_true",
             help="Disable GUI window",
         )
+        parser.add_argument(
+            "--save-run",
+            action="store_true",
+            help="Persist a full export of the simulation run",
+        )
+        parser.add_argument(
+            "--log-path",
+            type=str,
+            default=None,
+            help="Write a textual log to the given file path",
+        )
+        parser.add_argument(
+            "--kpi-buffer-size",
+            type=int,
+            default=240,
+            metavar="STEPS",
+            help="Number of steps stored in the KPI rolling window",
+        )
+        parser.add_argument(
+            "--kpi-warmup",
+            type=int,
+            default=5,
+            metavar="STEPS",
+            help="Steps ignored before KPI export starts",
+        )
+        parser.add_argument(
+            "--kpi-interval",
+            type=float,
+            default=0.0,
+            metavar="SECONDS",
+            help="Seconds between KPI samples (interactive mode)",
+        )
+        parser.add_argument(
+            "--kpi-style",
+            type=str,
+            default="default",
+            help="Matplotlib style to use for KPI charts",
+        )
+        parser.add_argument(
+            "--save-kpis",
+            type=str,
+            default=None,
+            metavar="DIR",
+            help="Directory where KPI CSV files should be written",
+        )
 
         return parser
