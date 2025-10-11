@@ -42,7 +42,7 @@ class DisplayManager:
         self.map_renderer = None
         self.stats_renderer = None
         self.controls = None
-        refresh_hint = float(self.kpi_options.get('refresh_interval', 0.0) or 0.0)
+        refresh_hint = float(self.kpi_options.get("refresh_interval", 0.0) or 0.0)
         base_delay = refresh_hint if refresh_hint > 0 else 0.05
         self._min_frame_delay = max(0.01, base_delay)
         self._last_draw = 0.0
@@ -118,14 +118,10 @@ class DisplayManager:
         
     def pause_for_frame(self, paused):
         """Pause appropriately for frame rate control."""
-        multiplier = max(1, getattr(self.engine, "speed_multiplier", 1))
-        base_delay = self._min_frame_delay
         if paused:
-            plt.pause(max(0.1, base_delay))  # keep slow cadence when paused
-            return
-
-        dynamic_delay = base_delay / multiplier
-        plt.pause(max(0.005, dynamic_delay))
+            plt.pause(max(0.1, self._min_frame_delay))
+        else:
+            plt.pause(self._min_frame_delay)
             
     def set_final_mode(self):
         """Configure display for final mode."""

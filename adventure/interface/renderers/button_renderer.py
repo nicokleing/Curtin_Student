@@ -43,8 +43,6 @@ class ButtonRenderer:
         self.size_hint = size_hint
         self.buttons = {}
         self._engine = None
-        self._ax_w_px = 1.0
-        self._ax_h_px = 1.0
         self._resize_cid = None
         self._label_font = 11
 
@@ -56,50 +54,55 @@ class ButtonRenderer:
         self.ax_controls.set_ylim(0, 1)
         self.ax_controls.axis("off")
 
-        self._update_axes_size()
-        if self._resize_cid is None:
+        if self._resize_cid is None and self.ax_controls.figure:
             self._resize_cid = self.ax_controls.figure.canvas.mpl_connect(
                 "resize_event", self._on_resize
             )
 
         spec = self._SIZE_PRESETS.get(self.size_hint, self._SIZE_PRESETS["medium"])
-        w = self._px_w(spec["w_px"])
-        h = self._px_h(spec["h_px"])
-        pad = self._px_w(spec["pad_px"])
-        pad_y = self._px_h(spec["pad_y_px"])
-        offset = 0.0
         self._label_font = spec["font"]
 
-        speed_count = 3 + (1 if engine.show_stats else 0)
+        # Use normalized coordinates so buttons do not overlap after resizing.
+        btn_width = 0.235
+        btn_height = 0.33
+        pad_x = 0.02
 
-        top_total_w = 3 * w + 2 * pad
-        bot_total_w = speed_count * w + (speed_count - 1) * pad
-        left_margin = max(0.015, self._px_w(22) + offset)
-        x_top = min(left_margin, max(0.0, 1.0 - top_total_w))
-        x_bot = min(left_margin, max(0.0, 1.0 - bot_total_w))
+        top_buttons = ["pause", "reset", "exit"]
+        bottom_buttons = ["speed1", "speed5", "speed10"]
+        if engine.show_stats:
+            bottom_buttons.append("stats")
 
-        y_bot = max(self._px_h(34), 0.08)
-        y_top = y_bot + h + pad_y
-        y_top = min(y_top, 0.86 - h)
+        top_total = len(top_buttons) * btn_width + (len(top_buttons) - 1) * pad_x
+        bot_total = len(bottom_buttons) * btn_width + (len(bottom_buttons) - 1) * pad_x
+
+        x_top = (1.0 - top_total) / 2.0
+        x_bot = (1.0 - bot_total) / 2.0
+
+        y_top = 0.70
+        y_bot = 0.18
 
         self.buttons = {}
 
         x = x_top
-        self._create_button("pause", x, y_top, w, h, "lightgreen")
-        x += w + pad
-        self._create_button("reset", x, y_top, w, h, "orange")
-        x += w + pad
-        self._create_button("exit", x, y_top, w, h, "red")
+        for name, color in [
+            ("pause", "lightgreen"),
+            ("reset", "orange"),
+            ("exit", "red"),
+        ]:
+            self._create_button(name, x, y_top, btn_width, btn_height, color)
+            x += btn_width + pad_x
 
         x = x_bot
-        self._create_button("speed1", x, y_bot, w, h, "lightblue")
-        x += w + pad
-        self._create_button("speed5", x, y_bot, w, h, "orange")
-        x += w + pad
-        self._create_button("speed10", x, y_bot, w, h, "red")
-        x += w + pad
+        for name, color in [
+            ("speed1", "lightblue"),
+            ("speed5", "orange"),
+            ("speed10", "red"),
+        ]:
+            self._create_button(name, x, y_bot, btn_width, btn_height, color)
+            x += btn_width + pad_x
+
         if engine.show_stats:
-            self._create_button("stats", x, y_bot, w, h, "lightgray")
+            self._create_button("stats", x, y_bot, btn_width, btn_height, "lightgray")
 
         self.update_button_texts(engine)
 
@@ -162,7 +165,7 @@ class ButtonRenderer:
         elif btn_name == "pause":
             color = "darkgreen"
         elif btn_name == "reset":
-            color = "darkorange"
+            color = "black"
         elif "speed" in btn_name:
             color = "white"
         else:
@@ -184,21 +187,4 @@ class ButtonRenderer:
     def _on_resize(self, _event):
         if self._engine is None:
             return
-        self._update_axes_size()
         self.create_layout(self._engine)
-
-    def _update_axes_size(self):
-        fig = self.ax_controls.figure
-        try:
-            fig.canvas.draw()
-        except Exception:
-            pass
-        bbox = self.ax_controls.get_window_extent()
-        self._ax_w_px = max(1.0, bbox.width)
-        self._ax_h_px = max(1.0, bbox.height)
-
-    def _px_w(self, value):
-        return value / self._ax_w_px
-
-    def _px_h(self, value):
-        return value / self._ax_h_px

@@ -1,0 +1,159 @@
+@startuml adventureworld_core
+' AdventureWorld core module overview
+
+title AdventureWorld Modules Overview
+skinparam dpi 400
+skinparam shadowing false
+skinparam minClassWidth 150
+skinparam roundCorner 12
+
+package "CLI" {
+    class CLIManager {
+        +parse_arguments()
+    }
+}
+
+package "Configuration" {
+    class ConfigLoader {
+        +load_from_args(args, cli_manager)
+    }
+}
+
+package "Simulation" {
+    class SimulationEngine {
+        -terrain : Terrain
+        -rides : List<Ride>
+        -patrons : List<Patron>
+        -metrics_calculator : MetricsCalculator
+        +run(interactive=False)
+        +perform_tick()
+        +set_speed(multiplier)
+        +toggle_pause()
+        +reset_simulation()
+    }
+
+    class Terrain {
+        -grid : int[][]
+        +is_free_point(pos)
+        +add_ride(ride)
+        +reset()
+    }
+
+    class Patron {
+        -state : str
+        -patience : int
+        +step_change(step, rides)
+        +board_ride(ride)
+        +reset()
+    }
+
+    abstract class Ride {
+        -state : str
+        -_queue : deque
+        +step_change(step)
+        +enqueue(patron)
+        +reset()
+    }
+
+    class FerrisWheel
+    class PirateShip
+    class RollerCoaster
+}
+
+package "Interface" {
+    class DisplayManager {
+        +setup()
+        +update(state)
+        +pause_for_frame(paused)
+        +set_final_mode()
+    }
+
+    class ControlsManager {
+        +setup()
+        +update_display(state)
+        +set_final_mode()
+    }
+
+    class KeyboardHandler {
+        +handle_key_press(event)
+    }
+
+    class MouseHandler {
+        +handle_click(event)
+    }
+
+    class MapRenderer {
+        +render(state)
+    }
+
+    class StatsRenderer {
+        +render(state, engine)
+        +get_export_data()
+    }
+}
+
+package "Stats" {
+    class ExportManager {
+        +log_event(step, kind, entity, details)
+        +set_config(config)
+        +set_final_stats(stats, timeline)
+        +export_all(display, metrics)
+    }
+
+    class MetricsCalculator {
+        +initialize_visitor(visitor_id, type, spawn_time)
+        +log_visitor_event(visitor_id, event_type, step, details)
+        +log_ride_event(ride_name, event_type, step, details)
+        +calculate_all_metrics()
+        +update_live_satisfaction(value)
+    }
+}
+
+package "Behaviors" {
+    class MovementBehavior {
+        +step_towards(pos, target, speed, terrain)
+        +find_nearby_rides(pos, rides, max_distance)
+    }
+
+    class DecisionBehavior {
+        +choose_target(pos, rides, terrain, prefs)
+        +calculate_exit_probability(rides_completed, patron_type)
+    }
+
+    class QueueBehavior {
+        +should_join_queue(ride, patron_type)
+        +process_queue_patience(patron, current_time, rides)
+        +abandon_queue(patron, ride, current_time, queue_length)
+    }
+}
+
+CLIManager --> ConfigLoader : builds args
+ConfigLoader --> SimulationEngine : produces config
+SimulationEngine --> Terrain : manages
+SimulationEngine --> Patron : advances
+SimulationEngine --> Ride : controls cycles
+SimulationEngine o-- ExportManager : optional export
+SimulationEngine o-- MetricsCalculator
+SimulationEngine o-- DisplayManager : interactive mode
+
+DisplayManager --> ControlsManager
+DisplayManager --> MapRenderer
+DisplayManager --> StatsRenderer
+ControlsManager --> KeyboardHandler
+ControlsManager --> MouseHandler
+
+Ride <|-- FerrisWheel
+Ride <|-- PirateShip
+Ride <|-- RollerCoaster
+
+Patron --> Terrain : movement queries
+Patron --> Ride : joins queues
+Patron ..> MovementBehavior
+Patron ..> DecisionBehavior
+Patron ..> QueueBehavior
+Ride --> Terrain : checks occupancy
+
+ExportManager --> MetricsCalculator : uses summaries
+StatsRenderer ..> MetricsCalculator : exports KPI data
+
+@enduml
