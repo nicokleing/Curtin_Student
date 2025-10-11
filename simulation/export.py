@@ -58,12 +58,6 @@ class ExportManager:
             if csv_file:
                 files_created.append(csv_file)
                 
-            # Epic 6: Export detailed visitor events CSV if metrics available
-            if metrics_calculator:
-                detailed_csv_file = self._export_detailed_visitor_events_csv(metrics_calculator)
-                if detailed_csv_file:
-                    files_created.append(detailed_csv_file)
-                
             # Export summary to JSON
             json_file = self._export_summary_json()
             if json_file:
@@ -86,7 +80,7 @@ class ExportManager:
             return files_created
             
     def _export_events_csv(self):
-        """Export events log to CSV file."""
+        """Write events log to CSV."""
         try:
             csv_path = self.output_dir / "events.csv"
             
@@ -115,67 +109,17 @@ class ExportManager:
             print(f"Error exporting CSV: {e}")
             return None
             
-    def _export_detailed_visitor_events_csv(self, metrics_calculator):
-        """Export detailed visitor events CSV for Epic 6 HU-20."""
-        try:
-            csv_path = self.output_dir / "detailed_visitor_events.csv"
-            
-            with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-                fieldnames = [
-                    'visitor_id', 'visitor_type', 'step', 'timestamp', 
-                    'event_type', 'ride_name', 'queue_position', 
-                    'wait_time', 'details'
-                ]
-                writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-                writer.writeheader()
-                
-                # Export all visitor events from metrics calculator
-                for visitor_id, visitor_data in metrics_calculator.visitor_metrics.items():
-                    for event in visitor_data['events']:
-                        details = event.get('details', {})
-                        row = {
-                            'visitor_id': visitor_id,
-                            'visitor_type': visitor_data['type'],
-                            'step': event['step'],
-                            'timestamp': event['timestamp'].isoformat(),
-                            'event_type': event['event_type'],
-                            'ride_name': details.get('ride_name', ''),
-                            'queue_position': details.get('queue_position', ''),
-                            'wait_time': '',  # Will be calculated below
-                            'details': json.dumps(details)
-                        }
-                        
-                        # Calculate wait time for boarding events
-                        if event['event_type'] == 'boarded_ride':
-                            ride_name = details.get('ride_name', '')
-                            if ride_name and ride_name in visitor_data['queue_times']:
-                                wait_times = visitor_data['queue_times'][ride_name]
-                                if wait_times:
-                                    row['wait_time'] = wait_times[-1]  # Most recent wait time
-                        
-                        writer.writerow(row)
-                        
-            return str(csv_path)
-            
-        except Exception as e:
-            print(f"Error exporting detailed visitor CSV: {e}")
-            return None
-            
     def _export_summary_json(self):
-        """Export summary data to JSON file."""
+        """Write a short summary JSON."""
         try:
             json_path = self.output_dir / "summary.json"
             
-            # Prepare comprehensive summary
             summary = {
-                'run_info': {
-                    'name': self.run_name,
-                    'export_time': datetime.datetime.now().isoformat(),
-                    'total_events': len(self.events_log)
-                },
+                'run_name': self.run_name,
+                'export_time': datetime.datetime.now().isoformat(),
+                'total_events': len(self.events_log),
                 'configuration': self.config_data,
                 'final_statistics': self.final_stats,
-                'events_summary': self._analyze_events()
             }
             
             with open(json_path, 'w', encoding='utf-8') as jsonfile:
@@ -188,7 +132,7 @@ class ExportManager:
             return None
             
     def _export_plot_png(self, display_manager=None):
-        """Export current simulation plot to PNG file."""
+        """Save the current figure when available."""
         try:
             png_path = self.output_dir / "plot.png"
             
@@ -196,28 +140,13 @@ class ExportManager:
                 # Save current plot
                 display_manager.fig.savefig(png_path, dpi=300, bbox_inches='tight', 
                                           facecolor='white', edgecolor='none')
-            else:
-                # Create a summary plot from timeline data
-                self._create_summary_plot(png_path)
-                
-            return str(png_path)
+                return str(png_path)
+            
+            return None
             
         except Exception as e:
             print(f"Error exporting PNG: {e}")
             return None
-            
-    def _create_summary_plot(self, png_path):
-        """Create a summary plot with timeline data."""
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 8))
-        fig.suptitle(f'AdventureWorld - Simulation Summary\n{self.run_name}', fontsize=14)
-        
-        # Extract timeline data if available
-        timeline = self.final_stats.get('timeline', {})
-        
-        if timeline and 'steps' in timeline:
-            steps = timeline['steps']
-            
-            # Plot 1: Active visitors
             ax1.plot(steps, timeline.get('riders_timeline', []), 'r-', linewidth=2, label='On Rides')
             ax1.plot(steps, timeline.get('queued_timeline', []), 'orange', linewidth=2, label='In Queue')
             

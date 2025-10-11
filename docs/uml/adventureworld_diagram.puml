@@ -1,5 +1,5 @@
 @startuml adventureworld_core
-' Simple class diagram for AdventureWorld coursework
+' Class diagram for AdventureWorld coursework
 
 title AdventureWorld Core Modules
 skinparam dpi 400
@@ -15,16 +15,16 @@ package "CLI" {
 
 package "Configuration" {
     class ConfigLoader {
-        +load_from_args(args, cli)
+        +load_from_args(args)
     }
 }
 
 package "Simulation" {
     class SimulationEngine {
         -config
-        -clock
+        -current_step
         +run(interactive)
-        +set_seed(seed)
+        +step()
     }
 
     class Terrain {
@@ -52,9 +52,7 @@ package "Simulation" {
 
 package "Stats" {
     class ExportManager {
-        +log_event(step, type, entity)
-        +set_config(config)
-        +export_all(display, metrics)
+        +write_kpi_csv(path, timeline)
     }
 }
 
@@ -75,7 +73,7 @@ ConfigLoader --> SimulationEngine : provides config
 SimulationEngine --> Terrain : initialises
 SimulationEngine --> Patron : updates
 SimulationEngine --> Ride : updates
-SimulationEngine o-- ExportManager : optional export
+SimulationEngine ..> ExportManager : writes KPIs
 Ride <|-- FerrisWheel
 Ride <|-- PirateShip
 Ride <|-- SpinnerRide
