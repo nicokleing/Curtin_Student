@@ -15,7 +15,7 @@ exports/
 backup/
 .backups/
 .continue/
-contexto/
+tests/visual_outputs/
 
 # Editor / OS
 .vscode/
@@ -43,7 +43,6 @@ exports/
 backup/
 .backups/
 .continue/
-contexto/
 
 # Editor / OS
 .vscode/

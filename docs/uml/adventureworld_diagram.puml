@@ -1,0 +1,86 @@
+@startuml adventureworld_core
+' Simple class diagram for AdventureWorld coursework
+
+title AdventureWorld Core Modules
+
+package "CLI" {
+    class CLIManager {
+        +parse_arguments()
+    }
+}
+
+package "Configuration" {
+    class ConfigLoader {
+        +load_from_args(args, cli)
+    }
+}
+
+package "Simulation" {
+    class SimulationEngine {
+        -config
+        -clock
+        +run(interactive)
+        +set_seed(seed)
+    }
+
+    class Terrain {
+        -grid
+        +is_free_point(pos)
+        +random_free_point()
+    }
+
+    class Patron {
+        -state
+        -patience
+        +step_change(tick, rides)
+    }
+
+    class Ride {
+        -state
+        -queue
+        +tick()
+    }
+
+    class FerrisWheel
+    class PirateShip
+    class SpinnerRide
+}
+
+package "Stats" {
+    class ExportManager {
+        +log_event(step, type, entity)
+        +set_config(config)
+        +export_all(display, metrics)
+    }
+}
+
+package "Behaviours" {
+    class MovementBehavior {
+        +step_towards(pos, target, speed, terrain)
+    }
+    class DecisionBehavior {
+        +compute_ride_score(pos, ride, terrain, prefs)
+    }
+    class QueueBehavior {
+        +process_queue_patience(patron, current_time, rides)
+    }
+}
+
+CLIManager --> ConfigLoader : builds
+ConfigLoader --> SimulationEngine : provides config
+SimulationEngine --> Terrain : initialises
+SimulationEngine --> Patron : updates
+SimulationEngine --> Ride : updates
+SimulationEngine o-- ExportManager : optional export
+Ride <|-- FerrisWheel
+Ride <|-- PirateShip
+Ride <|-- SpinnerRide
+
+Patron --> Terrain : queries paths
+Patron --> Ride : joins queues
+Patron ..> MovementBehavior
+Patron ..> DecisionBehavior
+Patron ..> QueueBehavior
+Ride --> Terrain : checks capacity zones
+
+@enduml

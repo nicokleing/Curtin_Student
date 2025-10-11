@@ -1,16 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-AdventureWorld - Theme Park Simulator
-=====================================
-Modular architecture for maintainability.
-
-Implemented Features:
-- Epic 1: Park configuration system
-- Epic 2: Visitor system
-- Epic 3: Ride system
-- Epic 4: Interactive controls
-"""
+"""CLI entry point for the AdventureWorld simulator."""
 
 # Imports from the refactored modules
 from adventure.ui.cli import CLIManager
@@ -23,14 +13,11 @@ import shutil
 
 
 def main():
-    """
-    Main function - module orchestration with clear separation of concerns.
-    """
-    # 1. Handle command-line arguments
+    # Handle command-line arguments
     cli = CLIManager()
     args = cli.parse_arguments()
-    
-    # 2. Handle optional parameter sweep
+
+    # Handle optional parameter sweep
     config_loader = ConfigLoader()
     if getattr(args, 'param_sweep', None):
         sweep_path = Path(args.param_sweep)
