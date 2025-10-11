@@ -2,3 +2,12 @@ matplotlib>=3.7.0
 numpy>=1.24.0
 pandas>=2.0.0
 pyyaml>=6.0
+
+# Note: the Tkinter GUI bindings (Tcl/Tk) are a system-level dependency and
+# are not installable via pip. If you plan to run the GUI (--gui or --stats
+# with a live window) ensure your platform provides Tcl/Tk. Example:
+#   Debian/Ubuntu: sudo apt install python3-tk
+#   Fedora:        sudo dnf install python3-tkinter
+#   Arch:          sudo pacman -S tk
+#   macOS (Homebrew): brew install tcl-tk  # then follow Homebrew notes
+#   Windows: standard CPython installer normally includes tkinter

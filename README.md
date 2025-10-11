@@ -112,6 +112,23 @@ python -m unittest discover tests
 - Keep `out/`, `exports/`, `backup/`, and runtime virtualenvs out of the repository (a `.gitignore` is provided).
 - Provide `.env.example` for any environment variables; do not commit secrets.
 
+## Tcl/Tk (tkinter) GUI dependency
+
+The GUI uses the `tkinter` bindings which rely on the system Tcl/Tk libraries. `tkinter` is not a pip package and must be provided by your OS/runtime. If you plan to run the simulator with `--gui` or open live KPI windows, install Tcl/Tk using your platform package manager. Examples:
+
+- Debian/Ubuntu:
+   sudo apt update && sudo apt install -y python3-tk
+- Fedora:
+   sudo dnf install -y python3-tkinter
+- Arch Linux:
+   sudo pacman -S tk
+- macOS (Homebrew Python):
+   brew install tcl-tk  # then follow Homebrew notes to link Python
+- Windows:
+   The standard CPython installer usually includes tkinter.
+
+If you prefer not to install system packages, run headless with `--no-gui` or use a remote display (X11 forwarding, VNC).
+
 ## License
 
 This coursework artefact is provided for Curtin COMP5005 assessment. Redistribution outside the unit cohort is not permitted.
