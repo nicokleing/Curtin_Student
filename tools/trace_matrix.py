@@ -32,17 +32,13 @@ CHECKLIST_PATH = Path("docs/postgrad_rubrica_checklist.md")
 # Edit these to match your repo (you already scanned real names; keep them here).
 # You can list multiple code files comma-separated, and use wildcards like adventure/sim/*.py
 ROWS = [
-    ("1.0", "Ride base (state+plot)", "adventure/rides/base_ride.py",      "tests/test_bbox.py::test_rides_do_not_overlap_in_preset"),
-    ("1.1", "Pirate swing",            "adventure/rides/ride_types.py",    "tests/test_queues.py::test_enqueue_respects_queue_limit"),
-    ("1.2", "Ferris rotation",         "adventure/rides/ride_types.py",    "tests/test_strategy.py::test_shorter_queue_preferred"),
-    ("1.3", "Spinner phases",          "adventure/rides/ride_types.py",   "tests/test_queues.py::test_enqueue_respects_queue_limit"),
-    ("2.0", "Patron states",           "adventure/patrons/patron.py",  "tests/test_queues.py::test_enqueue_respects_queue_limit"),
-    ("2.1", "Obstacle avoidance",      "adventure/patrons/behaviors/movement_behavior.py",    "tests/test_bbox.py::test_rides_do_not_overlap_in_preset"),
-    ("3.0", "Queue per ride",          "adventure/rides/base_ride.py",      "tests/test_queues.py::test_enqueue_respects_queue_limit"),
-    ("4.0", "Terrain CSV",             "adventure/terrain/__init__.py",  "tests/test_terrain.py::test_map_loads"),
-    ("5.0", "CLI",                     "scripts/adventureworld.py",    "tests/test_cli_and_batch.py::test_cli_batch_and_flags"),
-    ("6.0", "Simulation loop",         "core/engine.py, adventure/sim/loop.py, adventure/sim/engine.py",    "tests/test_determinism.py::test_kpi_export_reproducible_with_same_seed"),
-    ("7.0", "Live stats",              "adventure/stats/export.py",         "tests/test_stats_io.py::test_kpi_csv_written_and_headers"),
+    ("1.0", "Ride layout", "adventure/config/loader.py, adventure/rides/base_ride.py", "tests/test_bbox.py::BBoxTests::test_rides_do_not_overlap_in_preset"),
+    ("1.1", "Queue limit", "adventure/rides/base_ride.py", "tests/test_queues.py::QueueCapacityTests::test_enqueue_respects_queue_limit"),
+    ("1.2", "Patron decision score", "adventure/patrons/behaviors/decision_behavior.py", "tests/test_strategy.py::StrategyTests::test_shorter_queue_preferred"),
+    ("1.3", "Patron timers", "adventure/patrons/patron.py", "tests/test_cli_and_batch.py::ConfigLoaderTests::test_seed_controls_initial_patron_timers"),
+    ("1.4", "CLI defaults", "adventure/ui/cli.py", "tests/test_cli_and_batch.py::CLIArgumentTests::test_defaults_are_applied"),
+    ("1.5", "Headless flags", "adventure/config/loader.py", "tests/test_cli_and_batch.py::ConfigLoaderTests::test_gui_flags_set_headless_mode"),
+    ("1.6", "Stats export", "adventure/stats/export.py", "tests/test_stats_io.py::test_kpi_csv_written_and_headers"),
 ]
 
 # Perth time (AWST, UTC+8) for audit clarity
