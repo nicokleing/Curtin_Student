@@ -36,7 +36,7 @@ ROWS = [
     ("1.1", "Queue limit", "adventure/rides/base_ride.py", "tests/test_queues.py::QueueCapacityTests::test_enqueue_respects_queue_limit"),
     ("1.2", "Patron decision score", "adventure/patrons/behaviors/decision_behavior.py", "tests/test_strategy.py::StrategyTests::test_shorter_queue_preferred"),
     ("1.3", "Patron timers", "adventure/patrons/patron.py", "tests/test_cli_and_batch.py::ConfigLoaderTests::test_seed_controls_initial_patron_timers"),
-    ("1.4", "CLI defaults", "adventure/ui/cli.py", "tests/test_cli_and_batch.py::CLIArgumentTests::test_defaults_are_applied"),
+    ("1.4", "CLI defaults", "adventure/interface/cli.py", "tests/test_cli_and_batch.py::CLIArgumentTests::test_defaults_are_applied"),
     ("1.5", "Headless flags", "adventure/config/loader.py", "tests/test_cli_and_batch.py::ConfigLoaderTests::test_gui_flags_set_headless_mode"),
     ("1.6", "Stats export", "adventure/stats/export.py", "tests/test_stats_io.py::test_kpi_csv_written_and_headers"),
 ]

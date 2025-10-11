@@ -114,7 +114,7 @@ No  Feature                        Code                          Test           
 3.0 Queue per ride                 adventure/rides/base_ride.py   tests/test_queues.py::test_enqueue_respects_queue_limit Missing test (bad nodeid) -
 4.0 Terrain CSV                    adventure/terrain/__init__.py  tests/test_terrain.py::test_map_loads    Missing test (bad nodeid) -
 5.0 CLI                            scripts/adventureworld.py      tests/test_cli_and_batch.py::test_cli_batch_and_flags Missing test (bad nodeid) -
-6.0 Simulation loop                core/engine.py, adventure/sim/loop.py, adventure/sim/engine.py tests/test_determinism.py::test_kpi_export_reproducible_with_same_seed Missing code           -
+6.0 Simulation loop                adventure/core/engine.py, adventure/sim/loop.py, adventure/sim/engine.py tests/test_determinism.py::test_kpi_export_reproducible_with_same_seed Missing code           -
 7.0 Live stats                     adventure/stats/export.py      tests/test_stats_io.py::test_kpi_csv_written_and_headers Done                   2025-10-11
 ## 13) Report (deliverables)
 - [ ] Overview (purpose + features) (report not started)
