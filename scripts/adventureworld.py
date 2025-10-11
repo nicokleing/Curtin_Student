@@ -1,8 +1,8 @@
 """Runs the AdventureWorld simulation from the CLI."""
 
-from adventure.ui.cli import CLIManager
+from adventure.interface.cli import CLIManager
 from adventure.config.loader import ConfigLoader
-from core.engine import SimulationEngine
+from adventure.core.engine import SimulationEngine
 
 
 def main():

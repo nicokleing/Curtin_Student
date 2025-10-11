@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from adventure.config.loader import ConfigLoader
-from adventure.ui.cli import CLIManager
+from adventure.interface.cli import CLIManager
 
 
 class CLIArgumentTests(unittest.TestCase):

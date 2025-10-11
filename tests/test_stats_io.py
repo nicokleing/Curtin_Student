@@ -5,7 +5,7 @@ import tempfile
 from types import SimpleNamespace
 
 from adventure.config.loader import ConfigLoader
-from core.engine import SimulationEngine
+from adventure.core.engine import SimulationEngine
 
 
 def test_kpi_csv_written_and_headers():
