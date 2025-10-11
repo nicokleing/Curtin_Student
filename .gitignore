@@ -25,4 +25,35 @@ Thumbs.db
 
 # Test UI artifacts
 tests/ui/*.png
+# .gitignore (submission-ready)
+
+# Environment / caches
+adventure_env/
+.venv/
+venv/
+env/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
+
+# Local outputs and exports
+out/
+exports/
+backup/
+.backups/
+.continue/
+contexto/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Secrets
+.env
+
+# Test UI artifacts
+tests/ui/*.png
 test_*.png
