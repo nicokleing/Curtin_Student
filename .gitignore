@@ -196,3 +196,30 @@ env/
 .env/
 # Local outputs
 out/
+
+
+If you want, I can:
+- produce the exact .gitignore patch ready to commit,
+- generate the precise git rm --cached commands for items that are currently tracked,
+- or produce a minimal checklist file of the files to include/exclude for the ZIP.
+
+References (quick links to files mentioned above)
+- [scripts/adventureworld.py](scripts/adventureworld.py)
+- [run_simulation.py](run_simulation.py)
+- [`SimulationEngine`](core/engine.py)
+- [core/engine.py](core/engine.py)
+- [adventure/](adventure/)
+- [adventure/rides/base_ride.py](adventure/rides/base_ride.py)
+- [adventure/patrons/patron.py](adventure/patrons/patron.py)
+- [adventure/patrons/behaviors/movement_behavior.py](adventure/patrons/behaviors/movement_behavior.py)
+- [adventure/stats/export.py](adventure/stats/export.py)
+- [adventure/utils/io.py](adventure/utils/io.py)
+- [configs/preset_small.yaml](configs/preset_small.yaml)
+- [configs/sweep.yaml](configs/sweep.yaml)
+- [tests/](tests/)
+- [tools/trace_matrix.py](tools/trace_matrix.py)
+- [docs/postgrad_rubrica_checklist.md](docs/postgrad_rubrica_checklist.md)
+- [.gitignore](.gitignore)
+- [requirements.txt](requirements.txt)
+
+Would you like me to produce the concrete `.gitignore` patch and the exact `git rm --cached` commands to run now?
