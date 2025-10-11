@@ -1,225 +1,28 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+# .gitignore (submission-ready)
 
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-adventure_env/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
-
-# VS Code settings (optional - remove if you want to share VS Code config)
-.vscode/
-
-# MacOS
-.DS_Store
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-
-# Linux
-*~
-
-# Temporary files
-*.tmp
-*.temp
-*.swp
-*.swo
-
-# Log files
-*.log
-
-# AdventureWorld specific
-# Uncomment these if you don't want to track CSV data files
-#*.csv
-#data/
-
-# Matplotlib cache
-.matplotlib/
-
-# Backup files
-*.bak
-*.backup
-*~
-
-# Local context and tooling
-contexto/
-.continue/
-.continue/agents/
-.continue/agents/*.yaml
-agents/
-experiments/
-backups/
-.idea/
-*.env
-**/.env
-exports/
-
-
-.github/instructions/
-
-# UI test artifacts
-tests/ui/*.png
-
-# Ignore run output artifacts
-out/
-
-
-# Virtual environments
+# Environment / caches
 adventure_env/
 .venv/
 venv/
 env/
-.env/
-# Local outputs
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Local outputs and exports
 out/
+exports/
+backup/
+.backups/
+.continue/
+contexto/
 
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
 
-If you want, I can:
-- produce the exact .gitignore patch ready to commit,
-- generate the precise git rm --cached commands for items that are currently tracked,
-- or produce a minimal checklist file of the files to include/exclude for the ZIP.
-
-References (quick links to files mentioned above)
-- [scripts/adventureworld.py](scripts/adventureworld.py)
-- [run_simulation.py](run_simulation.py)
-- [`SimulationEngine`](core/engine.py)
-- [core/engine.py](core/engine.py)
-- [adventure/](adventure/)
-- [adventure/rides/base_ride.py](adventure/rides/base_ride.py)
-- [adventure/patrons/patron.py](adventure/patrons/patron.py)
-- [adventure/patrons/behaviors/movement_behavior.py](adventure/patrons/behaviors/movement_behavior.py)
-- [adventure/stats/export.py](adventure/stats/export.py)
-- [adventure/utils/io.py](adventure/utils/io.py)
-- [configs/preset_small.yaml](configs/preset_small.yaml)
-- [configs/sweep.yaml](configs/sweep.yaml)
-- [tests/](tests/)
-- [tools/trace_matrix.py](tools/trace_matrix.py)
-- [docs/postgrad_rubrica_checklist.md](docs/postgrad_rubrica_checklist.md)
-- [.gitignore](.gitignore)
-- [requirements.txt](requirements.txt)
-
-Would you like me to produce the concrete `.gitignore` patch and the exact `git rm --cached` commands to run now?
+# Test UI artifacts
+tests/ui/*.png
+test_*.png
