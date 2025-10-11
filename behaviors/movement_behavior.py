@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Movement behavior for visitors.
-================================
-Handles grid-based pathfinding and navigation.
-"""
+"""Provides movement helpers for grid-based navigation."""
 import heapq
 import math
 

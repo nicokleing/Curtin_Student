@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Decision behavior for visitors.
-================================
-Handles target selection and ride choices.
-"""
+"""Provides decision helpers for selecting rides and targets."""
 import random
 from models.patron_types import PatronType, RideCategory, RIDE_CATEGORY_MAP
 

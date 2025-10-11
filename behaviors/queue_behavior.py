@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Queue behavior for visitors.
-============================
-Handles patience and queue abandonment logic.
-"""
+"""Provides queue handling utilities for visitors."""
 from models.patron_types import PatronType
 
 

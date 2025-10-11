@@ -26,7 +26,7 @@ import re
 import glob
 import json
 
-# ====== CONFIG ======
+# Config
 CHECKLIST_PATH = Path("docs/postgrad_rubrica_checklist.md")
 
 # Edit these to match your repo (you already scanned real names; keep them here).
@@ -48,7 +48,7 @@ ROWS = [
 # Perth time (AWST, UTC+8) for audit clarity
 AWST = timezone(timedelta(hours=8))
 
-# ====== UTILITIES ======
+# Utilities
 
 def _glob_exists(path_expr: str) -> bool:
     # Accepts exact file or a glob with wildcards
@@ -127,7 +127,7 @@ def update_checklist(table_text: str):
     CHECKLIST_PATH.write_text(new_content, encoding="utf-8")
 
 
-# ====== MAIN ======
+# Main entry point
 
 def main():
     parser = argparse.ArgumentParser()

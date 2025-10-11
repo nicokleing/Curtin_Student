@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""
-Export module - generate data and reports.
-==========================================
-Exports simulation results to multiple formats.
-"""
+"""Handles exporting simulation results to files."""
 import os
 import json
 import csv

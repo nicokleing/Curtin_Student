@@ -2,6 +2,10 @@
 ' Simple class diagram for AdventureWorld coursework
 
 title AdventureWorld Core Modules
+skinparam dpi 400
+skinparam shadowing false
+skinparam minClassWidth 140
+skinparam roundCorner 12
 
 package "CLI" {
     class CLIManager {
@@ -54,7 +58,7 @@ package "Stats" {
     }
 }
 
-package "Behaviours" {
+package "Behaviors" {
     class MovementBehavior {
         +step_towards(pos, target, speed, terrain)
     }

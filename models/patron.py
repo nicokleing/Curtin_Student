@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Patron class (refactored).
-==========================
-Park visitor with modular behaviors.
-"""
+"""Defines the Patron class used in the park simulation."""
 import random
 
 from models.patron_types import PatronType, DEFAULT_CATEGORY_WEIGHTS

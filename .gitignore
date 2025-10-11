@@ -8,6 +8,9 @@ env/
 __pycache__/
 .pytest_cache/
 .ruff_cache/
+.venv-test/
+
+
 
 # Local outputs and exports
 out/
@@ -16,6 +19,7 @@ backup/
 .backups/
 .continue/
 tests/visual_outputs/
+plantuml.jar
 
 # Editor / OS
 .vscode/
@@ -43,6 +47,7 @@ exports/
 backup/
 .backups/
 .continue/
+plantuml.jar
 
 # Editor / OS
 .vscode/

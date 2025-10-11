@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-Metrics and analysis module.
-============================
-Calculates park efficiency metrics and KPIs.
-Keeps detailed event logs for full auditing.
-"""
+"""Calculates park metrics and keeps audit-friendly data."""
 import time
 from datetime import datetime
 from collections import defaultdict, deque
